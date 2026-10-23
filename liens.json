@@ -32,9 +32,23 @@
       "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
     },
     "os": {
-      "nom": "Clipia-USB.iso.zip",
-      "url": "",
-      "taille": "262 Mo"
+      "nom": "Clipia-USB.iso.zip (4 parties)",
+      "parties": [
+        {
+          "url": "telechargements/Clipia-USB.iso.zip.part00"
+        },
+        {
+          "url": "telechargements/Clipia-USB.iso.zip.part01"
+        },
+        {
+          "url": "telechargements/Clipia-USB.iso.zip.part02"
+        },
+        {
+          "url": "telechargements/Clipia-USB.iso.zip.part03"
+        }
+      ],
+      "taille": "262 Mo en 4 parties",
+      "sha256": "09dd5bc29074ec5008a03cb62b30418c70339326c8467b476a8249661fd7abba"
     }
   }
 }
