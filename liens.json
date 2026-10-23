@@ -1,0 +1,41 @@
+{
+  "version": "3.0.0",
+  "fichiers": {
+    "windows": {
+      "nom": "Clipia-Setup-3.0.0-windows-x64.exe",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-Setup-3.0.0-windows-x64.exe",
+      "taille": "26 Mo",
+      "sha256": "3cfbd6fc260a3badd6ff51576601d0b81317aa6a3aed6672baf284c87263c6cf"
+    },
+    "portable": {
+      "nom": "Clipia-Portable-3.0.0-windows-x64.zip",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-Portable-3.0.0-windows-x64.zip",
+      "taille": "38 Mo",
+      "sha256": "abde298bbd9fdd164b43745799d7602f37ed55b4dd0e4922d28d58c462a2302e"
+    },
+    "linux": {
+      "nom": "clipia_1.2.1_amd64.deb",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/clipia_1.2.1_amd64.deb",
+      "taille": "31 Mo",
+      "sha256": "ee5f792bddb1420d18c384101bbfc7f1b78ac15a4d9c6f4f5e4eb3094d9e33f1"
+    },
+    "macos": {
+      "nom": "Clipia-1.2.1-macos.zip",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-1.2.1-macos.zip",
+      "taille": "45 Mo",
+      "sha256": "5549b5508c3b58c2c669795cb38feb515be9930084e2c6941d71326ef9d392a5"
+    },
+    "telephone": {
+      "nom": "Clipia-Telephone-3.0.0.zip",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-Telephone-3.0.0.zip",
+      "taille": "19 Ko",
+      "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
+    },
+    "os": {
+      "nom": "Clipia-USB.iso.zip",
+      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-USB.iso.zip",
+      "taille": "300 Mo",
+      "sha256": "A_REMPLIR"
+    }
+  }
+}

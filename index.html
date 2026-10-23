@@ -318,7 +318,7 @@ const FCT=[['call','Appel « Clipia »','Dis son nom : bip, « Oui ? », elle é
  ['usb','Clipia OS','Un vrai système Linux sur clé USB, avec bureau, navigateur, pilotes, réglages et Clipia intégrée.']];
 $('#fct').innerHTML=FCT.map(([i,t,d])=>`<div class="k rv">${ic(i)}<h3>${t}</h3><p>${d}</p></div>`).join('');
 /* téléchargements */
-const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta)'],telephone:['phone','Android et iPhone','Application installable depuis le navigateur · avec ton PC'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 3 parties à réassembler']};
+const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],telephone:['phone','Android et iPhone','Application installable depuis le navigateur · avec ton PC'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · archive zip à dézipper']};
 const modeles=Object.keys(NOMS);
 fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   $('#ver').textContent=L.version;$('#ver2').textContent=L.version;
