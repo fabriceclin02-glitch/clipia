@@ -33,9 +33,8 @@
     },
     "os": {
       "nom": "Clipia-USB.iso.zip",
-      "url": "https://github.com/fabriceclin02-glitch/clipia/releases/download/v3.0.0/Clipia-USB.iso.zip",
-      "taille": "300 Mo",
-      "sha256": "A_REMPLIR"
+      "url": "",
+      "taille": "262 Mo"
     }
   }
 }
