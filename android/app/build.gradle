@@ -65,5 +65,12 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.core:core:1.13.1'
-    implementation 'androidx.webkit:webkit:1.11.0'
+
+    // Les bibliotheques AndroidX tirent plusieurs versions de la bibliotheque
+    // standard Kotlin, qui se marchent dessus. On n'en garde qu'une.
+    constraints {
+        implementation('org.jetbrains.kotlin:kotlin-stdlib:1.9.24')
+        implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.24')
+        implementation('org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24')
+    }
 }
