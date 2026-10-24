@@ -90,7 +90,22 @@ jobs:
 
       - name: Compiler l'APK
         working-directory: android
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          gradle assembleRelease --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/compilation.log"
+
+      - name: Deposer le journal si la compilation echoue
+        if: failure()
+        run: |
+          mkdir -p _journal
+          tail -n 250 "$RUNNER_TEMP/compilation.log" > _journal/derniere-compilation.txt || \
+            echo "aucun journal" > _journal/derniere-compilation.txt
+          git config user.name  "Atelier Clipia"
+          git config user.email "actions@github.com"
+          git add -f _journal/derniere-compilation.txt
+          git commit -m "Journal de la compilation en echec" || exit 0
+          git pull --rebase origin main || true
+          git push origin HEAD:main
 
       - name: Verifier et ranger l'APK
         id: apk
