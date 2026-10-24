@@ -54,6 +54,12 @@
       "url": "telechargements/Clipia-Telephone-3.0.0.zip",
       "taille": "19 Ko",
       "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
+    },
+    "android": {
+      "nom": "Clipia-3.1.0.apk",
+      "url": "telechargements/Clipia-3.1.0.apk",
+      "taille": "2.6 Mo",
+      "sha256": "f5c32861ad5768b5faf023b6609fa6e79ee2acb30cabd5128951f0edc1276e68"
     }
   }
 }
