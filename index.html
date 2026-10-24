@@ -217,6 +217,18 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
   <p class="note rv" style="margin-top:14px">Le paiement en ligne s'active dans l'application une fois le service de paiement configuré par l'éditeur. Les modèles payants des fournisseurs (OpenAI, Claude…) se facturent chez eux, avec ta propre clé.</p>
 </div></section>
 
+<section id="telephone"><div class="c">
+  <h2 class="rv">📱 Installer Clipia sur ton téléphone</h2>
+  <p class="sous rv">Une seule page à ouvrir. Pas de magasin d'applications, pas de PC allumé, pas de fichier à télécharger.</p>
+  <div class="rv" style="max-width:720px;margin:0 auto;background:linear-gradient(135deg,#1a1f4d,#11153a);border:1px solid #7c5cff;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 0 6px #7c5cff18,0 26px 70px #7c5cff33">
+    <img src="app/icones/clipia-192.png" alt="" width="84" height="84" style="border-radius:22px;box-shadow:0 0 34px #7c5cff77">
+    <h3 style="margin:14px 0 6px;font-size:22px">Clipia — application téléphone</h3>
+    <p style="color:#a9afd6;margin:0 0 20px;font-size:15px">Conversation vocale, création, organisation. Fonctionne sur Android et iPhone, en plein écran, avec son icône sur l'écran d'accueil.</p>
+    <a class="btn p" href="app/" style="font-size:16px;padding:14px 30px">Ouvrir et installer Clipia</a>
+    <p style="color:#7a81ad;font-size:13px;margin:16px 0 0">Android (Chrome) : un bouton « Installer » apparaît.<br>iPhone (Safari) : Partager → « Sur l'écran d'accueil ».</p>
+  </div>
+</div></section>
+
 <section id="telecharger" class="dl"><div class="c">
   <h2 class="rv">Télécharger</h2><p class="sous rv">Version <span id="ver">3.0.0</span> · gratuit · Node.js déjà inclus.</p>
   <div class="g" id="liste"></div>
@@ -227,7 +239,7 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
   <h2 class="rv">Tutoriels d'installation</h2><p class="sous rv">Choisis ton système. Compte 3 minutes.</p>
   <div class="g">
     <div class="k rv"><h3>Windows — installeur</h3><ol class="etapes"><li>Télécharge <code>Clipia-Setup-3.0.0-windows-x64.exe</code>.</li><li>Double-clique. Si Windows affiche « protégé votre PC » : <b>Informations complémentaires → Exécuter quand même</b>.</li><li>Suivant → Installer → Terminer (aucun droit administrateur).</li><li>Lance <b>Clipia</b> depuis le Bureau : ton navigateur s'ouvre sur Clipia.</li></ol></div>
-    <div class="k rv"><h3>Android et iPhone</h3><ol class="etapes"><li>Sur ton PC, lance <b>Clipia-Telephone</b> (Windows : <b>Clipia-Telephone.bat</b>). Une adresse et un <b>code à 6 chiffres</b> s'affichent.</li><li>Téléphone sur le même Wi-Fi : ouvre l'adresse (Chrome sur Android, Safari sur iPhone) et entre le code.</li><li>Android : menu ⋮ → <b>Installer l'application</b>. iPhone : Partager → <b>Sur l'écran d'accueil</b>.</li><li>L'icône Clipia apparaît sur ton écran, en plein écran, sans magasin d'applications.</li></ol></div>
+    <div class="k rv"><h3>Android et iPhone</h3><ol class="etapes"><li>Ouvre <a href="app/"><b>l'application Clipia</b></a> dans le navigateur du téléphone.</li><li><b>Android (Chrome)</b> : appuie sur <b>Installer</b> dans la bannière, ou menu ⋮ → <b>Installer l'application</b>.</li><li><b>iPhone (Safari)</b> : bouton <b>Partager</b> → <b>Sur l'écran d'accueil</b> → Ajouter.</li><li>Dans l'app, ouvre les <b>réglages ⚙</b> et colle une clé <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter</a> (gratuite) : Clipia choisit alors toute seule un bon modèle gratuit.</li><li>Elle fonctionne ensuite sans ton PC, partout, et s'ouvre même hors ligne.</li></ol></div>
     <div class="k rv"><h3>Windows — portable (clé USB)</h3><ol class="etapes"><li>Télécharge le zip <code>Clipia-Portable-3.0.0-windows-x64.zip</code>.</li><li>Clic droit → <b>Extraire tout</b>, sur le Bureau ou directement sur ta clé USB.</li><li>Ouvre le dossier et double-clique <b>Clipia.exe</b>. Rien n'est installé.</li><li>Pour quitter : <b>Quitter-Clipia.exe</b>. Tes données restent dans le dossier <code>donnees</code> : copie-le pour tout emporter.</li></ol></div>
     <div class="k rv"><h3>macOS</h3><ol class="etapes"><li>Télécharge le fichier macOS et dézippe-le.</li><li>Glisse <b>Clipia.app</b> dans Applications.</li><li>Premier lancement : <b>clic droit → Ouvrir → Ouvrir</b> (l'app n'est pas signée par Apple).</li><li>Si macOS dit « endommagé » : Terminal, puis <code>xattr -cr /Applications/Clipia.app</code>.</li></ol></div>
     <div class="k rv"><h3>Linux (Debian, Ubuntu, Mint)</h3><ol class="etapes"><li>Télécharge <code>clipia_3.0.0_amd64.deb</code>.</li><li>Dans un terminal : <code>sudo apt install ./clipia_3.0.0_amd64.deb</code></li><li>Lance <code>clipia</code> ou l'icône du menu Applications.</li></ol></div>
@@ -266,7 +278,7 @@ const FAQ=[
  {q:"Comment appeler Clipia à la voix ?",m:"appel voix vocal alexa réveil nom clipia dire parler mot micro veille",r:"Clique sur 📣 dans la zone de saisie pour activer le mode appel, puis dis « Clipia » : un bip, « Oui ? », et elle écoute. Tu peux aussi dire la demande d'un trait : « Clipia, fais-moi un clip ». Ce mode demande Chrome ou Edge (reconnaissance vocale du navigateur)."},
  {q:"Le mode appel écoute-t-il en permanence ?",m:"micro écoute permanence vie privée enregistre espionne",r:"Seulement si tu l'actives avec 📣. Le navigateur affiche alors l'icône micro. La transcription est faite par le service vocal du navigateur (Chrome/Edge), pas par Clipia. Coupe-le d'un clic sur 📣. Clipia ne garde dans sa mémoire que ce qui suit l'appel."},
  {q:"Comment l'installer ?",m:"installer installation télécharger setup exe deb dmg windows linux mac macos",r:"Télécharge le fichier de ton système (section Télécharger) et suis « Installer en 3 minutes ». Windows : .exe ou version portable (zip, sans installation). Linux : sudo apt install ./clipia_3.0.0_amd64.deb. macOS : dézippe, clic droit → Ouvrir."},
- {q:"Clipia fonctionne sur Android et iPhone ?",m:"android iphone ios telephone mobile smartphone app apk",r:"Oui : Clipia s'installe comme une application sur Android (Chrome : Installer l'application) et iPhone (Safari : Sur l'écran d'accueil). Le moteur tourne sur ton ordinateur, protégé par un code à 6 chiffres ; le téléphone sert d'écran et de micro, sur le même Wi-Fi. Pas de fichier .apk ou .ipa."},
+ {q:"Clipia fonctionne sur Android et iPhone ?",m:"android iphone ios telephone mobile smartphone app apk installer",r:"Oui, et sans ton PC. Ouvre la page Clipia sur le téléphone : Android (Chrome) propose « Installer l'application », iPhone (Safari) : Partager puis « Sur l'écran d'accueil ». L'icône arrive sur l'écran d'accueil et l'app s'ouvre en plein écran, même hors ligne. Ajoute une clé OpenRouter gratuite dans les réglages et Clipia répond directement depuis le téléphone. Le mode « écran déporté » avec le PC et son code à 6 chiffres reste possible pour utiliser les modèles installés sur l'ordinateur."},
  {q:"Qu'est-ce que la version portable Windows ?",m:"portable zip sans installation clé usb dossier",r:"Un dossier zippé : tu le dézippes où tu veux (même une clé USB) et tu lances Clipia.exe. Rien n'est installé, rien n'est écrit dans le registre ; tes données restent dans le sous-dossier « donnees »."},
  {q:"Qu'est-ce que Clipia OS ?",m:"os système exploitation clé usb ubuntu linux live bureau démarrer",r:"Un système Linux complet (base Ubuntu 24.04) qui démarre depuis une clé USB, avec bureau, navigateur, réglages, réseau et pilotes, et Clipia intégrée. Testé en machine virtuelle ; pas encore sur du matériel réel. PC x86-64 uniquement, Secure Boot à désactiver."},
  {q:"Faut-il installer Node.js ?",m:"node nodejs prérequis dépendances",r:"Non. Les installeurs et la version portable embarquent leur propre Node.js. Sur macOS, Clipia utilise celui du système s'il est assez récent, sinon celui qui est inclus."},
@@ -318,14 +330,14 @@ const FCT=[['call','Appel « Clipia »','Dis son nom : bip, « Oui ? », elle é
  ['usb','Clipia OS','Un vrai système Linux sur clé USB, avec bureau, navigateur, pilotes, réglages et Clipia intégrée.']];
 $('#fct').innerHTML=FCT.map(([i,t,d])=>`<div class="k rv">${ic(i)}<h3>${t}</h3><p>${d}</p></div>`).join('');
 /* téléchargements */
-const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],telephone:['phone','Android et iPhone','Application installable depuis le navigateur · avec ton PC'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 4 parties à réassembler (voir Tutoriels)']};
+const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],telephone:['phone','Android et iPhone','Application installable en un lien · fonctionne seule'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 4 parties à réassembler (voir Tutoriels)']};
 const modeles=Object.keys(NOMS);
 fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   $('#ver').textContent=L.version;$('#ver2').textContent=L.version;
   $('#liste').innerHTML=modeles.filter(k=>L.fichiers[k]).map(k=>{const f=L.fichiers[k],[i,t,s]=NOMS[k];
    const parties=f.parties||null;
    const bouton=parties?`<div class="parts">${parties.map((p,n)=>p.url?`<a class="btn p" style="padding:8px 14px;font-size:13px" href="${p.url}" rel="noopener" target="_blank">Partie ${n+1}</a>`:`<span class="btn" style="padding:8px 14px;font-size:13px" aria-disabled="true">Partie ${n+1}</span>`).join('')}</div>`
-     :(f.url?`<a class="btn p" href="${f.url}" rel="noopener" target="_blank">Télécharger</a>`:`<span class="btn" aria-disabled="true">Lien bientôt disponible</span>`);
+     :(f.url?`<a class="btn p" href="${f.url}" rel="noopener"${k==='telephone'?'':' target="_blank"'}>${k==='telephone'?"Ouvrir l'application":'Télécharger'}</a>`:`<span class="btn" aria-disabled="true">Lien bientôt disponible</span>`);
    return `<div class="k rv">${ic(i)}<h3>${t}</h3><p>${s} · ${f.taille}</p>${k==='os'?'<span class="badge n">Testé en machine virtuelle</span>':''}${bouton}<small>${f.nom}${f.sha256?`<br>SHA-256 : <code>${f.sha256}</code>`:''}</small></div>`}).join('');
   observer();
 }).catch(()=>{$('#liste').innerHTML='<p class="note">Liste des téléchargements indisponible. Écris à fabriceclin02@gmail.com.</p>'});

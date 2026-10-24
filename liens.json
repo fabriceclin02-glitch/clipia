@@ -26,10 +26,9 @@
       "sha256": "5549b5508c3b58c2c669795cb38feb515be9930084e2c6941d71326ef9d392a5"
     },
     "telephone": {
-      "nom": "Clipia-Telephone-3.0.0.zip",
-      "url": "telechargements/Clipia-Telephone-3.0.0.zip",
-      "taille": "19 Ko",
-      "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
+      "nom": "Rien à télécharger : la page s'installe comme une application",
+      "url": "app/",
+      "taille": "Android et iPhone"
     },
     "os": {
       "nom": "Clipia-USB.iso.zip (4 parties)",
@@ -49,6 +48,12 @@
       ],
       "taille": "262 Mo en 4 parties",
       "sha256": "09dd5bc29074ec5008a03cb62b30418c70339326c8467b476a8249661fd7abba"
+    },
+    "telephone_pc": {
+      "nom": "Clipia-Telephone-3.0.0.zip",
+      "url": "telechargements/Clipia-Telephone-3.0.0.zip",
+      "taille": "19 Ko",
+      "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
     }
   }
 }
