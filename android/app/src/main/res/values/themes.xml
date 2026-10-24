@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ThemeClipia" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/fond</item>
+        <item name="android:statusBarColor">@color/fond</item>
+        <item name="android:navigationBarColor">@color/fond</item>
+        <item name="android:colorBackground">@color/fond</item>
+        <item name="android:textColorPrimary">@color/texte</item>
+    </style>
+</resources>

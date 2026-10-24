@@ -1,0 +1,159 @@
+name: Construire l'APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'app/**'
+      - '.github/workflows/apk.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apk
+  cancel-in-progress: true
+
+jobs:
+  construire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+        with:
+          filter: blob:none          # evite de telecharger les gros fichiers deja publies
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparer le SDK Android
+        uses: android-actions/setup-android@v3
+
+      - name: Preparer Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Preparer la cle de signature
+        id: cle
+        env:
+          CLE_B64:   ${{ secrets.CLIPIA_KEYSTORE_B64 }}
+          CLE_MDP:   ${{ secrets.CLIPIA_KEYSTORE_MDP }}
+          CLE_ALIAS: ${{ secrets.CLIPIA_KEY_ALIAS }}
+          CLE_MDP2:  ${{ secrets.CLIPIA_KEY_MDP }}
+        run: |
+          set -e
+          CHEMIN="$RUNNER_TEMP/clipia.keystore"
+          if [ -n "$CLE_B64" ]; then
+            printf '%s' "$CLE_B64" | base64 -d > "$CHEMIN"
+            ALIAS="${CLE_ALIAS:-clipia}"
+            MDP="$CLE_MDP"
+            MDP_CLE="${CLE_MDP2:-$CLE_MDP}"
+            echo "permanente=oui" >> "$GITHUB_OUTPUT"
+            echo "Signature avec la cle privee du depot (secrets)."
+          else
+            # Aucune cle fournie : on en fabrique une pour cette compilation.
+            # Elle est jointe a la compilation pour pouvoir etre reutilisee ensuite.
+            ALIAS="clipia"
+            MDP=$(openssl rand -base64 24 | tr -d '\n')
+            MDP_CLE="$MDP"
+            keytool -genkeypair -v -keystore "$CHEMIN" -alias "$ALIAS" \
+              -keyalg RSA -keysize 2048 -validity 10950 \
+              -storepass "$MDP" -keypass "$MDP" \
+              -dname "CN=Clipia, OU=CLENDAX, O=Clin Fabrice, L=Flize, C=FR"
+            echo "permanente=non" >> "$GITHUB_OUTPUT"
+            echo "::warning::Aucun secret de signature : cle temporaire. Voir android/LISEZ-MOI.md pour rendre les mises a jour installables par-dessus."
+            mkdir -p "$RUNNER_TEMP/signature"
+            cp "$CHEMIN" "$RUNNER_TEMP/signature/clipia.keystore"
+            printf 'alias : %s\nmot de passe : %s\n' "$ALIAS" "$MDP" > "$RUNNER_TEMP/signature/mots-de-passe.txt"
+          fi
+          {
+            echo "CLIPIA_KEYSTORE=$CHEMIN"
+            echo "CLIPIA_KEYSTORE_MDP=$MDP"
+            echo "CLIPIA_KEY_ALIAS=$ALIAS"
+            echo "CLIPIA_KEY_MDP=$MDP_CLE"
+          } >> "$GITHUB_ENV"
+
+      - name: Compiler l'APK
+        working-directory: android
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Verifier et ranger l'APK
+        id: apk
+        run: |
+          set -e
+          SOURCE=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          test -n "$SOURCE"
+          VERSION=$(grep -oP 'versionName\s+"\K[^"]+' android/app/build.gradle)
+          NOM="Clipia-${VERSION}.apk"
+          mkdir -p telechargements
+          cp "$SOURCE" "telechargements/$NOM"
+
+          # l'APK doit etre signe, sinon Android refusera de l'installer
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify --print-certs "telechargements/$NOM"
+
+          TAILLE=$(du -h "telechargements/$NOM" | cut -f1)
+          SOMME=$(sha256sum "telechargements/$NOM" | cut -d' ' -f1)
+          echo "nom=$NOM"            >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION"    >> "$GITHUB_OUTPUT"
+          echo "taille=$TAILLE"      >> "$GITHUB_OUTPUT"
+          echo "somme=$SOMME"        >> "$GITHUB_OUTPUT"
+          echo "APK : $NOM ($TAILLE)"
+
+      - name: Mettre a jour liens.json
+        run: |
+          python3 - <<'PY'
+          import json, os
+          nom    = os.environ['NOM']
+          taille = os.environ['TAILLE'].replace('M', ' Mo').replace('K', ' Ko')
+          with open('liens.json', encoding='utf-8') as f:
+              d = json.load(f)
+          d['fichiers']['android'] = {
+              'nom': nom,
+              'url': 'telechargements/' + nom,
+              'taille': taille,
+              'sha256': os.environ['SOMME'],
+          }
+          with open('liens.json', 'w', encoding='utf-8') as f:
+              json.dump(d, f, ensure_ascii=False, indent=2)
+              f.write('\n')
+          print('liens.json mis a jour :', nom)
+          PY
+        env:
+          NOM: ${{ steps.apk.outputs.nom }}
+          TAILLE: ${{ steps.apk.outputs.taille }}
+          SOMME: ${{ steps.apk.outputs.somme }}
+
+      - name: Publier l'APK dans le depot
+        run: |
+          git config user.name  "Atelier Clipia"
+          git config user.email "actions@github.com"
+          git add telechargements/${{ steps.apk.outputs.nom }} liens.json
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau a publier."
+          else
+            git commit -m "APK Android ${{ steps.apk.outputs.version }} (compilation automatique)"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
+
+      - name: Garder l'APK en piece jointe de la compilation
+        uses: actions/upload-artifact@v4
+        with:
+          name: Clipia-APK
+          path: telechargements/${{ steps.apk.outputs.nom }}
+          retention-days: 30
+
+      - name: Joindre la cle temporaire pour pouvoir la conserver
+        if: steps.cle.outputs.permanente == 'non'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Clipia-cle-de-signature
+          path: ${{ runner.temp }}/signature
+          retention-days: 7

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fond">#FF080A1C</color>
+    <color name="fond2">#FF0D1030</color>
+    <color name="texte">#FFEEF0FF</color>
+    <color name="doux">#FFA9AFD6</color>
+    <color name="violet">#FF7C5CFF</color>
+    <color name="bleu">#FF2F8CFF</color>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Clipia</string>
+    <string name="hors_ligne_titre">Pas de connexion</string>
+    <string name="hors_ligne_detail">Clipia a besoin d\'Internet pour répondre. Vérifiez le Wi-Fi ou les données mobiles, puis réessayez.</string>
+    <string name="reessayer">Réessayer</string>
+</resources>

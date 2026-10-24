@@ -359,6 +359,7 @@ async function demander(texte) {
     etat.messages.push({ role: 'user', contenu: texte });
     bulle('systeme', "Pour que je puisse répondre, ajoutez une clé OpenRouter dans les réglages (⚙). C'est gratuit et ça prend une minute.");
     sauver();
+    majEtat('Prête');
     ouvrir('#feuilleReglages');
     return;
   }
@@ -565,7 +566,7 @@ function arreterEcoute() {
 
 function relancerEcoute() {
   if (!etat.conversation || etat.occupe) return;
-  setTimeout(() => { if (etat.conversation && !etat.occupe && !recoActive) demarrerEcoute(); }, 350);
+  setTimeout(() => { if (etat.conversation && !etat.occupe && !etat.ecoute) demarrerEcoute(); }, 350);
 }
 
 function majBasculeConv() {
@@ -649,7 +650,7 @@ zone.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); demander(zone.value); }
 });
 $('#bEnvoi').addEventListener('click', () => demander(zone.value));
-$('#bMicro').addEventListener('click', () => { if (recoActive) arreterEcoute(); else demarrerEcoute(); });
+$('#bMicro').addEventListener('click', () => { if (etat.ecoute) arreterEcoute(); else demarrerEcoute(); });
 
 $('#bConv').addEventListener('click', () => {
   etat.conversation = !etat.conversation;
@@ -774,6 +775,108 @@ function majReseau() {
 }
 window.addEventListener('online', majReseau);
 window.addEventListener('offline', majReseau);
+
+
+/* ---------------- application Android : voix du telephone ----------------
+   Dans l'application installee, la page tourne dans une WebView : les API
+   vocales du navigateur n'y sont pas disponibles. L'application Android
+   prete alors sa propre reconnaissance vocale et sa propre synthese. */
+const pont = window.ClipiaAndroid || null;
+
+if (pont) {
+  document.documentElement.classList.add('dans-app');
+
+  window.__clipiaVoix = {
+    debut() {
+      etat.ecoute = true;
+      $('#bMicro').classList.add('ecoute');
+      majEtat('Je vous écoute…', 'attente');
+    },
+    partiel(t) { zone.value = t; ajusteZone(); },
+    final(t) {
+      etat.ecoute = false;
+      $('#bMicro').classList.remove('ecoute');
+      const texte = (t || '').trim();
+      zone.value = texte; ajusteZone();
+      if (texte) demander(texte);
+      else if (etat.conversation) relancerEcoute();
+      else majEtat('Prête');
+    },
+    erreur(code) {
+      etat.ecoute = false;
+      $('#bMicro').classList.remove('ecoute');
+      if (code === 'not-allowed') {
+        etat.conversation = false; majBasculeConv();
+        bulle('systeme', "Le micro est refusé. Autorisez le microphone pour Clipia dans les réglages Android de l'application, puis réessayez.");
+        majEtat('Micro refusé', 'off');
+      } else if (code === 'indisponible') {
+        etat.conversation = false; majBasculeConv();
+        bulle('systeme', "La reconnaissance vocale n'est pas installée sur ce téléphone. Installez « Services vocaux Google » depuis le Play Store pour parler à Clipia.");
+        majEtat('Prête');
+      } else if (code === 'no-speech') {
+        majEtat('Prête');
+        if (etat.conversation) relancerEcoute();
+      } else if (code === 'reseau') {
+        bulle('systeme', "La dictée a besoin d'Internet. Vérifiez votre connexion.");
+        majEtat('Prête');
+      } else {
+        majEtat('Prête');
+        if (etat.conversation) relancerEcoute();
+      }
+    },
+    paroleDebut() { majEtat('Clipia parle…', 'attente'); },
+    paroleFin() { majEtat('Prête'); if (etat.conversation) relancerEcoute(); }
+  };
+
+  demarrerEcoute = function () {
+    if (etat.ecoute) return;
+    zone.value = ''; ajusteZone();
+    try { pont.stopParole(); pont.ecouter(); } catch (e) {}
+  };
+
+  arreterEcoute = function () {
+    try { pont.stopEcoute(); } catch (e) {}
+    etat.ecoute = false;
+    $('#bMicro').classList.remove('ecoute');
+  };
+
+  parler = function (texte) {
+    if (!etat.voixActive) { if (etat.conversation) relancerEcoute(); return; }
+    try {
+      pont.reglerVitesse(etat.vitesse);
+      pont.choisirVoix(etat.voixNom || '');
+      pont.parler(nettoyerPourVoix(texte));
+    } catch (e) {
+      majEtat('Prête');
+      if (etat.conversation) relancerEcoute();
+    }
+  };
+
+  chargerVoix = function () {
+    let liste = [];
+    try { liste = JSON.parse(pont.listeVoix() || '[]'); } catch (e) {}
+    const sel = $('#voix');
+    sel.innerHTML = '';
+    liste.forEach((v) => {
+      const o = document.createElement('option');
+      o.value = v.nom; o.textContent = v.nom + ' (' + v.langue + ')';
+      sel.appendChild(o);
+    });
+    if (etat.voixNom && liste.some((v) => v.nom === etat.voixNom)) sel.value = etat.voixNom;
+    else if (liste[0]) { etat.voixNom = liste[0].nom; sel.value = etat.voixNom; }
+    $('#aideVoix').textContent = liste.length
+      ? liste.length + ' voix française(s) installée(s) sur ce téléphone.'
+      : "Aucune voix française installée. Ouvrez Réglages Android → Langues → Synthèse vocale pour en ajouter.";
+  };
+
+  // le navigateur integre ne doit plus toucher a la liste des voix
+  if (synth) { synth.onvoiceschanged = null; try { synth.cancel(); } catch (e) {} }
+  window.addEventListener('clipia-voix-prete', chargerVoix);
+  chargerVoix();
+
+  // dans l'application, inutile de proposer de l'installer
+  $('#banniere').classList.remove('on');
+}
 
 /* ---------------- demarrage ---------------- */
 remplirModeles();

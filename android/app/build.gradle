@@ -1,0 +1,69 @@
+plugins {
+    id 'com.android.application'
+}
+
+/* ---------------------------------------------------------------
+   Signature.
+   Aucune cle n'est rangee dans ce depot : une cle privee publiee
+   laisserait n'importe qui signer une fausse mise a jour de Clipia.
+   L'atelier de compilation fournit la cle par variables
+   d'environnement (secrets GitHub). Sans secret, il en fabrique une
+   au vol : l'APK s'installe, mais la mise a jour suivante devra
+   etre signee avec la meme cle pour s'installer par-dessus.
+   Voir android/LISEZ-MOI.md.
+   --------------------------------------------------------------- */
+def fichierCle = System.getenv("CLIPIA_KEYSTORE")
+def mdpMagasin = System.getenv("CLIPIA_KEYSTORE_MDP")
+def aliasCle   = System.getenv("CLIPIA_KEY_ALIAS")
+def mdpCle     = System.getenv("CLIPIA_KEY_MDP")
+def signatureFournie = fichierCle != null && !fichierCle.isEmpty() && file(fichierCle).exists()
+
+android {
+    namespace 'com.clendax.clipia'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.clendax.clipia"
+        minSdk 24
+        targetSdk 34
+        versionCode 30100
+        versionName "3.1.0"
+        resConfigs "fr", "en"
+    }
+
+    if (signatureFournie) {
+        signingConfigs {
+            clipia {
+                storeFile file(fichierCle)
+                storePassword mdpMagasin
+                keyAlias aliasCle
+                keyPassword mdpCle
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (signatureFournie) signingConfig signingConfigs.clipia
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packagingOptions {
+        resources {
+            excludes += ['META-INF/*.kotlin_module', 'DebugProbesKt.bin']
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.webkit:webkit:1.11.0'
+}

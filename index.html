@@ -224,8 +224,11 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
     <img src="app/icones/clipia-192.png" alt="" width="84" height="84" style="border-radius:22px;box-shadow:0 0 34px #7c5cff77">
     <h3 style="margin:14px 0 6px;font-size:22px">Clipia — application téléphone</h3>
     <p style="color:#a9afd6;margin:0 0 20px;font-size:15px">Conversation vocale, création, organisation. Fonctionne sur Android et iPhone, en plein écran, avec son icône sur l'écran d'accueil.</p>
-    <a class="btn p" href="app/" style="font-size:16px;padding:14px 30px">Ouvrir et installer Clipia</a>
-    <p style="color:#7a81ad;font-size:13px;margin:16px 0 0">Android (Chrome) : un bouton « Installer » apparaît.<br>iPhone (Safari) : Partager → « Sur l'écran d'accueil ».</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+      <a class="btn p" href="app/" style="font-size:16px;padding:14px 26px">Ouvrir et installer Clipia</a>
+      <a class="btn" id="btnApk" href="telechargements/Clipia-3.1.0.apk" style="font-size:16px;padding:14px 26px">⬇ Télécharger l'APK Android</a>
+    </div>
+    <p style="color:#7a81ad;font-size:13px;margin:16px 0 0">Android (Chrome) : un bouton « Installer » apparaît.<br>iPhone (Safari) : Partager → « Sur l'écran d'accueil ».<br>L'APK installe Clipia comme une vraie application, avec la voix du téléphone.</p>
   </div>
 </div></section>
 
@@ -330,7 +333,7 @@ const FCT=[['call','Appel « Clipia »','Dis son nom : bip, « Oui ? », elle é
  ['usb','Clipia OS','Un vrai système Linux sur clé USB, avec bureau, navigateur, pilotes, réglages et Clipia intégrée.']];
 $('#fct').innerHTML=FCT.map(([i,t,d])=>`<div class="k rv">${ic(i)}<h3>${t}</h3><p>${d}</p></div>`).join('');
 /* téléchargements */
-const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],telephone:['phone','Android et iPhone','Application installable en un lien · fonctionne seule'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 4 parties à réassembler (voir Tutoriels)']};
+const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],android:['phone','Android — fichier APK','Installation directe · signé · sans magasin d\'applications'],telephone:['phone','Android et iPhone — depuis le navigateur','Application installable en un lien · fonctionne seule'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 4 parties à réassembler (voir Tutoriels)']};
 const modeles=Object.keys(NOMS);
 fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   $('#ver').textContent=L.version;$('#ver2').textContent=L.version;
