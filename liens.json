@@ -50,10 +50,10 @@
       "sha256": "09dd5bc29074ec5008a03cb62b30418c70339326c8467b476a8249661fd7abba"
     },
     "telephone_pc": {
-      "nom": "Clipia-Telephone-3.0.0.zip",
-      "url": "telechargements/Clipia-Telephone-3.0.0.zip",
+      "nom": "Clipia-Telephone-6.0.1.zip",
+      "url": "telechargements/Clipia-Telephone-6.0.1.zip",
       "taille": "19 Ko",
-      "sha256": "02daec70be29380f48804cb4822e5861f1ea2cfb4adb547b3bead1559b4890a7"
+      "sha256": "6cc92a68fb337d19e587fff32b7fd6e3bc8a37156895b1f3cc49874dd8bfeafb"
     },
     "android": {
       "nom": "Clipia-3.1.0.apk",
