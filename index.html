@@ -3,8 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Clipia — Studio créatif IA</title>
-<meta name="description" content="Clipia : studio créatif IA par CLENDAX. Réponds à l'appel « Clipia », crée images, vidéos, musique et projets. Windows (installeur ou portable), Linux, macOS, Android, iPhone et Clipia OS sur clé USB.">
+<title>Clipia V6 — ton agent personnel IA : il réfléchit, il agit, il apprend</title>
+<meta name="description" content="Clipia V6 : agent personnel IA installé sur ton ordinateur. Installation guidée image par image, 62 moteurs d'IA (Groq, Qwen, Ollama…), 38 connecteurs, sous-agents, mémoire, voix, psychologue personnel. Gratuit, plan Pro 9,90 €/mois. Windows, Mac, Linux, Android, iPhone.">
+<meta property="og:title" content="Clipia V6 — ton agent personnel IA">
+<meta property="og:description" content="Il réfléchit, il agit, il apprend avec toi. Gratuit pour Windows, Mac, Linux, Android et iPhone.">
+<meta property="og:image" content="https://fabriceclin02-glitch.github.io/clipia/img/og.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#080a1c">
 <link rel="icon" href="icone.png">
 <style>
@@ -98,158 +103,172 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
 #sug{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}#sug button{font-size:12px;padding:5px 11px;border-radius:99px;border:1px solid var(--bord);background:transparent;color:var(--doux);cursor:pointer}#sug button:hover{border-color:var(--violet);color:#fff}
 #bot form{display:flex;border-top:1px solid var(--bord)}#bot input{flex:1;padding:13px;background:transparent;border:0;color:var(--texte);font-size:15px;outline:none}#bot form button{border:0;background:transparent;color:var(--cyan);font-weight:700;padding:0 15px;cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.bu{opacity:1}}
+
+.shots{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 18px;scrollbar-width:thin}
+.shot{flex:0 0 min(560px,86vw);scroll-snap-align:start;background:var(--carte);border:1px solid var(--bord);border-radius:18px;overflow:hidden;box-shadow:0 14px 40px #0006}
+.shot img{display:block;width:100%;height:auto;cursor:zoom-in}
+.shot div{padding:12px 16px}.shot b{display:flex;gap:10px;align-items:center}.shot .n{width:28px;height:28px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:14px;flex:none}
+.shot p{margin:6px 0 0;color:var(--doux);font-size:14px}
+.deux{display:grid;gap:26px;grid-template-columns:1fr 1fr;align-items:center}
+.deux img{width:100%;height:auto;border-radius:16px;border:1px solid var(--bord);box-shadow:0 20px 60px #1a1670aa}
+.puces{list-style:none;padding:0;margin:14px 0}.puces li{padding:7px 0 7px 30px;position:relative;color:var(--texte)}.puces li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.cols3{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.cols3 .k ul{margin:8px 0 0;padding-left:18px;color:var(--doux);font-size:14px}
+.pill{display:inline-block;margin:3px 4px 3px 0;padding:5px 12px;border-radius:99px;background:#1a1f4d;border:1px solid var(--bord);font-size:13px;color:#d6dbff}
+.prix{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:840px;margin:0 auto}
+.plan{background:var(--carte);border:1px solid var(--bord);border-radius:22px;padding:28px;position:relative}
+.plan.pro{border-color:#a98bff;box-shadow:0 0 0 5px #7c5cff22,0 24px 70px #7c5cff33;background:linear-gradient(160deg,#1c1f55,#11153a)}
+.plan h3{margin:0;font-size:22px}.plan .p{font-size:46px;font-weight:800;margin:10px 0 0}.plan .p small{font-size:16px;font-weight:500;color:var(--doux)}
+.plan .btn{width:100%;justify-content:center;margin-top:10px}
+.ruban{position:absolute;top:-13px;right:22px;background:var(--grad);padding:4px 14px;border-radius:99px;font-size:12px;font-weight:700}
+.stats{display:flex;gap:26px;flex-wrap:wrap;margin:22px 0}.stats div b{display:block;font-size:34px;line-height:1}.stats div span{color:var(--doux);font-size:13px}
+#zoom{position:fixed;inset:0;background:#000d;display:none;place-items:center;z-index:50;cursor:zoom-out}#zoom.on{display:grid}#zoom img{max-width:94vw;max-height:92vh;border-radius:12px}
+.cta-fin{text-align:center;padding:60px 0}.cta-fin h2{font-size:clamp(30px,5vw,48px)}
+@media(max-width:820px){.deux{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="fond" aria-hidden="true"><i></i><i></i><i></i><span id="pts"></span></div>
-
 <header><div class="c"><nav>
-  <a class="logo" href="#top"><img src="icone.png" alt="">Clipia</a>
-  <a class="l" href="#video">Vidéo</a><a class="l" href="#fonctions">Fonctions</a><a class="l" href="#appel">Appel vocal</a><a class="l" href="#os">Clipia OS</a><a class="l" href="#offres">Offres</a><a class="l" href="#installer">Tutoriels</a><a class="l" href="#faq">FAQ</a><a class="btn p dlnav" href="#telecharger" style="padding:8px 16px;font-size:14px">Télécharger</a>
+  <a class="logo" href="#top"><img src="icone.png" alt="">CLIPIA <small style="color:#c9a0ff;font-weight:700">V6</small></a>
+  <a class="l" href="#video">Vidéo</a><a class="l" href="#installation">Installation</a><a class="l" href="#styles">Styles</a><a class="l" href="#autonome">Autonomie</a><a class="l" href="#moteurs">Moteurs</a><a class="l" href="#connecteurs">Connecteurs</a><a class="l" href="#offres">Tarifs</a><a class="l" href="#faq">FAQ</a><a class="btn p dlnav" href="#telecharger" style="padding:8px 16px;font-size:14px">Télécharger</a>
 </nav></div></header>
 
 <main id="top">
 <div class="c hero">
   <div>
-    <span class="etiq"><b></b>Version <span id="ver2">3.0.0</span> · gratuit · CLENDAX</span>
-    <h1>Dis <span class="deg">« Clipia »</span>.<br>Elle crée avec toi.</h1>
-    <p class="lead">Un studio créatif IA qui t'écoute, se souvient et travaille sur ta machine : image, vidéo, musique, texte, projets et agents. Modèles gratuits hors ligne ou tes propres clés.</p>
+    <span class="etiq"><b></b>Version <span id="ver2">6.0.1</span> · gratuit · CLENDAX</span>
+    <h1>Ton agent personnel.<br><span class="deg">Il réfléchit, il agit, il apprend.</span></h1>
+    <p class="lead">Clipia s'installe sur ton ordinateur, te guide pas à pas, branche les meilleurs cerveaux d'IA (gratuits ou non), crée ses propres sous-agents et garde la mémoire de tout. Elle te parle comme tu veux : ami, entrepreneur, coach… ou psychologue personnel.</p>
     <div class="appel" aria-label="Exemple d'appel vocal"><div class="onde" id="onde1"></div><div id="tape"></div></div>
-    <a class="btn p" href="#telecharger">Télécharger Clipia</a> <a class="btn" href="#video">▶ Voir la vidéo</a> <a class="btn" href="#os">Découvrir Clipia OS</a>
+    <a class="btn p" href="#telecharger">⬇ Télécharger gratuitement</a> <a class="btn" href="#video">▶ Voir la vidéo</a> <a class="btn" href="#offres">Tarifs</a>
+    <div class="stats"><div><b>62</b><span>moteurs d'IA</span></div><div><b>38</b><span>connecteurs</span></div><div><b>11</b><span>styles de conversation</span></div><div><b>5</b><span>plateformes</span></div></div>
   </div>
-  <div class="orbe" aria-hidden="true">
-    <svg viewBox="0 0 400 400">
-      <defs>
-        <radialGradient id="g1" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#b9a6ff"/><stop offset=".5" stop-color="#6a56ff"/><stop offset="1" stop-color="#1c3f9e"/></radialGradient>
-        <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c26bff"/><stop offset="1" stop-color="#2f8cff"/></linearGradient>
-        <filter id="fl"><feGaussianBlur stdDeviation="14"/></filter>
-      </defs>
-      <circle cx="200" cy="200" r="120" fill="#6a56ff" opacity=".55" filter="url(#fl)"/>
-      <g class="r3"><circle cx="200" cy="200" r="185" fill="none" stroke="url(#g2)" stroke-width="1.5" stroke-dasharray="2 10" opacity=".8"/><circle cx="200" cy="15" r="6" fill="#42d7ff"/></g>
-      <g class="r2"><circle cx="200" cy="200" r="158" fill="none" stroke="url(#g2)" stroke-width="2" stroke-dasharray="60 24 8 24" opacity=".85"/><circle cx="358" cy="200" r="5" fill="#c26bff"/></g>
-      <g class="r1"><circle cx="200" cy="200" r="132" fill="none" stroke="#7c5cff" stroke-width="1.5" stroke-dasharray="4 8" opacity=".9"/><circle cx="68" cy="200" r="5" fill="#2f8cff"/></g>
-      <g class="coeur"><circle cx="200" cy="200" r="98" fill="url(#g1)"/><circle cx="200" cy="200" r="98" fill="none" stroke="#ffffff55" stroke-width="1.5"/>
-        <path d="M178 166v68l62-34z" fill="#fff" opacity=".95"/></g>
-    </svg>
-  </div>
+  <div class="orbe" aria-hidden="true"><img src="img/orbe.jpg" alt="" style="width:100%;border-radius:50%;box-shadow:0 0 90px #7c5cff88"></div>
 </div>
 
 <section id="video"><div class="c">
-  <h2 class="rv">🎬 Découvre Clipia en 1 minute</h2><p class="sous rv">Avec la voix de Clipia et une ambiance afro-house. Mets le son 🔊</p>
-  <div class="rv" style="position:relative;max-width:960px;margin:0 auto;border-radius:20px;overflow:hidden;border:2px solid #7c5cff;box-shadow:0 0 0 6px #7c5cff22,0 30px 90px #7c5cff55">
-    <video id="vid" controls preload="metadata" poster="poster.jpg" playsinline style="display:block;width:100%;background:#000"><source src="Clipia-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video>
+  <h2 class="rv">🎬 Découvre Clipia V6 en 2 minutes</h2><p class="sous rv">Voix, sous-titres : toutes les capacités, de l'installation aux connecteurs. Mets le son 🔊</p>
+  <div class="rv" style="position:relative;max-width:980px;margin:0 auto;border-radius:20px;overflow:hidden;border:2px solid #7c5cff;box-shadow:0 0 0 6px #7c5cff22,0 30px 90px #7c5cff55">
+    <video id="vid" controls preload="metadata" poster="img/poster-v6.jpg" playsinline style="display:block;width:100%;background:#000"><source src="Clipia-V6-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video>
     <button id="vidPlay" type="button" style="position:absolute;inset:0;margin:auto;width:92px;height:92px;border-radius:50%;border:0;background:#7c5cffee;color:#fff;font-size:38px;cursor:pointer;box-shadow:0 10px 40px #0009" aria-label="Lancer la vidéo avec le son">▶</button>
   </div>
-  <p class="sous rv" style="margin-top:14px"><a href="Clipia-presentation.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo</a></p>
+  <p class="sous rv" style="margin:14px auto 0;text-align:center"><a href="Clipia-V6-presentation.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo</a> · <a href="Clipia-V6-short.mp4" download style="color:#9bb4ff">⬇ Version verticale (Shorts, TikTok, Reels)</a></p>
 </div></section>
 
+<section id="installation"><div class="c">
+  <h2 class="rv">Une installation guidée, image par image</h2>
+  <p class="sous rv">Après l'installeur, Clipia se présente en plein écran avec une animation 3D, puis t'accompagne de l'étape 1 à la fin. Rien à taper, tout se télécharge pour toi.</p>
+  <div class="shots rv" id="galerie"></div>
+  <p class="note rv">Chaque étape est facultative : tu peux passer, revenir en arrière, ou tout reprendre plus tard depuis le menu « Assistant d'installation ».</p>
+</div></section>
+
+<section id="styles"><div class="c"><div class="deux">
+  <div class="rv"><h2>« Comment veux-tu que je te parle ? »</h2>
+    <p class="sous" style="margin-bottom:10px">À la fin de l'installation, Clipia te demande le style de votre conversation. Tu peux le changer à tout moment, ou créer le tien.</p>
+    <div><span class="pill">🤝 Comme un ami</span><span class="pill">🚀 Entrepreneur</span><span class="pill">🎨 Créateur de projet</span><span class="pill">🏆 Coach</span><span class="pill">🧠 Psychologue personnel</span><span class="pill">⚖️ Modéré</span><span class="pill">🎭 Drôle</span><span class="pill">⚡ Direct</span><span class="pill">📚 Pédagogue</span><span class="pill">💼 Professionnel</span><span class="pill">🔪 Cash</span><span class="pill">＋ Ton propre style</span></div>
+    <h3 style="margin-top:18px">🧠 Psychologue personnel</h3>
+    <ul class="puces"><li>Écoute active, questions ouvertes, petits exercices concrets.</li><li><b>Se souvient de vos séances</b> : le carnet reste uniquement sur ton ordinateur, consultable et effaçable.</li><li>Honnête sur ses limites : c'est une IA, pas une psychologue diplômée, elle ne pose pas de diagnostic et ne remplace pas un professionnel.</li><li>En cas de détresse, elle t'oriente vers le <b>3114</b> (24 h/24, gratuit) ou le 15 / 112.</li></ul>
+  </div>
+  <div class="rv"><img src="img/11-style-psy.jpg" alt="Choix du style de conversation dans Clipia" loading="lazy"></div>
+</div></div></section>
+
+<section id="autonome"><div class="c"><div class="deux">
+  <div class="rv"><img src="img/18-agents.jpg" alt="Agents et sous-agents dans Clipia" loading="lazy"></div>
+  <div class="rv"><h2>Autonome, et elle apprend de toi</h2>
+    <p class="sous" style="margin-bottom:10px">Clipia ne se contente pas de répondre : elle comprend, planifie, agit, puis vérifie.</p>
+    <ul class="puces">
+      <li><b>Agent personnel</b> : elle crée des agents et sous-agents (codeur, chercheur, rédacteur, planificateur, créateur…), des workflows et des projets.</li>
+      <li><b>Mémoire totale</b> : conversations, recherches, fichiers, créations. Elle reprend une conversation là où tu l'as laissée.</li>
+      <li><b>Elle apprend de ses erreurs</b> : chaque échec est archivé comme leçon et resservi quand c'est utile.</li>
+      <li><b>Compétences importables</b> : elle reprend les compétences d'OpenClaw (SKILL.md) que tu choisis.</li>
+      <li><b>Elle peut améliorer son propre code</b>, avec ton accord à chaque changement, sauvegarde automatique et retour arrière.</li>
+      <li><b>Pilote autonome</b> : des tâches programmées qui tournent sans toi.</li>
+    </ul>
+    <p class="note">Précision honnête : « apprendre » veut dire mémoriser, tirer des leçons et s'équiper de nouvelles compétences. Clipia ne ré-entraîne pas les modèles d'IA.</p>
+  </div>
+</div></div></section>
+
+<section id="moteurs"><div class="c">
+  <h2 class="rv">62 moteurs d'IA, à ta main</h2>
+  <p class="sous rv">Clipia choisit le plus rapide qui répond et bascule toute seule si l'un tombe. Tes clés restent chiffrées dans le coffre, sur ton ordinateur.</p>
+  <div class="cols3 rv">
+    <div class="k"><h3 style="color:var(--ok)">Gratuits</h3><ul><li>Groq (ultra-rapide)</li><li>Cerebras</li><li>SambaNova</li><li>Hugging Face</li><li>GitHub Models</li><li>NVIDIA NIM</li><li>Cloudflare Workers AI</li><li>Scaleway</li></ul></div>
+    <div class="k"><h3 style="color:var(--cyan)">Locaux, sans internet</h3><ul><li>Ollama — Qwen 3, Qwen 2.5, Llama, DeepSeek R1, Gemma, Mistral…</li><li>LM Studio, llama.cpp, GPT4All, Jan, vLLM</li><li>OpenClaw (passerelle locale)</li><li>Piper (voix), whisper.cpp (transcription)</li></ul></div>
+    <div class="k"><h3 style="color:var(--rose)">Cloud premium (ta clé)</h3><ul><li>Claude, OpenAI, Gemini</li><li>Mistral, DeepSeek, xAI Grok</li><li>Perplexity, Cohere, Qwen / Alibaba</li><li>OpenRouter (300+ modèles)</li><li>Images, vidéo, voix, musique : Stability, fal, Runway, Luma, ElevenLabs, Suno…</li></ul></div>
+  </div>
+  <div class="deux" style="margin-top:26px"><div class="rv"><img src="img/16-cerveau.jpg" alt="Assistant Cerveau pas à pas" loading="lazy"></div>
+  <div class="rv"><h3>Un vrai cerveau, étape par étape</h3><ul class="puces"><li>Étape 1 : Ollama, installé pour toi.</li><li>Étape 2 : Qwen choisi selon la mémoire de ta machine, avec barre de progression.</li><li>Étape 3 : Groq, ta clé gratuite testée avant activation.</li><li>Étape 4 : un essai réel pour prouver que ça répond.</li></ul></div></div>
+</div></section>
+
+<section id="connecteurs"><div class="c">
+  <h2 class="rv">38 connecteurs pour tout relier</h2>
+  <p class="sous rv">Publier, vendre, coder, discuter : Clipia agit dans tes outils, avec ton accord.</p>
+  <div class="cols3 rv">
+    <div class="k"><h3>Diffusion</h3><p>YouTube, TikTok, Instagram, Facebook, X (Twitter), Twitch, LinkedIn, Pinterest, Reddit</p></div>
+    <div class="k"><h3>Musique</h3><p>Spotify, SoundCloud, Bandcamp, DistroKid</p></div>
+    <div class="k"><h3>Fichiers et notes</h3><p>Google Drive, Dropbox, Notion, Amazon S3, Airtable</p></div>
+    <div class="k"><h3>Boutique et paiement</h3><p>Etsy, Shopify, Printful, Stripe, PayPal, Lemon Squeezy</p></div>
+    <div class="k"><h3>Code et mise en ligne</h3><p>GitHub, GitLab, Netlify, Vercel, Cloudflare Pages</p></div>
+    <div class="k"><h3>Messagerie et automatisation</h3><p>WhatsApp Business, Telegram, Signal, Discord, Slack, e-mail SMTP, Webhook, MCP, n8n</p></div>
+  </div>
+  <div class="shots rv" style="margin-top:20px"><div class="shot"><img src="img/19-connecteurs.jpg" alt="Connecteurs" loading="lazy"><div><b>Intégrations</b><p>Tu connectes un service en un clic ; chaque publication demande ton accord.</p></div></div><div class="shot"><img src="img/20-systeme.jpg" alt="Tableau de bord" loading="lazy"><div><b>Tout le système</b><p>L'état de ton studio d'un coup d'œil.</p></div></div><div class="shot"><img src="img/22-memoire.jpg" alt="Mémoire" loading="lazy"><div><b>Mémoire totale</b><p>Tout ce qu'elle a fait et retenu, que tu peux chercher, exporter ou effacer.</p></div></div></div>
+</div></section>
+
+<section id="acces"><div class="c"><div class="deux">
+  <div class="rv"><h2>Un accès complet… sous ton contrôle</h2>
+    <p class="sous" style="margin-bottom:10px">Tu coches ce que Clipia peut utiliser : navigateur Chrome, fichiers, code, micro, son, système, clavier et souris.</p>
+    <ul class="puces"><li>Rien n'est activé sans ton clic.</li><li>Même coché, chaque action sensible demande une autorisation de 10 minutes, avec arrêt d'urgence.</li><li>Elle ne tape jamais un mot de passe ni un numéro de carte.</li><li>Ce qu'elle lit sur une page est une donnée, jamais un ordre.</li></ul></div>
+  <div class="rv"><img src="img/05-acces.jpg" alt="Cases d'accès à cocher" loading="lazy"></div>
+</div></div></section>
+
 <section id="fonctions"><div class="c">
-  <h2 class="rv">Ce que fait Clipia</h2><p class="sous rv">Un seul endroit pour créer, avec le moteur IA de ton choix.</p>
+  <h2 class="rv">Tout ce que fait Clipia</h2><p class="sous rv">Un seul endroit pour créer, organiser et automatiser.</p>
   <div class="g" id="fct"></div>
 </div></section>
 
-<section id="appel"><div class="c">
-  <h2 class="rv">Comme un assistant vocal : appelle-la</h2>
-  <p class="sous rv">Active le <b>mode appel 📣</b> : dis « Clipia », elle répond « Oui ? », écoute ta demande, puis retourne en veille. Tu peux aussi tout dire d'un trait : « Clipia, fais-moi un clip. »</p>
-  <div class="dem rv">
-    <div class="dlg" id="dlg">
-      <div class="bu u">« Clipia ! »</div>
-      <div class="bu c">Oui ? Je t'écoute.</div>
-      <div class="bu u">« Prépare une pochette d'album bleu et violet. »</div>
-      <div class="bu c">C'est parti : je lance la génération et je range le résultat dans ton projet.</div>
-    </div>
-    <div class="fen"><div class="bar"><i></i><i></i><i></i></div>
-      <svg viewBox="0 0 520 300" role="img" aria-label="Aperçu de l'application Clipia">
-        <rect width="520" height="300" fill="#0a0d2b"/><rect width="120" height="300" fill="#0f1336"/>
-        <rect x="14" y="18" width="92" height="12" rx="6" fill="#7c5cff"/>
-        <g fill="#2a3070"><rect x="14" y="50" width="80" height="9" rx="4"/><rect x="14" y="72" width="70" height="9" rx="4"/><rect x="14" y="94" width="86" height="9" rx="4"/><rect x="14" y="116" width="64" height="9" rx="4"/><rect x="14" y="138" width="78" height="9" rx="4"/></g>
-        <circle cx="320" cy="120" r="56" fill="url(#g1)"/><path d="M308 96v48l44-24z" fill="#fff"/>
-        <g class="bars" fill="#42d7ff"><rect x="190" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="8;34;8" dur="1s" repeatCount="indefinite"/><animate attributeName="y" values="223;206;223" dur="1s" repeatCount="indefinite"/></rect>
-          <rect x="204" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="20;8;28" dur=".8s" repeatCount="indefinite"/><animate attributeName="y" values="212;223;209" dur=".8s" repeatCount="indefinite"/></rect>
-          <rect x="218" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="10;30;12" dur="1.2s" repeatCount="indefinite"/><animate attributeName="y" values="221;209;220" dur="1.2s" repeatCount="indefinite"/></rect>
-          <rect x="232" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="30;10;30" dur=".9s" repeatCount="indefinite"/><animate attributeName="y" values="208;221;208" dur=".9s" repeatCount="indefinite"/></rect>
-          <rect x="246" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="12;28;12" dur="1.1s" repeatCount="indefinite"/><animate attributeName="y" values="220;209;220" dur="1.1s" repeatCount="indefinite"/></rect>
-          <rect x="260" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="24;8;24" dur=".7s" repeatCount="indefinite"/><animate attributeName="y" values="210;223;210" dur=".7s" repeatCount="indefinite"/></rect>
-          <rect x="274" y="215" width="6" height="16" rx="3"><animate attributeName="height" values="8;26;8" dur="1.05s" repeatCount="indefinite"/><animate attributeName="y" values="223;210;223" dur="1.05s" repeatCount="indefinite"/></rect></g>
-        <rect x="160" y="252" width="300" height="30" rx="15" fill="#1a1f4d" stroke="#2a3070"/><rect x="176" y="263" width="150" height="8" rx="4" fill="#3a4290"/>
-        <circle cx="440" cy="267" r="11" fill="url(#g2)"/>
-        <defs><radialGradient id="g1" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#b9a6ff"/><stop offset=".6" stop-color="#6a56ff"/><stop offset="1" stop-color="#1c3f9e"/></radialGradient><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c26bff"/><stop offset="1" stop-color="#2f8cff"/></linearGradient></defs>
-      </svg></div>
-  </div>
-  <p class="note rv" style="margin-top:16px">Le mode appel utilise la reconnaissance vocale intégrée à <b>Chrome ou Edge</b> : la transcription passe par le service du navigateur, ce n'est donc pas un mode 100 % hors ligne. Le micro n'est jamais actif sans que tu aies cliqué sur 📣, et tu peux le couper à tout moment.</p>
-</div></section>
-
-<section id="os"><div class="c">
-  <h2 class="rv">Clipia OS : un vrai système, sur une clé USB</h2>
-  <p class="sous rv">Un système Linux complet (base Ubuntu 24.04) qui démarre depuis une clé USB, avec bureau, navigateur, réglages, réseau, pilotes… et Clipia intégrée.</p>
-  <div class="os rv">
-    <div class="fen"><div class="bar"><i></i><i></i><i></i></div>
-      <svg viewBox="0 0 520 320" role="img" aria-label="Aperçu du bureau Clipia OS">
-        <defs><linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b1466"/><stop offset=".55" stop-color="#2a3bb8"/><stop offset="1" stop-color="#0a2a70"/></linearGradient></defs>
-        <rect width="520" height="320" fill="url(#bg3)"/>
-        <circle cx="400" cy="70" r="90" fill="#c26bff" opacity=".22"/><circle cx="110" cy="260" r="110" fill="#42d7ff" opacity=".16"/>
-        <rect width="520" height="22" fill="#0a0d2bcc"/><circle cx="14" cy="11" r="5" fill="#7c5cff"/><rect x="28" y="7" width="40" height="8" rx="4" fill="#3a4290"/><rect x="470" y="7" width="38" height="8" rx="4" fill="#3a4290"/>
-        <rect x="90" y="46" width="340" height="206" rx="10" fill="#0a0d2b" stroke="#4a52b8"/>
-        <rect x="90" y="46" width="340" height="20" rx="10" fill="#161b4d"/>
-        <circle cx="260" cy="150" r="42" fill="#6a56ff"/><path d="M250 130v40l36-20z" fill="#fff"/>
-        <rect x="120" y="212" width="280" height="22" rx="11" fill="#1a1f4d"/>
-        <rect x="170" y="276" width="180" height="34" rx="12" fill="#0a0d2bd9" stroke="#4a52b8"/>
-        <g fill="#7c5cff"><rect x="184" y="285" width="16" height="16" rx="4"/></g><g fill="#2f8cff"><rect x="210" y="285" width="16" height="16" rx="4"/></g><g fill="#c26bff"><rect x="236" y="285" width="16" height="16" rx="4"/></g><g fill="#42d7ff"><rect x="262" y="285" width="16" height="16" rx="4"/></g><g fill="#5a63c8"><rect x="288" y="285" width="16" height="16" rx="4"/></g><g fill="#7c5cff"><rect x="314" y="285" width="16" height="16" rx="4"/></g>
-      </svg></div>
-    <div>
-      <div class="ligne"><span>Bureau complet</span><span>Navigateur web</span><span>Fichiers</span><span>Terminal</span><span>Réseau & Wi-Fi</span><span>Son & Bluetooth</span><span>Pilotes</span><span>Réglages</span><span>Installation sur disque</span></div>
-      <p style="color:var(--doux)">Mémoire permanente sur la clé : conversations, projets et souvenirs restent d'un démarrage à l'autre. Le « Cerveau du système » observe la machine, apprend et te propose des améliorations expliquées, sans rien changer sans ton accord.</p>
-      <p class="note">Honnêtement : testé en machine virtuelle (BIOS et UEFI), pas encore sur du matériel réel. PC x86-64 uniquement (pas les Mac Apple Silicon), Secure Boot à désactiver.</p>
-      <p style="margin-top:14px"><a class="btn p" href="#telecharger">Télécharger Clipia OS</a></p>
-    </div>
-  </div>
-</div></section>
-
 <section id="offres"><div class="c">
-  <h2 class="rv">Gratuit pour commencer, options payantes ensuite</h2>
-  <p class="sous rv">Les modèles locaux sont illimités. Les offres ci-dessous se choisissent dans l'application (menu Abonnement).</p>
-  <div class="g">
-    <div class="k rv"><h3>Découverte</h3><p><b style="font-size:28px">0 €</b></p><ul class="etapes"><li>IA locales illimitées</li><li>2 clips par mois en cloud</li><li>Export 1080p avec filigrane</li><li>1 connecteur</li></ul></div>
-    <div class="k rv"><h3>Créateur</h3><p><b style="font-size:28px">12 €</b> / mois</p><ul class="etapes"><li>20 clips par mois</li><li>Tous les modèles cloud</li><li>Export 1080p sans filigrane</li><li>Paroles karaoké automatiques</li></ul></div>
-    <div class="k rv"><h3>Studio <span class="badge n">Populaire</span></h3><p><b style="font-size:28px">29 €</b> / mois</p><ul class="etapes"><li>100 clips par mois, export 4K</li><li>Tous les connecteurs</li><li>Publication YouTube/TikTok</li><li>Workflows programmés</li></ul></div>
-    <div class="k rv"><h3>Pro / Label</h3><p><b style="font-size:28px">79 €</b> / mois</p><ul class="etapes"><li>Clips illimités, multi-artistes</li><li>API Clipia + MCP</li><li>Marque blanche</li><li>Support prioritaire</li></ul></div>
+  <h2 class="rv" style="text-align:center">Gratuit pour commencer. Pro quand tu veux.</h2>
+  <p class="sous rv" style="margin:0 auto 28px;text-align:center">Sans engagement, résiliable à tout moment.</p>
+  <div class="prix">
+    <div class="plan rv"><h3 style="color:var(--ok)">Gratuit</h3><div class="p">0 €<small> / pour toujours</small></div>
+      <ul class="puces"><li>Toutes les fonctions de Clipia</li><li>Moteurs gratuits et locaux (Groq, Qwen, Ollama…)</li><li>Agents, mémoire, voix, connecteurs</li><li>Mises à jour de sécurité</li></ul>
+      <a class="btn" href="#telecharger">Télécharger</a></div>
+    <div class="plan pro rv"><span class="ruban">Recommandé</span><h3 style="color:#c9a0ff">Pro</h3><div class="p">9,90 €<small> / mois</small></div>
+      <ul class="puces"><li>Tout le plan Gratuit</li><li>Support prioritaire (réponse sous 48 h)</li><li>Versions en avance</li><li>Ton avis oriente la feuille de route</li></ul>
+      <a class="btn p" id="btnPro" href="mailto:fabriceclin02@gmail.com?subject=Clipia%20Pro&body=Bonjour%2C%20je%20souhaite%20passer%20au%20plan%20Pro%20Clipia%20(9%2C90%20%E2%82%AC%2Fmois).">Passer au Pro</a></div>
   </div>
-  <p class="note rv" style="margin-top:14px">Le paiement en ligne s'active dans l'application une fois le service de paiement configuré par l'éditeur. Les modèles payants des fournisseurs (OpenAI, Claude…) se facturent chez eux, avec ta propre clé.</p>
-</div></section>
-
-<section id="telephone"><div class="c">
-  <h2 class="rv">📱 Installer Clipia sur ton téléphone</h2>
-  <p class="sous rv">Une seule page à ouvrir. Pas de magasin d'applications, pas de PC allumé, pas de fichier à télécharger.</p>
-  <div class="rv" style="max-width:720px;margin:0 auto;background:linear-gradient(135deg,#1a1f4d,#11153a);border:1px solid #7c5cff;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 0 6px #7c5cff18,0 26px 70px #7c5cff33">
-    <img src="app/icones/clipia-192.png" alt="" width="84" height="84" style="border-radius:22px;box-shadow:0 0 34px #7c5cff77">
-    <h3 style="margin:14px 0 6px;font-size:22px">Clipia — application téléphone</h3>
-    <p style="color:#a9afd6;margin:0 0 20px;font-size:15px">Conversation vocale, création, organisation. Fonctionne sur Android et iPhone, en plein écran, avec son icône sur l'écran d'accueil.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-      <a class="btn p" href="app/" style="font-size:16px;padding:14px 26px">Ouvrir et installer Clipia</a>
-      <a class="btn" id="btnApk" href="telechargements/Clipia-3.1.0.apk" style="font-size:16px;padding:14px 26px">⬇ Télécharger l'APK Android</a>
-    </div>
-    <p style="color:#7a81ad;font-size:13px;margin:16px 0 0">Android (Chrome) : un bouton « Installer » apparaît.<br>iPhone (Safari) : Partager → « Sur l'écran d'accueil ».<br>L'APK installe Clipia comme une vraie application, avec la voix du téléphone.</p>
-  </div>
+  <p class="note rv" style="margin:18px auto 0;max-width:840px">Les modèles payants des fournisseurs (OpenAI, Claude…) se facturent chez eux, avec ta propre clé : Clipia, elle, fonctionne entièrement avec des moteurs gratuits.</p>
 </div></section>
 
 <section id="telecharger" class="dl"><div class="c">
-  <h2 class="rv">Télécharger</h2><p class="sous rv">Version <span id="ver">3.0.0</span> · gratuit · Node.js déjà inclus.</p>
+  <h2 class="rv">Télécharger Clipia</h2><p class="sous rv">Version <span id="ver">6.0.1</span> · gratuit · Node.js déjà inclus.</p>
   <div class="g" id="liste"></div>
-  <p class="note rv" style="margin-top:16px">Les logiciels ne sont pas signés par un éditeur payant : Windows (« Exécuter quand même ») et macOS (clic droit → Ouvrir) afficheront un avertissement normal. Vérifie l'empreinte SHA-256 sous chaque fichier si tu veux t'assurer qu'il n'a pas été modifié.</p>
+  <p class="note rv" style="margin-top:16px">Les logiciels ne sont pas signés par un éditeur payant : Windows (« Exécuter quand même ») et macOS (clic droit → Ouvrir) afficheront un avertissement normal. Vérifie l'empreinte SHA-256 sous chaque fichier. <b>Extrais toujours tout le zip avant de lancer Clipia.exe</b> (ne le lance pas depuis WinRAR).</p>
+</div></section>
+
+<section id="telephone"><div class="c">
+  <h2 class="rv">📱 Sur ton téléphone</h2>
+  <p class="sous rv">Android : application dédiée avec la voix du téléphone. iPhone : s'installe depuis Safari comme une application.</p>
+  <div class="rv" style="max-width:720px;margin:0 auto;background:linear-gradient(135deg,#1a1f4d,#11153a);border:1px solid #7c5cff;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 0 6px #7c5cff18,0 26px 70px #7c5cff33">
+    <img src="app/icones/clipia-192.png" alt="" width="84" height="84" style="border-radius:22px;box-shadow:0 0 34px #7c5cff77">
+    <h3 style="margin:14px 0 6px;font-size:22px">Clipia — application téléphone</h3>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px">
+      <a class="btn p" href="app/" style="font-size:16px;padding:14px 26px">Ouvrir (iPhone et Android)</a>
+      <a class="btn" id="btnApk" href="telechargements/Clipia-3.1.0.apk" style="font-size:16px;padding:14px 26px">⬇ APK Android</a>
+    </div>
+    <p style="color:#7a81ad;font-size:13px;margin:16px 0 0">Android (Chrome) : « Installer l'application ». iPhone (Safari) : Partager → « Sur l'écran d'accueil ».<br>Il n'existe pas d'application sur l'App Store ni sur Google Play pour l'instant.</p>
+  </div>
 </div></section>
 
 <section id="installer"><div class="c">
-  <h2 class="rv">Tutoriels d'installation</h2><p class="sous rv">Choisis ton système. Compte 3 minutes.</p>
+  <h2 class="rv">Installer en 3 minutes</h2>
   <div class="g">
-    <div class="k rv"><h3>Windows — installeur</h3><ol class="etapes"><li>Télécharge <code>Clipia-Setup-3.0.0-windows-x64.exe</code>.</li><li>Double-clique. Si Windows affiche « protégé votre PC » : <b>Informations complémentaires → Exécuter quand même</b>.</li><li>Suivant → Installer → Terminer (aucun droit administrateur).</li><li>Lance <b>Clipia</b> depuis le Bureau : ton navigateur s'ouvre sur Clipia.</li></ol></div>
-    <div class="k rv"><h3>Android et iPhone</h3><ol class="etapes"><li>Ouvre <a href="app/"><b>l'application Clipia</b></a> dans le navigateur du téléphone.</li><li><b>Android (Chrome)</b> : appuie sur <b>Installer</b> dans la bannière, ou menu ⋮ → <b>Installer l'application</b>.</li><li><b>iPhone (Safari)</b> : bouton <b>Partager</b> → <b>Sur l'écran d'accueil</b> → Ajouter.</li><li>Dans l'app, ouvre les <b>réglages ⚙</b> et colle une clé <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">OpenRouter</a> (gratuite) : Clipia choisit alors toute seule un bon modèle gratuit.</li><li>Elle fonctionne ensuite sans ton PC, partout, et s'ouvre même hors ligne.</li></ol></div>
-    <div class="k rv"><h3>Windows — portable (clé USB)</h3><ol class="etapes"><li>Télécharge le zip <code>Clipia-Portable-3.0.0-windows-x64.zip</code>.</li><li>Clic droit → <b>Extraire tout</b>, sur le Bureau ou directement sur ta clé USB.</li><li>Ouvre le dossier et double-clique <b>Clipia.exe</b>. Rien n'est installé.</li><li>Pour quitter : <b>Quitter-Clipia.exe</b>. Tes données restent dans le dossier <code>donnees</code> : copie-le pour tout emporter.</li></ol></div>
-    <div class="k rv"><h3>macOS</h3><ol class="etapes"><li>Télécharge le fichier macOS et dézippe-le.</li><li>Glisse <b>Clipia.app</b> dans Applications.</li><li>Premier lancement : <b>clic droit → Ouvrir → Ouvrir</b> (l'app n'est pas signée par Apple).</li><li>Si macOS dit « endommagé » : Terminal, puis <code>xattr -cr /Applications/Clipia.app</code>.</li></ol></div>
-    <div class="k rv"><h3>Linux (Debian, Ubuntu, Mint)</h3><ol class="etapes"><li>Télécharge <code>clipia_3.0.0_amd64.deb</code>.</li><li>Dans un terminal : <code>sudo apt install ./clipia_3.0.0_amd64.deb</code></li><li>Lance <code>clipia</code> ou l'icône du menu Applications.</li></ol></div>
-    <div class="k rv"><h3>Clipia OS (clé USB bootable)</h3><ol class="etapes"><li>Télécharge les <b>4 parties</b> dans un même dossier, puis reconstitue l'archive — Windows (invite de commandes) : <code>copy /b Clipia-USB.iso.zip.part00 + Clipia-USB.iso.zip.part01 + Clipia-USB.iso.zip.part02 + Clipia-USB.iso.zip.part03 Clipia-USB.iso.zip</code> ; Mac/Linux : <code>cat Clipia-USB.iso.zip.part0* &gt; Clipia-USB.iso.zip</code>.</li><li>Dézippe <code>Clipia-USB.iso.zip</code> pour obtenir <code>Clipia-USB.iso</code>.</li><li>Écris-la sur une clé de 8 Go ou plus avec <b>balenaEtcher</b> (efface la clé).</li><li>Redémarre, ouvre le menu de démarrage (F12, Échap, F9 ou Option) et choisis la clé. Désactive le Secure Boot si besoin.</li></ol></div>
+    <div class="k rv"><h3>Windows — installeur ou image .iso</h3><ol class="etapes"><li>Télécharge <code>Clipia-Setup-6.0.1-windows-x64.exe</code> (ou l'image <code>.iso</code> : double-clic pour l'ouvrir, puis lance le Setup).</li><li>Si Windows dit « protégé votre PC » : <b>Informations complémentaires → Exécuter quand même</b>.</li><li>Suivant → Installer → Terminer : <b>l'assistant plein écran s'ouvre tout seul</b>.</li></ol></div>
+    <div class="k rv"><h3>Windows — portable (clé USB)</h3><ol class="etapes"><li>Télécharge le zip portable.</li><li>Clic droit → <b>Extraire tout</b> dans un dossier (pas depuis WinRAR).</li><li>Double-clique <b>Clipia.exe</b>. En cas de souci : <b>Diagnostic-Clipia.bat</b>.</li></ol></div>
+    <div class="k rv"><h3>macOS</h3><ol class="etapes"><li>Télécharge le zip macOS et dézippe-le.</li><li>Glisse <b>Clipia.app</b> dans Applications.</li><li>Premier lancement : <b>clic droit → Ouvrir</b>.</li></ol></div>
+    <div class="k rv"><h3>Linux (Debian, Ubuntu, Mint)</h3><ol class="etapes"><li>Télécharge le <code>.deb</code>.</li><li><code>sudo apt install ./clipia_6.0.1_amd64.deb</code></li><li>Lance <code>clipia</code>.</li></ol></div>
   </div>
-  <h3 style="margin-top:26px">Premier lancement : Clipia se met en route</h3>
-  <ol class="etapes"><li><b>Option rapide (recommandée) :</b> crée une clé gratuite sur <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a>, colle-la dans l'assistant de bienvenue de Clipia et clique « Tester et activer ».</li><li><b>Option hors ligne :</b> installe <a href="https://ollama.com/download" target="_blank" rel="noopener">Ollama</a>, puis clique « Installer Qwen en local » : le meilleur modèle pour ta RAM est téléchargé.</li><li>Pour Claude, OpenAI, Gemini, Suno, ElevenLabs et les autres : <b>Coffre de clés</b>, tes clés restent chiffrées chez toi.</li><li>Dis ce que tu veux créer : Clipia te propose des solutions et te guide pas à pas.</li></ol>
 </div></section>
 
 <section id="faq"><div class="c">
@@ -257,44 +276,24 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
   <div id="faqliste"></div>
 </div></section>
 
+<section class="cta-fin"><div class="c rv">
+  <h2>Prête à travailler avec toi.</h2><p class="sous" style="margin:0 auto 22px">Télécharge Clipia gratuitement et laisse-la te guider.</p>
+  <a class="btn p" href="#telecharger" style="font-size:18px;padding:16px 34px">⬇ Télécharger Clipia V6</a>
+</div></section>
+
 <section id="createur"><div class="c">
   <h2 class="rv">Le créateur</h2>
-  <div class="k rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div><h3>Clin Fabrice — CLENDAX</h3><p>Clipia est créé et maintenu par Clin Fabrice, basé à Flize (Ardennes, France).<br>Contact : <a href="mailto:fabriceclin02@gmail.com">fabriceclin02@gmail.com</a><br><a class="wabtn" href="https://wa.me/33751880650" target="_blank" rel="noopener">💬 WhatsApp : +33 7 51 88 06 50</a></p></div>
+  <div class="k rv"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg></div><h3>Clin Fabrice — CLENDAX</h3><p>Clipia est créé et maintenu par Clin Fabrice, basé à Flize (Ardennes, France).<br>Contact : <a href="mailto:fabriceclin02@gmail.com">fabriceclin02@gmail.com</a> · <a href="https://wa.me/33751880650" target="_blank" rel="noopener">WhatsApp +33 7 51 88 06 50</a></p></div>
 </div></section>
 </main>
-
-<footer><div class="c">© <span id="an"></span> CLENDAX — Clin Fabrice · <a href="mailto:fabriceclin02@gmail.com">Contact</a> · <a href="https://wa.me/33751880650" target="_blank" rel="noopener">WhatsApp +33 7 51 88 06 50</a><br>Clipia est un logiciel indépendant. Les noms de modèles et de fournisseurs appartiennent à leurs propriétaires.</div></footer>
-
-<a id="wa" href="https://wa.me/33751880650?text=Bonjour%20Clipia%20!" target="_blank" rel="noopener" aria-label="Écrire sur WhatsApp au +33 7 51 88 06 50" title="WhatsApp +33 7 51 88 06 50"><svg viewBox="0 0 32 32" width="30" height="30" fill="#fff"><path d="M16 3C9 3 3.4 8.6 3.4 15.5c0 2.3.6 4.4 1.7 6.3L3 29l7.4-2c1.8 1 3.8 1.500 5.600 1.500C23 28.500 28.600 22.900 28.600 16S23 3 16 3zm0 22.500c-1.800 0-3.500-.5-5-1.400l-.4-.2-4.400 1.200 1.200-4.300-.3-.4a10.200 10.200 0 1 1 8.900 5.100zm5.600-7.600c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.200-.2.300-.8 1-.9 1.100-.2.200-.3.200-.6.100-.3-.2-1.300-.5-2.400-1.500-.9-.8-1.500-1.800-1.700-2.100-.2-.3 0-.5.100-.6l.5-.5c.1-.2.200-.3.300-.5.100-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.100-.8.400-.3.300-1 1-1 2.500s1.100 2.900 1.200 3.100c.2.200 2.100 3.300 5.200 4.500 3 1.200 3 .8 3.600.8.600-.1 1.800-.7 2-1.400.3-.7.300-1.300.2-1.400-.1-.2-.3-.3-.6-.4z"/></svg></a>
-<style>#wa{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:60;width:58px;height:58px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 8px 28px #0007}#wa:hover{transform:scale(1.08)}.wabtn{display:inline-flex;gap:8px;align-items:center;background:#25d366;color:#04210f;font-weight:700;padding:12px 20px;border-radius:12px;text-decoration:none;margin:6px}</style>
+<footer><div class="c">© <span id="an"></span> CLENDAX — Clin Fabrice · <a href="mailto:fabriceclin02@gmail.com">Contact</a><br>Clipia est un logiciel indépendant. Les noms de modèles et de fournisseurs appartiennent à leurs propriétaires. Clipia n'est pas un professionnel de santé.</div></footer>
+<div id="zoom"><img alt=""></div>
+<a id="wa" href="https://wa.me/33751880650?text=Bonjour%20Clipia%20!" target="_blank" rel="noopener" aria-label="WhatsApp" style="position:fixed;left:16px;bottom:16px;width:54px;height:54px;border-radius:50%;background:#25d366;display:grid;place-items:center;z-index:20;box-shadow:0 8px 26px #0008"><svg viewBox="0 0 32 32" width="28" height="28" fill="#fff"><path d="M16 3C9 3 3.400 8.600 3.400 15.500c0 2.300.6 4.400 1.700 6.300L3 29l7.400-2c1.800 1 3.800 1.500 5.600 1.500C23 28.500 28.600 22.900 28.600 16S23 3 16 3zm0 22.500c-1.800 0-3.500-.5-5-1.400l-.4-.2-4.400 1.200 1.200-4.300-.3-.4a10.200 10.200 0 1 1 8.900 5.100zm5.600-7.600c-.3-.2-1.800-.9-2.100-1-.3-.1-.5-.2-.7.200-.2.300-.8 1-.9 1.100-.2.200-.3.200-.6.100-.3-.2-1.300-.5-2.400-1.500-.9-.8-1.500-1.800-1.700-2.100-.2-.3 0-.5.100-.6l.5-.5c.1-.2.200-.3.300-.5.100-.2 0-.4 0-.5l-1-2.300c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.100-.8.400-.3.300-1 1-1 2.500s1.100 2.900 1.200 3.100c.2.200 2.100 3.300 5.200 4.500 3 1.200 3 .8 3.600.8.600-.1 1.800-.7 2-1.400.3-.7.300-1.300.2-1.400-.1-.2-.3-.3-.6-.4z"/></svg></a>
 <button id="bot-b" aria-label="Ouvrir l'assistant"><svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.3A8 8 0 1 1 21 12z"/></svg></button>
 <div id="bot" role="dialog" aria-label="Assistant Clipia"><header>Assistant Clipia</header><div id="msgs"></div><div id="sug"></div>
 <form id="bf"><input id="bi" placeholder="Pose ta question…" autocomplete="off"><button>Envoyer</button></form></div>
-
 <script>
-const FAQ=[
- {q:"Comment brancher Groq et Qwen gratuitement ?",m:"groq qwen gratuit clé api démarrage ollama configuration rapide",r:"Au premier lancement, l'assistant de bienvenue te guide : crée une clé gratuite sur console.groq.com/keys, colle-la et clique « Tester et activer ». Pour travailler hors ligne, installe Ollama puis clique « Installer Qwen en local »."},
- {q:"Mes conversations sont-elles sauvegardées ?",m:"conversation projet sauvegarde historique reprendre gauche mémoire",r:"Oui. Chaque échange est enregistré automatiquement et rangé à gauche (Mes conversations et Mes projets). Un clic le rouvre, même après un redémarrage. Une clé collée dans un message est masquée avant l'enregistrement."},
- {q:"Qu'est-ce que le guide pas à pas ?",m:"guide étapes pas à pas tutoriel cocher clip créer",r:"Quand tu veux créer quelque chose, Clipia propose des solutions puis te donne des étapes précises (télécharger, installer, redémarrer…) que tu coches. Elle reprend là où tu t'étais arrêté."},
- {q:"Quels outils de création propose Clipia ?",m:"outils suno musique film vidéo application agents open source boîte",r:"La Boîte à outils liste plus de 40 outils gratuits ou open source : Suno, ACE-Step, MusicGen, DaVinci Resolve, Kdenlive, ComfyUI, Godot, n8n, Flowise… « Me guider » lance une conversation pour choisir et démarrer."},
- {q:"Clipia est-il gratuit ?",m:"gratuit prix coût payant abonnement tarif",r:"Clipia lui-même est gratuit. Les modèles locaux (via Ollama) sont gratuits aussi. Seuls certains services externes (OpenAI, Anthropic, Runway, ElevenLabs…) sont payants et demandent TA clé et TON compte : Clipia n'en fournit pas."},
- {q:"Comment appeler Clipia à la voix ?",m:"appel voix vocal alexa réveil nom clipia dire parler mot micro veille",r:"Clique sur 📣 dans la zone de saisie pour activer le mode appel, puis dis « Clipia » : un bip, « Oui ? », et elle écoute. Tu peux aussi dire la demande d'un trait : « Clipia, fais-moi un clip ». Ce mode demande Chrome ou Edge (reconnaissance vocale du navigateur)."},
- {q:"Le mode appel écoute-t-il en permanence ?",m:"micro écoute permanence vie privée enregistre espionne",r:"Seulement si tu l'actives avec 📣. Le navigateur affiche alors l'icône micro. La transcription est faite par le service vocal du navigateur (Chrome/Edge), pas par Clipia. Coupe-le d'un clic sur 📣. Clipia ne garde dans sa mémoire que ce qui suit l'appel."},
- {q:"Comment l'installer ?",m:"installer installation télécharger setup exe deb dmg windows linux mac macos",r:"Télécharge le fichier de ton système (section Télécharger) et suis « Installer en 3 minutes ». Windows : .exe ou version portable (zip, sans installation). Linux : sudo apt install ./clipia_3.0.0_amd64.deb. macOS : dézippe, clic droit → Ouvrir."},
- {q:"Clipia fonctionne sur Android et iPhone ?",m:"android iphone ios telephone mobile smartphone app apk installer",r:"Oui, et sans ton PC. Ouvre la page Clipia sur le téléphone : Android (Chrome) propose « Installer l'application », iPhone (Safari) : Partager puis « Sur l'écran d'accueil ». L'icône arrive sur l'écran d'accueil et l'app s'ouvre en plein écran, même hors ligne. Ajoute une clé OpenRouter gratuite dans les réglages et Clipia répond directement depuis le téléphone. Le mode « écran déporté » avec le PC et son code à 6 chiffres reste possible pour utiliser les modèles installés sur l'ordinateur."},
- {q:"Qu'est-ce que la version portable Windows ?",m:"portable zip sans installation clé usb dossier",r:"Un dossier zippé : tu le dézippes où tu veux (même une clé USB) et tu lances Clipia.exe. Rien n'est installé, rien n'est écrit dans le registre ; tes données restent dans le sous-dossier « donnees »."},
- {q:"Qu'est-ce que Clipia OS ?",m:"os système exploitation clé usb ubuntu linux live bureau démarrer",r:"Un système Linux complet (base Ubuntu 24.04) qui démarre depuis une clé USB, avec bureau, navigateur, réglages, réseau et pilotes, et Clipia intégrée. Testé en machine virtuelle ; pas encore sur du matériel réel. PC x86-64 uniquement, Secure Boot à désactiver."},
- {q:"Faut-il installer Node.js ?",m:"node nodejs prérequis dépendances",r:"Non. Les installeurs et la version portable embarquent leur propre Node.js. Sur macOS, Clipia utilise celui du système s'il est assez récent, sinon celui qui est inclus."},
- {q:"Quels modèles IA gratuits ?",m:"modèle modèles ollama gratuit local deepseek qwen llama mistral gemma phi hors ligne",r:"Installe Ollama, puis ouvre le Centre des IA dans Clipia : DeepSeek, Qwen, Llama, Mistral, Gemma, Phi, GLM, InternLM… Clipia propose ceux qui tiennent dans la RAM de ta machine. Aucun téléchargement sans ton accord."},
- {q:"Mes données restent-elles chez moi ?",m:"données confidentialité vie privée sécurité cloud",r:"En mode local, oui : tout tourne sur ta machine. Si tu actives un fournisseur externe avec ta clé, ce que tu envoies à ce moteur part chez lui, selon sa politique. Les clés sont chiffrées sur ta machine."},
- {q:"Y a-t-il des restrictions de contenu ?",m:"restriction censure limite contenu sans restriction interdit",r:"Clipia n'ajoute aucune limite de contenu de son côté. Mais chaque fournisseur de modèle applique sa propre politique, et Clipia garde des garde-fous de sécurité (accord requis pour les actions sensibles sur ta machine)."},
- {q:"Windows ou macOS affiche un avertissement",m:"avertissement smartscreen protégé gatekeeper endommagé signé bloqué",r:"Normal : les logiciels ne sont pas signés par un éditeur payant. Windows : Informations complémentaires → Exécuter quand même. macOS : clic droit → Ouvrir, ou dans le Terminal : xattr -dr com.apple.quarantine /Applications/Clipia.app"},
- {q:"Qu'est-ce que les agents et sous-agents ?",m:"agent agents sous-agent projet projets openclaw automatisation",r:"Dans « Projets & agents », tu crées des projets qui restent enregistrés et des agents avec un rôle. Un agent peut confier une sous-tâche à un autre (jusqu'à 2 niveaux). Ils n'accèdent jamais à ta machine sauf si tu le coches. OpenClaw est optionnel."},
- {q:"Où sont mes projets ?",m:"données dossier sauvegarde projets où fichiers",r:"Installeur Windows : %APPDATA%\\Clipia. Portable : dossier « donnees » à côté de Clipia.exe. Linux : ~/.local/share/clipia. macOS : ~/Library/Application Support/Clipia. Copie ce dossier pour sauvegarder."},
- {q:"Ça ne démarre pas",m:"problème erreur bug marche pas démarre ouvre port",r:"Ouvre à la main http://127.0.0.1:8787. Si le port est pris, Clipia tourne peut-être déjà. Sinon écris-moi : fabriceclin02@gmail.com en précisant ton système."},
- {q:"Clipia se souvient-il de tout ?",m:"mémoire souvient historique enregistre apprend conversations oublier effacer",r:"Oui, localement : conversations, recherches web, commandes, fichiers, créations, projets et erreurs sont journalisés dans la Mémoire totale. Les clés et mots de passe sont masqués avant écriture. Tu peux chercher, exporter, mettre en pause, supprimer une entrée ou tout effacer."},
- {q:"Qui a créé Clipia ?",m:"créateur auteur contact clendax fabrice qui",r:"Clin Fabrice, marque CLENDAX, à Flize (Ardennes). Contact : fabriceclin02@gmail.com"}
-];
+const FAQ=[{"q": "Qu'est-ce que Clipia V6 ?", "m": "agent personnel ia présentation c'est quoi clipia v6", "r": "Un agent personnel IA qui s'installe sur ton ordinateur (Windows, Mac, Linux) et sur ton téléphone. Il réfléchit avec le cerveau d'IA que tu choisis, agit avec tes outils (navigateur, fichiers, code, connecteurs), crée des sous-agents et garde la mémoire de vos échanges."}, {"q": "Est-elle vraiment autonome ? Apprend-elle toute seule ?", "m": "autonome apprend toute seule apprentissage mémoire leçons améliore code", "r": "Elle enchaîne seule comprendre, planifier, agir et vérifier, et peut exécuter des tâches programmées. Elle apprend en mémorisant tes conversations, en tirant des leçons de ses erreurs et en important des compétences. Elle peut proposer d'améliorer son propre code, mais chaque changement demande ton accord et peut être annulé. Elle ne ré-entraîne pas les modèles d'IA."}, {"q": "Comment se passe l'installation ?", "m": "installation installer guidée étapes assistant plein écran", "r": "Après l'installeur, un assistant plein écran s'ouvre : animation 3D puis 7 étapes (Groq, modèles locaux, agents, accès, OpenClaw, installation, style). Tu peux passer chaque étape et tout reprendre plus tard dans le menu « Assistant d'installation »."}, {"q": "Comment brancher Groq et Qwen gratuitement ?", "m": "groq qwen gratuit clé api ollama cerveau", "r": "Groq : crée une clé gratuite sur console.groq.com/keys et colle-la dans l'assistant (elle est testée avant activation). Qwen : l'assistant installe Ollama puis télécharge le modèle adapté à ta mémoire (menu « Cerveau pas à pas » pour recommencer)."}, {"q": "Qu'est-ce que le mode psychologue personnel ?", "m": "psychologue psy soutien séances mémoire thérapie", "r": "Un style d'écoute bienveillante, avec questions ouvertes et petits exercices, qui se souvient de vos séances (carnet local, consultable et effaçable). Clipia est une IA, pas une psychologue diplômée : elle ne pose pas de diagnostic et ne remplace pas un professionnel. En cas de détresse, appelle le 3114 (24 h/24, gratuit) ou le 15 / 112."}, {"q": "Puis-je créer mon propre style de conversation ?", "m": "style mode créer personnaliser ton", "r": "Oui : menu « Comment te parler » (ou Configuration) → « Créer mon style ». Tu décris le ton voulu, Clipia l'adopte."}, {"q": "Que peut-elle faire sur mon ordinateur ?", "m": "accès ordinateur fichiers navigateur clavier souris micro code sécurité", "r": "Selon les cases que tu coches : clavier et souris, applications, navigateur Chrome (extension), fichiers, code, micro, son, système. Même coché, chaque action sensible demande ton autorisation de 10 minutes avec arrêt d'urgence, et elle ne tape jamais de mot de passe."}, {"q": "Qu'est-ce qu'OpenClaw et comment Clipia l'utilise ?", "m": "openclaw skills compétences passerelle", "r": "OpenClaw est un agent personnel open source. Si tu l'as installé, Clipia le détecte, liste ses compétences (SKILL.md) et importe celles que tu coches, et peut lui confier des tâches. Lis les compétences avant de les importer : ce sont des textes écrits par d'autres."}, {"q": "Quels moteurs d'IA sont gérés ?", "m": "moteurs ia modèles fournisseurs claude openai gemini mistral deepseek groq", "r": "62 moteurs : gratuits (Groq, Cerebras, SambaNova, Hugging Face, GitHub Models, NVIDIA…), locaux (Ollama, LM Studio, llama.cpp, GPT4All…) et cloud premium avec ta clé (Claude, OpenAI, Gemini, Mistral, DeepSeek, xAI, Perplexity, OpenRouter…)."}, {"q": "Quels connecteurs ?", "m": "connecteurs youtube tiktok instagram spotify stripe github slack whatsapp", "r": "38 : YouTube, TikTok, Instagram, Facebook, X, Twitch, LinkedIn, Pinterest, Reddit, Spotify, SoundCloud, Bandcamp, DistroKid, Google Drive, Dropbox, Notion, S3, Etsy, Shopify, Printful, Stripe, PayPal, Lemon Squeezy, GitHub, GitLab, Netlify, Vercel, Cloudflare Pages, Discord, Slack, WhatsApp, Telegram, Signal, e-mail, Webhook, MCP, Airtable, n8n."}, {"q": "Clipia est-elle gratuite ? Que contient le Pro ?", "m": "gratuit prix pro abonnement tarif payant 9,90", "r": "Le plan Gratuit contient toutes les fonctions de Clipia. Le plan Pro (9,90 €/mois, sans engagement) ajoute un support prioritaire (réponse sous 48 h), les versions en avance et ton avis sur la feuille de route. Seuls certains moteurs externes (OpenAI, Claude…) se facturent chez leur éditeur, avec ta clé."}, {"q": "Comment passer au Pro ?", "m": "pro payer abonnement paiement", "r": "Clique sur « Passer au Pro » : pour l'instant la demande part par e-mail et je te réponds avec le lien de paiement. Le paiement en ligne automatique arrive."}, {"q": "Ça marche sur Android et iPhone ?", "m": "android iphone ios telephone apk app store", "r": "Android : APK à télécharger, ou installation depuis Chrome. iPhone/iPad : ouvre la page de l'application dans Safari puis Partager → « Sur l'écran d'accueil ». Il n'y a pas encore d'application sur l'App Store ni Google Play."}, {"q": "Qu'est-ce que l'image .iso Windows ?", "m": "iso image windows installer", "r": "Un fichier .iso qui contient l'installeur et la version portable. Sous Windows, double-clique dessus : il s'ouvre comme un disque. Ce n'est pas un système bootable (pour ça : Clipia OS)."}, {"q": "Faut-il installer Node.js ?", "m": "node nodejs prérequis", "r": "Non, les installeurs et la version portable embarquent leur propre Node.js."}, {"q": "Mes données restent-elles chez moi ?", "m": "données confidentialité vie privée sécurité cloud", "r": "En mode local, oui : tout tourne sur ta machine, y compris le carnet de séances. Si tu actives un fournisseur externe avec ta clé, ce que tu lui envoies part chez lui selon sa politique."}, {"q": "Windows ou macOS affiche un avertissement", "m": "avertissement smartscreen gatekeeper bloqué signé", "r": "Normal : le logiciel n'est pas signé par un éditeur payant. Windows : Informations complémentaires → Exécuter quand même. macOS : clic droit → Ouvrir."}, {"q": "Clipia ne démarre pas / « Failed to fetch »", "m": "problème erreur ne démarre pas failed to fetch diagnostic winrar", "r": "Extrais tout le zip dans un dossier (ne lance pas Clipia.exe depuis WinRAR), puis lance Clipia.exe ; en cas de souci, lance Diagnostic-Clipia.bat et envoie-moi le fichier donnees\\\\clipia.log à fabriceclin02@gmail.com. Le menu Installation guidée affiche aussi la santé de Clipia avec un bouton Réparer."}, {"q": "Qui a créé Clipia ?", "m": "créateur auteur contact clendax fabrice qui", "r": "Clin Fabrice, marque CLENDAX, à Flize (Ardennes). Contact : fabriceclin02@gmail.com"}];
 const $=s=>document.querySelector(s);
 $('#an').textContent=new Date().getFullYear();
 $('#faqliste').innerHTML=FAQ.map(f=>`<details class="rv"><summary>${f.q}</summary><p>${f.r}</p></details>`).join('');
@@ -319,29 +318,34 @@ const I={
  zip:'<path d="M6 3h8l4 4v14H6z"/><path d="M12 3v6M12 11h2M10 13h2M12 15h2M10 17h2"/>',
  star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'
 };
+
 const ic=n=>`<div class="ic"><svg viewBox="0 0 24 24">${I[n]}</svg></div>`;
-const FCT=[['call','Appel « Clipia »','Dis son nom : bip, « Oui ? », elle écoute, répond à voix haute et retourne en veille. Comme un assistant vocal (Chrome ou Edge).'],
- ['mic','Conversation vocale','Un gros bouton micro, des réponses précises, un ton naturel que tu règles.'],
- ['guide','Guide pas à pas','Pour créer un clip, un site, une application : des étapes concrètes (télécharger, installer, redémarrer) que tu coches, et qu\'elle reprend là où tu t\'es arrêté.'],
- ['proj','Conversations et projets sauvegardés','Chaque échange est enregistré et rangé à gauche. Tes projets, agents et sous-agents restent là pour de bon.'],
- ['brain','Mémoire totale','Conversations, recherches web, travail sur ta machine, projets, erreurs : Clipia se souvient et tire des leçons. Tout reste chez toi ; tu peux tout chercher, exporter ou effacer.'],
- ['tools','Boîte à outils de création','Plus de 40 outils gratuits ou open source (Suno, ACE-Step, DaVinci Resolve, Kdenlive, ComfyUI, Godot, n8n…) : Clipia te propose la meilleure voie et te guide.'],
- ['start','Gratuite dès le démarrage','Assistant du premier lancement : une clé Groq gratuite (ultra-rapide, Qwen, Llama) testée avant activation, ou Qwen en local avec Ollama, sans clé.'],
- ['plug','Plus de 60 fournisseurs','Groq, Cerebras, OpenAI, Anthropic Claude, Gemini, Mistral, DeepSeek, xAI, NVIDIA, Ollama, OpenClaw et d\'autres : tes clés restent chiffrées dans le coffre.'],
- ['art','Image, vidéo, musique, voix','Selon les moteurs que tu connectes (Suno, ElevenLabs, Runway, Luma, ComfyUI…). Chaque fournisseur applique sa propre politique de contenu.'],
- ['shield','Sous ton contrôle','L\'accès à la machine et au navigateur est désactivé par défaut ; chaque action sensible demande ton accord.'],
- ['usb','Clipia OS','Un vrai système Linux sur clé USB, avec bureau, navigateur, pilotes, réglages et Clipia intégrée.']];
+const FCT=[['start','Installation guidée en plein écran','Animation 3D, puis 7 étapes : cerveau rapide, cerveaux locaux, agents, accès, compétences, installation et essai réel.'],
+ ['brain','Un vrai cerveau','Groq gratuit, Qwen via Ollama, Claude, OpenAI, Gemini… Elle choisit le meilleur qui répond et bascule si l\'un tombe.'],
+ ['proj','Agent personnel et sous-agents','Elle crée des agents, des workflows et des projets, retrouve et reprend tes conversations.'],
+ ['mic','Voix naturelle','Fenêtre vocale flottante agrandissable ; elle t\'écoute pendant qu\'elle réfléchit et tu peux la couper.'],
+ ['shield','Accès à cocher','Navigateur, fichiers, code, micro, son, système, clavier et souris : tu décides, et chaque action sensible demande ton accord.'],
+ ['star','Styles de conversation','Ami, entrepreneur, créateur, coach, psychologue personnel avec carnet de séances… ou ton propre style.'],
+ ['plug','62 moteurs, 38 connecteurs','Publier sur YouTube, TikTok, Instagram, vendre sur Etsy ou Shopify, coder sur GitHub, discuter sur WhatsApp ou Telegram…'],
+ ['guide','Guide pas à pas','Pour créer un clip, un site, une application : des étapes concrètes que tu coches.'],
+ ['art','Image, vidéo, musique, voix','Création avec les moteurs que tu connectes, et clips locaux sans réseau avec FFmpeg.'],
+ ['tools','Boîte à outils','Plus de 40 outils gratuits ou open source (DaVinci Resolve, Kdenlive, ComfyUI, n8n…) recommandés au bon moment.'],
+ ['grid','OpenClaw','Détection chez toi et import des compétences que tu choisis ; ses tâches peuvent lui être confiées.'],
+ ['phone','Android, iPhone, Windows, Mac, Linux','Un même agent partout, et Clipia OS pour démarrer depuis une clé USB.']];
 $('#fct').innerHTML=FCT.map(([i,t,d])=>`<div class="k rv">${ic(i)}<h3>${t}</h3><p>${d}</p></div>`).join('');
+/* galerie d'installation */
+const ETAPES=[['01-accueil','Bonjour, je suis Clipia','Animation 3D et présentation : elle te guide pas à pas.'],['02-groq','Cerveau rapide : Groq','Une clé gratuite, testée avant activation.'],['03-modeles','Cerveaux locaux : Qwen et Ollama','Les modèles adaptés à ta mémoire, téléchargés pour toi.'],['04-agents','Agent personnel et sous-agents','Codeur, chercheur, rédacteur, planificateur, créateur.'],['05-acces','Accès à ton ordinateur','Tu coches ce qu\'elle peut utiliser. Accord requis pour chaque action sensible.'],['06-openclaw','Compétences OpenClaw','Détection et import des compétences que tu choisis.'],['08-installation','Installation et essai réel','Barres de progression, puis une vraie question au cerveau.'],['09-prete','Je suis prête pour toi','« Comment veux-tu que je te parle ? »'],['10-style','Ton style de conversation','Ami, entrepreneur, créateur, psychologue…']];
+$('#galerie').innerHTML=ETAPES.map(([f,t,d],i)=>`<div class="shot"><img src="img/${f}.jpg" alt="${t}" loading="lazy"><div><b><span class="n">${i+1}</span>${t}</b><p>${d}</p></div></div>`).join('');
+document.addEventListener('click',e=>{const im=e.target.closest('.shot img,.deux img');if(im){$('#zoom img').src=im.src;$('#zoom').classList.add('on')}else if(e.target.closest('#zoom'))$('#zoom').classList.remove('on')});
 /* téléchargements */
-const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · sans droits administrateur'],portable:['zip','Windows — portable (zip)','Sans installation · dézippe et lance'],linux:['term','Linux','Debian, Ubuntu, Mint · version 1.2.1'],macos:['apple','macOS','Intel et Apple Silicon (Rosetta) · version 1.2.1'],android:['phone','Android — fichier APK','Installation directe · signé · sans magasin d\'applications'],telephone:['phone','Android et iPhone — depuis le navigateur','Application installable en un lien · fonctionne seule'],os:['usb','Clipia OS — clé USB','Système complet · PC x86-64 · 4 parties à réassembler (voir Tutoriels)']};
-const modeles=Object.keys(NOMS);
+const NOMS={windows:['pc','Windows — installeur','10/11, 64 bits · l\'assistant s\'ouvre tout seul'],iso:['zip','Windows — image .iso','Double-clic pour l\'ouvrir : installeur + version portable'],portable:['zip','Windows — portable (zip)','Sans installation · extrais tout, puis lance Clipia.exe'],macos:['apple','macOS','Apple Silicon et Intel · clic droit → Ouvrir'],linux:['term','Linux','Debian, Ubuntu, Mint'],android:['phone','Android — APK','Application avec la voix du téléphone'],telephone:['phone','iPhone / iPad','S\'installe depuis Safari'],os:['usb','Clipia OS — clé USB','Système complet bootable (basé sur la V3)']};
 fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   $('#ver').textContent=L.version;$('#ver2').textContent=L.version;
-  $('#liste').innerHTML=modeles.filter(k=>L.fichiers[k]).map(k=>{const f=L.fichiers[k],[i,t,s]=NOMS[k];
+  $('#liste').innerHTML=Object.keys(NOMS).filter(k=>L.fichiers[k]).map(k=>{const f=L.fichiers[k],[i,t,s]=NOMS[k];
    const parties=f.parties||null;
-   const bouton=parties?`<div class="parts">${parties.map((p,n)=>p.url?`<a class="btn p" style="padding:8px 14px;font-size:13px" href="${p.url}" rel="noopener" target="_blank">Partie ${n+1}</a>`:`<span class="btn" style="padding:8px 14px;font-size:13px" aria-disabled="true">Partie ${n+1}</span>`).join('')}</div>`
-     :(f.url?`<a class="btn p" href="${f.url}" rel="noopener"${k==='telephone'?'':' target="_blank"'}>${k==='telephone'?"Ouvrir l'application":'Télécharger'}</a>`:`<span class="btn" aria-disabled="true">Lien bientôt disponible</span>`);
-   return `<div class="k rv">${ic(i)}<h3>${t}</h3><p>${s} · ${f.taille}</p>${k==='os'?'<span class="badge n">Testé en machine virtuelle</span>':''}${bouton}<small>${f.nom}${f.sha256?`<br>SHA-256 : <code>${f.sha256}</code>`:''}</small></div>`}).join('');
+   const bouton=parties?`<div class="parts">${parties.map((p,n)=>p.url?`<a class="btn p" style="padding:8px 14px;font-size:13px" href="${p.url}" rel="noopener">Partie ${n+1}</a>`:'').join('')}</div>`
+     :(f.url?`<a class="btn p" href="${f.url}" rel="noopener">${k==='telephone'?"Ouvrir l'application":'Télécharger'}</a>`:`<span class="btn" aria-disabled="true">Lien bientôt disponible</span>`);
+   return `<div class="k rv">${ic(i)}<h3>${t}</h3><p>${s}${f.taille?' · '+f.taille:''}</p>${bouton}<small>${f.nom||''}${f.sha256?`<br>SHA-256 : <code>${f.sha256}</code>`:''}</small></div>`}).join('');
   observer();
 }).catch(()=>{$('#liste').innerHTML='<p class="note">Liste des téléchargements indisponible. Écris à fabriceclin02@gmail.com.</p>'});
 /* animations */
@@ -368,6 +372,7 @@ let init=false;$('#bot-b').onclick=()=>{$('#bot').classList.toggle('ouvert');if(
  $('#sug').innerHTML=['Comment appeler Clipia ?','Comment l\'installer ?','Est-ce gratuit ?','Qu\'est-ce que Clipia OS ?'].map(s=>`<button type="button">${s}</button>`).join('');
  $('#sug').querySelectorAll('button').forEach(b=>b.onclick=()=>{add('u',b.textContent);add('b',repondre(b.textContent))})}};
 $('#bf').onsubmit=e=>{e.preventDefault();const t=$('#bi').value.trim();if(!t)return;add('u',t);add('b',repondre(t));$('#bi').value=''};
+
 </script>
 <script>(function(){var v=document.getElementById('vid'),b=document.getElementById('vidPlay');if(!v||!b)return;b.onclick=function(){v.muted=false;v.play();};v.addEventListener('play',function(){b.style.display='none'});v.addEventListener('ended',function(){b.style.display=''})})();</script>
 </body>
