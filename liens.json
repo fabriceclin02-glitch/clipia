@@ -1,29 +1,29 @@
 {
-  "version": "7.0.0",
+  "version": "7.0.1",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-7.0.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-7.0.0-windows-x64.exe",
+      "nom": "Clipia-Setup-7.0.1-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-7.0.1-windows-x64.exe",
       "taille": "76 Mo",
-      "sha256": "fbe13ec9c079baff9cbd512586421c877db36ea015d603d1ae904610b408e479"
+      "sha256": "a7540b85a44616421bc94a9ad2f445b44f676fef1769bdd1ebba6be73b498aef"
     },
     "portable": {
-      "nom": "Clipia-Portable-7.0.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-7.0.0-windows-x64.zip",
+      "nom": "Clipia-Portable-7.0.1-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-7.0.1-windows-x64.zip",
       "taille": "40 Mo",
-      "sha256": "936082122976667240160ca057e877f84af94fffd994d6a88aa25f1f41e07e6c"
+      "sha256": "355ad1818de3d4321794a30f3c2c134b141340ec90c56a4b87632a725eedad7a"
     },
     "linux": {
-      "nom": "clipia_7.0.0_amd64.deb",
-      "url": "telechargements/clipia_7.0.0_amd64.deb",
+      "nom": "clipia_7.0.1_amd64.deb",
+      "url": "telechargements/clipia_7.0.1_amd64.deb",
       "taille": "33 Mo",
-      "sha256": "14c77fa59f8d9b4c0a41c4c5faeb0b27dbbb8882d19b47786f82818015158c28"
+      "sha256": "d549de52d904cb8a14a3b8c0b4ace6409214e0b03afe7cc68291d6a28b3fcfe4"
     },
     "macos": {
-      "nom": "Clipia-7.0.0-macos.zip",
-      "url": "telechargements/Clipia-7.0.0-macos.zip",
+      "nom": "Clipia-7.0.1-macos.zip",
+      "url": "telechargements/Clipia-7.0.1-macos.zip",
       "taille": "47 Mo",
-      "sha256": "e89c2fddf9f52e8a68356deeb9cfc50e00df51dc130beb1445e752a5e49a0f52"
+      "sha256": "fc91ca9bdf63c2ea5cc0ec5dfc802bcc274bceff090cf75c289a493d5f33ca78"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",
@@ -55,17 +55,17 @@
       "taille": "APK Android"
     },
     "iso": {
-      "nom": "Clipia-V7.0.0-windows.iso.zip (2 parties)",
+      "nom": "Clipia-V7.0.1-windows.iso.zip (2 parties)",
       "parties": [
         {
-          "url": "telechargements/Clipia-V7.0.0-windows.iso.zip.part00"
+          "url": "telechargements/Clipia-V7.0.1-windows.iso.zip.part00"
         },
         {
-          "url": "telechargements/Clipia-V7.0.0-windows.iso.zip.part01"
+          "url": "telechargements/Clipia-V7.0.1-windows.iso.zip.part01"
         }
       ],
       "taille": "≈117 Mo en 2 parties",
-      "sha256": "cfc0ab081e2a31111450b456029e90a835bb000dc851972526f4f3f3ce6ad9e1"
+      "sha256": "795a45a296aa7a7766d12d6c0edea687a25b8daf3af9068f0286f51fe10e369a"
     }
   }
 }
