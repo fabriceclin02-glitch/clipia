@@ -13,3 +13,8 @@
    - 1 × **CNAME** sur `www` : fabriceclin02-glitch.github.io
 3. GitHub → dépôt → Settings → Pages → *Custom domain* : saisis ton domaine, puis coche *Enforce HTTPS* (le certificat arrive en quelques minutes à 24 h).
 4. Ajoute un fichier `CNAME` à la racine du dépôt contenant uniquement ton domaine (ex. `clipia.fr`).
+
+## Compter les visites et les téléchargements (gratuit, sans cookies)
+1. Crée un compte sur goatcounter.com (choisis un code, ex. `clipia`).
+2. Dans `index.html`, remplis `<meta name="goatcounter" content="clipia">` avec ton code, puis publie. Les clics de téléchargement sont comptés comme événements.
+3. Les téléchargements des Releases GitHub ont aussi leur propre compteur, visible sous chaque fichier de la Release.

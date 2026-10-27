@@ -10,8 +10,11 @@
 <meta property="og:image" content="https://fabriceclin02-glitch.github.io/clipia/img/og-x7.jpg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="goatcounter" content="">
 <meta name="theme-color" content="#080a1c">
 <link rel="icon" href="icone.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Clipia X7","applicationCategory":"MultimediaApplication","operatingSystem":"Windows, macOS, Linux, Android, iOS","softwareVersion":"7.0.0","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Clin Fabrice"},"description":"Agent personnel IA local : écoute permanente, studio vidéo et musique, pont OpenClaw, téléphone et MCP."}</script>
+<link rel="canonical" href="https://fabriceclin02-glitch.github.io/clipia/">
 <style>
 :root{--bg:#080a1c;--bg2:#0d1030;--carte:#11153a;--carte2:#1a1f4d;--texte:#eef0ff;--doux:#a9afd6;--bord:#2a3070;
   --violet:#7c5cff;--bleu:#2f8cff;--rose:#c26bff;--cyan:#42d7ff;--ok:#43e6a8;
@@ -175,7 +178,7 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
   <h2 class="rv">🎬 Clipia X7 en 2 minutes</h2><p class="sous rv">Présentation avec voix et sous-titres : voix 3D, studio, logithèque, OpenClaw, téléphone. Mets le son 🔊</p>
   <div class="vid2 rv"><video id="vid" controls preload="metadata" poster="img/poster-x7.jpg" playsinline><source src="Clipia-X7-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video>
     <button id="vidPlay" type="button" style="position:absolute;inset:0;margin:auto;width:92px;height:92px;border-radius:50%;border:0;background:#7c5cffee;color:#fff;font-size:38px;cursor:pointer;box-shadow:0 10px 40px #0009" aria-label="Lancer la vidéo avec le son">▶</button></div>
-  <p class="sous rv" style="margin:14px auto 0;text-align:center"><a href="Clipia-X7-presentation.mp4" download style="color:#9bb4ff">⬇ Télécharger la présentation</a> · <a href="Clipia-X7-installation.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo d'installation</a></p>
+  <p class="sous rv" style="margin:14px auto 0;text-align:center"><a href="Clipia-X7-presentation.mp4" download style="color:#9bb4ff">⬇ Télécharger la présentation</a> · <a href="Clipia-X7-installation.mp4" download style="color:#9bb4ff">⬇ Vidéo d'installation</a> · <a href="Clipia-X7-short.mp4" download style="color:#9bb4ff">⬇ Version verticale (Shorts, TikTok, Reels)</a></p>
   <h2 class="rv" style="margin-top:46px">🛠 Installer X7 pas à pas (vidéo)</h2><p class="sous rv">Du téléchargement à la première conversation : choisis tes logiciels, tes cerveaux, ton téléphone.</p>
   <div class="vid2 rv"><video controls preload="none" poster="img/poster-x7-install.jpg" playsinline><source src="Clipia-X7-installation.mp4" type="video/mp4"></video></div>
 </div></section>
@@ -489,5 +492,6 @@ $('#bf').onsubmit=e=>{e.preventDefault();const t=$('#bi').value.trim();if(!t)ret
 })();
 </script>
 <script>(function(){var v=document.getElementById('vid'),b=document.getElementById('vidPlay');if(!v||!b)return;b.onclick=function(){v.muted=false;v.play();};v.addEventListener('play',function(){b.style.display='none'});v.addEventListener('ended',function(){b.style.display=''})})();</script>
+<script>(function(){var c=document.querySelector('meta[name="goatcounter"]');if(!c||!c.content)return;var s=document.createElement("script");s.async=true;s.dataset.goatcounter="https://"+c.content+".goatcounter.com/count";s.src="https://gc.zgo.at/count.js";document.head.append(s);document.addEventListener("click",function(e){var a=e.target.closest("a[href*=telechargements],a[download]");if(a&&window.goatcounter&&goatcounter.count)goatcounter.count({path:"telechargement/"+a.getAttribute("href"),title:"Téléchargement",event:true})})})();</script>
 </body>
 </html>

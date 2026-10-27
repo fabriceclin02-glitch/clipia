@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fabriceclin02-glitch.github.io/clipia/sitemap.xml
