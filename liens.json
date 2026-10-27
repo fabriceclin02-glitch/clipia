@@ -1,29 +1,29 @@
 {
-  "version": "6.0.3",
+  "version": "6.0.4",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-6.0.3-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-6.0.3-windows-x64.exe",
-      "taille": "26 Mo",
-      "sha256": "c81b11e198bd8f6d2cc3eed40493176083bbe087653ac421a1102db3eaff80eb"
+      "nom": "Clipia-Setup-6.0.4-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-6.0.4-windows-x64.exe",
+      "taille": "76 Mo",
+      "sha256": "5f809da0533c840d2ae2546ff773c2f096586929023d6a22e9a07de4f347b9d7"
     },
     "portable": {
-      "nom": "Clipia-Portable-6.0.3-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-6.0.3-windows-x64.zip",
-      "taille": "39 Mo",
-      "sha256": "a807d50742cb4ea3aecfd0e0ccdbe36dedf4a9e5bcfc272afdeb73b3b2d5c094"
+      "nom": "Clipia-Portable-6.0.4-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-6.0.4-windows-x64.zip",
+      "taille": "40 Mo",
+      "sha256": "9d162772db5878bffe100c97180ba2067d280aca79318ba399b4915c1946332f"
     },
     "linux": {
-      "nom": "clipia_6.0.3_amd64.deb",
-      "url": "telechargements/clipia_6.0.3_amd64.deb",
-      "taille": "32 Mo",
-      "sha256": "ddb87d02e2448b4969aef5c8deee6c1bc6dc92005284d5c68b4b5d046e091745"
+      "nom": "clipia_6.0.4_amd64.deb",
+      "url": "telechargements/clipia_6.0.4_amd64.deb",
+      "taille": "33 Mo",
+      "sha256": "4069de654675e55bc2536b9128f10a0461763898c7d583450e35a5226cfd247e"
     },
     "macos": {
-      "nom": "Clipia-6.0.3-macos.zip",
-      "url": "telechargements/Clipia-6.0.3-macos.zip",
-      "taille": "45 Mo",
-      "sha256": "57a8552a066ca4a62c6672c8c0b7cf21454db8a30b821d6db69dbf9a5b485e99"
+      "nom": "Clipia-6.0.4-macos.zip",
+      "url": "telechargements/Clipia-6.0.4-macos.zip",
+      "taille": "47 Mo",
+      "sha256": "bda7e62dfa31b2b598c82e7744d4aa28a010230ecad799992d66c298f055a419"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",
@@ -61,10 +61,17 @@
       "taille": "APK Android"
     },
     "iso": {
-      "nom": "Clipia-V6.0.3-windows.iso",
-      "url": "telechargements/Clipia-V6.0.3-windows.iso",
-      "taille": "65 Mo",
-      "sha256": "5b46ea5d4740ea5dff195b0bd0b76bed99bb28f5cd61d92f9bfe868ff8eac89e"
+      "nom": "Clipia-V6.0.4-windows.iso.zip (2 parties)",
+      "parties": [
+        {
+          "url": "telechargements/Clipia-V6.0.4-windows.iso.zip.part00"
+        },
+        {
+          "url": "telechargements/Clipia-V6.0.4-windows.iso.zip.part01"
+        }
+      ],
+      "taille": "≈116 Mo en 2 parties",
+      "sha256": "aa7d266a33ce6e46d56c69aeb332c93d6f877f73d1e4243c483ae49f3c838bb8"
     }
   }
 }
