@@ -1,0 +1,9 @@
+node_modules/
+data/
+.env
+dist/
+www/
+*.keystore
+key.properties
+.DS_Store
+*.log

@@ -1,0 +1,14 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Installer OpenClaw — Clipia</title>
+<style>body{margin:0;background:#0f0a2a;color:#e8e6ff;font:16px/1.6 system-ui,sans-serif;padding:32px 20px}main{max-width:720px;margin:auto}
+h1{background:linear-gradient(90deg,#6aa8ff,#a56bff);-webkit-background-clip:text;color:transparent}
+pre{background:#1b1445;border:1px solid #3a2f80;border-radius:10px;padding:12px;overflow:auto}a{color:#8fb8ff}</style>
+<main><h1>Installer OpenClaw</h1>
+<p>OpenClaw est un agent autonome qui s'ajoute à Clipia. Il exige <b>Node.js 24.22 ou plus récent</b> : c'est la cause la plus fréquente d'une installation qui se termine par une erreur.</p>
+<h3>1. Vérifier Node.js (PowerShell)</h3><pre>node -v</pre>
+<p>Si le numéro est inférieur à v24.22, installe la version actuelle depuis <a href="https://nodejs.org" target="_blank">nodejs.org</a>, puis rouvre PowerShell.</p>
+<h3>2. Installer</h3><pre>npm install -g openclaw@latest
+openclaw onboard</pre>
+<h3>3. Démarrer</h3><pre>openclaw gateway</pre>
+<p>Il écoute sur <code>127.0.0.1:18789</code>. Copie son jeton d'accès dans Clipia (Configuration → OpenClaw) ou dans la variable <code>OPENCLAW_GATEWAY_TOKEN</code>.</p>
+<p>Documentation officielle : <a href="https://docs.openclaw.ai" target="_blank">docs.openclaw.ai</a></p></main>

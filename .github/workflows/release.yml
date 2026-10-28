@@ -1,0 +1,50 @@
+name: Publier une version de Clipia
+# Se déclenche quand package.json change sur main : crée une Release versionnée.
+# Les versions précédentes restent toutes disponibles dans l'onglet Releases.
+on:
+  push:
+    branches: [main]
+    paths: ['source/package.json']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Version
+        id: v
+        run: echo "version=$(node -p "require('./source/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Existe déjà ?
+        id: ex
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          if gh release view "v${{ steps.v.outputs.version }}" >/dev/null 2>&1; then echo "oui=1" >> "$GITHUB_OUTPUT"; fi
+      - name: Tests
+        if: steps.ex.outputs.oui != '1'
+        working-directory: source
+        run: node scripts/selftest.mjs
+      - name: Archive portable
+        if: steps.ex.outputs.oui != '1'
+        run: |
+          V=${{ steps.v.outputs.version }}
+          mkdir -p out
+          (cd source && zip -qr "../out/Clipia-$V-portable.zip" . -x 'node_modules/*' 'data/*' 'dist/*' '.env')
+          (cd out && sha256sum * > SHA256SUMS.txt)
+      - name: Installeurs (Windows, Linux, macOS) — facultatif
+        if: steps.ex.outputs.oui != '1'
+        continue-on-error: true
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq nsis dpkg xorriso zip python3-pil
+          cd source && DIST="$GITHUB_WORKSPACE/out" bash installers/build-all.sh
+          cd "$GITHUB_WORKSPACE/out" && rm -f SHA256SUMS.txt && sha256sum * > SHA256SUMS.txt
+      - name: Release GitHub
+        if: steps.ex.outputs.oui != '1'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          V=${{ steps.v.outputs.version }}
+          NOTES=$(grep -A6 "^## $V" source/docs/JOURNAL-EVOLUTION.md 2>/dev/null || echo "Version $V de Clipia.")
+          gh release create "v$V" out/* --title "Clipia $V" --notes "$NOTES"

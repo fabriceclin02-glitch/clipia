@@ -1,0 +1,35 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Clipia — Téléphone</title><link rel="manifest" href="/telephone.webmanifest"><meta name="theme-color" content="#070b16"><link rel="icon" href="/telephone-icone.svg">
+<style>
+:root{--bg:#070b16;--fg:#eef;--c:#7c5cff}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column}
+header{padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #ffffff1a;padding-top:max(12px,env(safe-area-inset-top))}
+header b{font-size:18px;letter-spacing:.5px}header span{opacity:.6;font-size:13px}
+.orb{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#d8ccff,#7c5cff 45%,#2a1a7a);box-shadow:0 0 18px #7c5cff88}
+#fil{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:88%;padding:10px 13px;border-radius:16px;line-height:1.4;white-space:pre-wrap;word-wrap:break-word}.u{align-self:flex-end;background:var(--c)}.c{align-self:flex-start;background:#ffffff14}.s{align-self:center;opacity:.65;font-size:13px}
+form{display:flex;gap:8px;padding:10px 12px max(10px,env(safe-area-inset-bottom));border-top:1px solid #ffffff1a}
+input,button{font:inherit;border-radius:14px;border:1px solid #ffffff2a;background:#ffffff10;color:var(--fg);padding:11px 13px}input{flex:1;min-width:0}button{background:var(--c);border:0;cursor:pointer;font-weight:600}
+#mic.on{background:#e5484d}#cfg{padding:20px;display:grid;gap:12px;max-width:460px;margin:auto}
+</style></head><body>
+<header><div class="orb"></div><b>CLIPIA</b><span id="st">téléphone</span></header>
+<div id="fil"></div>
+<form id="f"><button type="button" id="mic" title="Dicter">🎙</button><input id="q" placeholder="Parle à Clipia…" autocomplete="off"><button>➤</button></form>
+<script>
+const K='clipia:tel'; let cfg={}; try{cfg=JSON.parse(localStorage.getItem(K)||'{}')}catch{}
+const h=new URLSearchParams(location.hash.slice(1)); if(h.get('t')){cfg.t=h.get('t');try{localStorage.setItem(K,JSON.stringify(cfg))}catch{} history.replaceState(null,'',location.pathname)}
+const fil=document.getElementById('fil'),q=document.getElementById('q'),st=document.getElementById('st');
+const ajoute=(c,t)=>{const d=document.createElement('div');d.className='m '+c;d.textContent=t;fil.append(d);fil.scrollTop=fil.scrollHeight;return d};
+if(!cfg.t){ajoute('s','Ouvre le lien ou le QR code affiché dans Clipia (menu « Téléphone & MCP ») pour te connecter.')}
+else ajoute('s','Connecté. Dis ou écris ce que tu veux que Clipia fasse sur ton ordinateur.');
+const hist=[];
+document.getElementById('f').onsubmit=async e=>{e.preventDefault();const t=q.value.trim();if(!t||!cfg.t)return;q.value='';ajoute('u',t);const w=ajoute('c','…');st.textContent='réfléchit…';
+ try{const r=await fetch('/api/telephone/demander',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+cfg.t},body:JSON.stringify({message:t,historique:hist.slice(-8)})});
+  const j=await r.json();if(!r.ok)throw new Error(j.erreur||r.status);w.textContent=j.texte||'(pas de réponse)';hist.push({role:'user',content:t},{role:'assistant',content:j.texte||''});
+  if(j.attente)ajoute('s','🔒 Cette action demande ton accord sur l\'ordinateur.');
+  if('speechSynthesis' in window&&document.getElementById('mic').dataset.voix==='1'){speechSynthesis.speak(new SpeechSynthesisUtterance((j.texte||'').replace(/[*_`#]/g,'').slice(0,600)))}
+ }catch(x){w.textContent='⚠ '+x.message+' — ton PC est-il allumé et Clipia ouvert ?'}st.textContent='téléphone'};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;const mic=document.getElementById('mic');
+mic.onclick=()=>{if(!SR)return ajoute('s','Dictée non disponible sur ce navigateur.');const r=new SR();r.lang='fr-FR';mic.classList.add('on');mic.dataset.voix='1';
+ r.onresult=ev=>{q.value=Array.from(ev.results).map(x=>x[0].transcript).join(' ')};r.onend=()=>{mic.classList.remove('on');if(q.value.trim())document.getElementById('f').requestSubmit()};try{r.start()}catch{}};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('/telephone-sw.js').catch(()=>{});
+</script></body></html>

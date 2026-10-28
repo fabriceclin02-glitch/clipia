@@ -1,0 +1,26 @@
+{
+  "appId": "app.clendax.clipia",
+  "appName": "Clipia",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true,
+    "_note": "Laissez 'url' absent : l'interface embarquée se lance, et l'utilisateur indique l'adresse de son serveur dans Paramètres > Serveur. Ajoutez 'url' seulement si vous voulez forcer un serveur unique."
+  },
+  "android": {
+    "allowMixedContent": true,
+    "backgroundColor": "#070b16"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#070b16",
+      "androidSplashResourceName": "splash",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#070b16"
+    }
+  }
+}

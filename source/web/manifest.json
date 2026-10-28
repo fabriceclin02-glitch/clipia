@@ -1,0 +1,16 @@
+{
+  "name": "Clipia — Studio créatif IA",
+  "short_name": "Clipia",
+  "description": "Créez des clips, visuels et contenus avec toutes les IA, en ligne ou en local.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070b16",
+  "theme_color": "#070b16",
+  "lang": "fr",
+  "categories": ["multimedia", "productivity", "music"],
+  "icons": [
+    { "src": "/assets/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/assets/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

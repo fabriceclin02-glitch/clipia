@@ -1,0 +1,67 @@
+name: Évolution de Clipia (idée → Pull Request)
+# Déclenché UNIQUEMENT quand le propriétaire ajoute le label « approuvé » sur une idée.
+# Seuls les collaborateurs ayant le droit d'écriture peuvent poser un label : un inconnu ne peut pas déclencher l'agent.
+on:
+  issues:
+    types: [labeled]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: evolution-${{ github.event.issue.number }}
+jobs:
+  evoluer:
+    if: github.event.label.name == 'approuvé' && contains(github.event.issue.labels.*.name, 'idée')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Réflexion de l'agent
+        id: agent
+        working-directory: source
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          IDEE_TITRE: ${{ github.event.issue.title }}
+          IDEE_TEXTE: ${{ github.event.issue.body }}
+          IDEE_NUMERO: ${{ github.event.issue.number }}
+        run: node scripts/evolution.mjs
+      - name: Tests
+        if: steps.agent.outputs.statut == 'ok'
+        working-directory: source
+        run: node scripts/selftest.mjs
+      - name: Ouvrir la Pull Request
+        if: steps.agent.outputs.statut == 'ok'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUM: ${{ github.event.issue.number }}
+          VERSION: ${{ steps.agent.outputs.version }}
+          RESUME: ${{ steps.agent.outputs.resume }}
+          FICHIERS: ${{ steps.agent.outputs.fichiers }}
+        run: |
+          git config user.name "clipia-evolution"
+          git config user.email "clipia-evolution@users.noreply.github.com"
+          B="evolution/idee-$NUM"
+          git checkout -b "$B"
+          git add source
+          git commit -m "Évolution ${VERSION} — idée #${NUM}"
+          git push -f origin "$B"
+          printf 'Réalise #%s (proposée par la communauté, validée par le propriétaire).\n\n**Résumé de l'"'"'agent :** %s\n\n**Fichiers :** %s\n\nVersion proposée : **%s**. Les tests passent. **Relis le diff avant de fusionner** : la fusion publie automatiquement une nouvelle version téléchargeable (les anciennes restent disponibles).\n' "$NUM" "$RESUME" "$FICHIERS" "$VERSION" > corps.md
+          gh pr create --base main --head "$B" --title "Évolution $VERSION — idée #$NUM" --body-file corps.md
+      - name: Répondre sur l'idée
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUM: ${{ github.event.issue.number }}
+          STATUT: ${{ steps.agent.outputs.statut }}
+          RESUME: ${{ steps.agent.outputs.resume }}
+        run: |
+          case "$STATUT" in
+            ok) M="J'ai préparé une Pull Request pour cette idée. Elle sera publiée en nouvelle version après relecture. Merci !" ;;
+            refuse) M="Je n'ai pas pu réaliser cette idée automatiquement : $RESUME" ;;
+            *) M="L'agent n'a pas pu aboutir (voir l'onglet Actions)." ;;
+          esac
+          gh issue comment "$NUM" --body "$M"

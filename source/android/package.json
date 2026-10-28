@@ -1,0 +1,21 @@
+{
+  "name": "clipia-android",
+  "version": "1.0.0",
+  "description": "Clipia pour Android — Capacitor",
+  "scripts": {
+    "init": "npx cap add android",
+    "sync": "npx cap sync android",
+    "open": "npx cap open android",
+    "build": "cd android && ./gradlew bundleRelease",
+    "apk": "cd android && ./gradlew assembleRelease"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.1",
+    "@capacitor/share": "^6.0.3",
+    "@capacitor/splash-screen": "^6.0.3",
+    "@capacitor/status-bar": "^6.0.2"
+  }
+}

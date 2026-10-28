@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Clipia — mains dans le navigateur",
+  "version": "4.0.0",
+  "description": "Permet à ton agent Clipia (sur ton ordinateur) de voir et d'utiliser tes onglets Chrome, avec ton autorisation.",
+  "permissions": ["tabs", "scripting", "activeTab", "alarms", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "fond.js" },
+  "action": { "default_title": "Clipia", "default_popup": "popup.html" },
+  "icons": { "128": "icone.png" }
+}

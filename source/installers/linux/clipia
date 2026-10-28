@@ -1,0 +1,17 @@
+#!/bin/sh
+# Lanceur Clipia (Linux). Données dans ~/.local/share/clipia
+RACINE=/opt/clipia
+export CLIPIA_DATA_DIR="${CLIPIA_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/clipia}"
+mkdir -p "$CLIPIA_DATA_DIR"
+PORT="${PORT:-8787}"; export PORT
+URL="http://127.0.0.1:$PORT"
+if [ "$1" = "--quitter" ]; then
+  exec "$RACINE/runtime/node" -e "fetch('$URL/api/systeme/quitter',{method:'POST',headers:{'x-clipia-accord':'1'}}).catch(()=>{})"
+fi
+ouvrir() { (sleep 2; xdg-open "$URL" >/dev/null 2>&1 || true) & }
+# Déjà en marche ? On ouvre seulement le navigateur.
+if "$RACINE/runtime/node" -e "fetch('$URL/api/auto',{signal:AbortSignal.timeout(1500)}).then(()=>process.exit(0),()=>process.exit(1))"; then
+  ouvrir; exit 0
+fi
+ouvrir
+cd "$RACINE/app" && exec "$RACINE/runtime/node" server/index.js

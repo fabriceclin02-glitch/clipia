@@ -1,0 +1,18 @@
+{
+  "name": "clipia",
+  "version": "8.0.0",
+  "description": "Clipia — Studio créatif IA (CLENDAX). Passerelle multi-LLM, génération image/vidéo/audio, pipeline musique→clip, connecteurs sociaux, abonnements.",
+  "type": "module",
+  "main": "server/index.js",
+  "engines": { "node": ">=20.0.0" },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "doctor": "node scripts/doctor.js",
+    "detect-local": "node scripts/detect-local-ai.js",
+    "pack": "bash scripts/package-zip.sh"
+  },
+  "dependencies": {},
+  "author": "Clin Fabrice — CLENDAX",
+  "license": "UNLICENSED"
+}

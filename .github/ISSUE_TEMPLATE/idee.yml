@@ -1,0 +1,36 @@
+name: 💡 Proposer une idée pour Clipia
+description: Une fonction, une amélioration, un outil open source à intégrer. Les idées retenues sont réalisées par l'agent d'évolution de Clipia.
+title: "[Idée] "
+labels: ["idée"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de faire avancer Clipia 💛 Décris le **besoin** (le problème de l'utilisateur) plutôt que la solution technique.
+        Ne colle ici **aucun mot de passe, clé API ni donnée personnelle**.
+  - type: textarea
+    id: besoin
+    attributes:
+      label: Le besoin
+      description: Qui en a besoin, pour faire quoi ?
+      placeholder: "En tant que ..., je veux ... pour ..."
+    validations: { required: true }
+  - type: textarea
+    id: idee
+    attributes:
+      label: Ton idée
+      description: Comment Clipia pourrait y répondre ? (écran, commande vocale, agent, outil open source…)
+    validations: { required: true }
+  - type: dropdown
+    id: type
+    attributes:
+      label: Catégorie
+      options: [Assistant vocal, Travaux en arrière-plan, Entreprise & revenus, Création (image/vidéo/musique), Outils open source, Interface, Autre]
+    validations: { required: true }
+  - type: checkboxes
+    id: ok
+    attributes:
+      label: Engagement
+      options:
+        - label: Je comprends que l'idée sera relue par le propriétaire du projet avant toute réalisation.
+          required: true

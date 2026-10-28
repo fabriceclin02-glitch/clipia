@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Clipia
+GenericName=Studio créatif IA
+Comment=Image, vidéo, musique, texte, projets et agents IA
+Exec=/usr/bin/clipia
+Icon=clipia
+Terminal=false
+Categories=Graphics;AudioVideo;Utility;
+Actions=Quitter;
+
+[Desktop Action Quitter]
+Name=Quitter Clipia
+Exec=/usr/bin/clipia --quitter

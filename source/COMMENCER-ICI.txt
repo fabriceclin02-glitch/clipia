@@ -1,0 +1,69 @@
+CLIPIA — comment démarrer
+=========================
+
+TROIS FAÇONS DE L'UTILISER. Choisissez-en UNE.
+
+
+1) L'APPLICATION (c'est ce que vous voulez dans 99 % des cas)
+-------------------------------------------------------------
+   Windows   →  double-cliquez sur  DEMARRER.bat
+   macOS     →  double-cliquez sur  DEMARRER.command
+   Linux     →  bash demarrer.sh
+
+   Clipia s'ouvre sur :   http://127.0.0.1:8787
+                          ^^^^^^^^^^^^^^^^^^^^^
+   C'est le studio complet : orbe vocale, clips, agent, connecteurs.
+   Laissez la fenêtre noire ouverte pendant que vous l'utilisez.
+
+
+2) L'APPLICATION DE BUREAU (aucune installation de Node nécessaire)
+-------------------------------------------------------------------
+   Ce sont les archives séparées :
+     Clipia-Windows-x64.zip   →  décompresser, lancer Clipia.exe
+     Clipia-macOS-...zip      →  glisser dans Applications
+     Clipia-Linux-x64.zip     →  décompresser, lancer ./Clipia
+
+   Node est déjà embarqué dedans. Rien à installer.
+
+
+3) LE SITE VITRINE (page de présentation, pas le studio)
+--------------------------------------------------------
+   C'est une archive DIFFÉRENTE : site-clipia.zip ou netlify-clipia.zip
+
+   Windows   →  double-cliquez sur  apercu.bat
+   macOS     →  bash apercu.sh
+   Linux     →  bash apercu.sh
+
+   Le site s'ouvre sur :   http://localhost:5000
+                           ^^^^^^^^^^^^^^^^^^^^^
+   C'est la page de pub, pas l'application.
+
+
+NE CONFONDEZ PAS
+----------------
+   http://127.0.0.1:8787   =  l'application Clipia
+   http://localhost:5000   =  le site vitrine
+
+   Si « localhost:5000 ne fonctionne pas », c'est probablement que
+   vous cherchiez l'application : utilisez le port 8787.
+
+
+IL FAUT QUOI ?
+--------------
+   Node.js 20 ou plus   →  https://nodejs.org   (obligatoire)
+   FFmpeg               →  pour le montage vidéo uniquement
+
+   Windows :  winget install -e --id Gyan.FFmpeg
+   macOS   :  brew install ffmpeg
+   Linux   :  sudo apt install ffmpeg
+
+
+ÇA NE MARCHE TOUJOURS PAS ?
+---------------------------
+   Lancez le diagnostic :   node scripts/doctor.js
+   Il teste tout et vous dit précisément ce qui manque.
+
+   « EADDRINUSE »  → le port est pris. Lancez :
+                     PORT=8788 node server/index.js
+
+Clin Fabrice — CLENDAX — fabriceclin02@gmail.com

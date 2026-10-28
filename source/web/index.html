@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b16">
+<title>Clipia X8 — Studio créatif IA</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css?v=4">
+<link rel="icon" type="image/png" href="/assets/icone-192.png">
+<link rel="apple-touch-icon" href="/assets/icone-512.png">
+</head>
+<body>
+<div class="app">
+  <div class="marque">
+    <img class="logo" src="/assets/icone-192.png" alt="Clipia" width="34" height="34">
+    <div><b>CLIPIA <span style="color:#a99bff">X8</span></b><small>Studio créatif</small></div>
+  </div>
+  <header class="entete">
+    <button class="btn mini" id="menu" style="display:none">☰</button>
+    <div class="titre" id="fil">Tableau de bord</div>
+    <div class="pousse">
+      <span class="etiq neutre" id="plan">—</span>
+      <span class="etiq ok" id="sante">connecté</span>
+    </div>
+  </header>
+  <nav id="nav"></nav>
+  <main><div class="vue" id="vue"></div></main>
+</div>
+<div class="toast" id="toast"></div>
+<script type="module" src="/app.js?v=42"></script>
+</body>
+</html>
