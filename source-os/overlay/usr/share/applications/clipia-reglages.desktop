@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Réglages Clipia OS
+GenericName=Paramètres du système
+Comment=Réseau, clavier, heure, son, autorisations de Clipia
+Exec=epiphany --new-window http://127.0.0.1:8787/os.html#/reglages
+Icon=preferences-system
+Categories=Settings;System;

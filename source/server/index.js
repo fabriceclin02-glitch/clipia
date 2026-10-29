@@ -84,6 +84,7 @@ import * as mcp from './noyau/mcp-client.js';
 import * as planning from './noyau/planificateur.js';
 import * as sauvegarde from './noyau/sauvegarde.js';
 import * as initiative from './noyau/initiative.js';
+import * as osClipia from './noyau/os.js';
 import * as extChrome from './noyau/extension.js';
 import * as installation from './noyau/installation.js';
 import { demarrer as demarrerMessagerie, arreter as arreterMessagerie,
@@ -1465,6 +1466,7 @@ const server = http.createServer(async (req, res) => {
 
     // ─── X8 : TÂCHES PLANIFIÉES ───
     if (p === '/api/initiatives' && req.method === 'GET') return json(res, { initiatives: initiative.proposer() });
+    if (p.startsWith('/api/os/') && await osClipia.gerer(req, res, p, { json, jbody })) return;
     if (p === '/api/vscode/ouvrir' && req.method === 'POST') {
       if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403);
       const b = await jbody(req); const dossier = b.dossier ? path.resolve(String(b.dossier)) : PROJETS_DIR;

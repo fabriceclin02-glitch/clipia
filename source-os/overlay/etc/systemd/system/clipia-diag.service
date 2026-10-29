@@ -1,0 +1,9 @@
+[Unit]
+Description=Clipia OS — rapport de diagnostic (clipia.diag=1)
+ConditionKernelCommandLine=clipia.diag=1
+After=clipia.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/clipia-diag
+[Install]
+WantedBy=multi-user.target

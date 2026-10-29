@@ -5,6 +5,7 @@ La liste à jour (avec les sommes de contrôle SHA-256) est dans [`liens.json`](
 
 | Version | Contenu principal | Fichiers |
 |---|---|---|
+| OS 4.0 | **Clipia OS 4** : image ISO bootable (Ubuntu 24.04, Clipia 8.2), live USB, installation sur disque, Réglages, visite guidée, sphère 3D | branche `os-images` |
 | 8.2.0 | Sauvegarder mon IA (USB / Dropbox / MEGA), accueil vitrine, moteurs de clip (Canva…), touche Espace | `telechargements/` |
 | 8.0.0 | X8 « deux cerveaux », travaux en arrière-plan, OpenClaw, entreprise | `telechargements/` |
 | 7.0.1 | X7 : voix et sphère 3D, Logithèque, accès ordinateur | `telechargements/` |

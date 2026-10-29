@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Installer Ollama (IA hors ligne)
+Comment=Télécharge Ollama (Internet requis)
+Exec=xfce4-terminal --title="Ollama" -x sh -c "curl -fsSL https://ollama.com/install.sh | sudo sh; read -p 'Entrée pour fermer…' _"
+Icon=applications-science
+Categories=System;

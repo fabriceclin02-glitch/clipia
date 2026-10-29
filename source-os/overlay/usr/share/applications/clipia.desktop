@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Clipia
+GenericName=Studio créatif IA
+Comment=Image, vidéo, musique, texte, projets, agents — mémoire et cerveau du système
+Exec=/usr/local/bin/clipia-fenetre --maximise
+Icon=clipia
+Categories=Graphics;AudioVideo;Utility;

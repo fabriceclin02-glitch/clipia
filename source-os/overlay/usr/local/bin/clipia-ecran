@@ -1,0 +1,20 @@
+#!/bin/bash
+# Écran de Clipia OS : navigateur plein écran sur l'interface Clipia ; menu texte si l'écran graphique échoue.
+URL=http://127.0.0.1:8787
+[ -f /etc/default/keyboard ] && . /etc/default/keyboard
+export WLR_RENDERER_ALLOW_SOFTWARE=1 WEBKIT_DISABLE_COMPOSITING_MODE=1
+export XKB_DEFAULT_LAYOUT="${XKBLAYOUT:-fr}" XDG_RUNTIME_DIR="/run/user/$(id -u)" WLR_NO_HARDWARE_CURSORS=1 LIBSEAT_BACKEND=logind
+echo "Clipia OS — démarrage de l'interface…"
+for i in $(seq 1 60); do curl -fs -m 2 "$URL/api/auto" >/dev/null 2>&1 && break; sleep 1; done
+if [ -z "${CLIPIA_SANS_ECRAN:-}" ] && [ -e /dev/dri/card0 -o -e /dev/fb0 ]; then
+  # 1) X11 (le plus compatible : machines virtuelles, vieux GPU) ; 2) Wayland (cage) ; 3) menu texte
+  mkdir -p "$HOME/.local/share/org.gnome.Epiphany.WebApp_clipia"
+  xinit /usr/local/bin/clipia-xsession -- /usr/bin/Xorg :0 vt1 -nolisten tcp -quiet >/tmp/ecran.log 2>&1; code=$?
+  echo "x11 code=$code" >> /tmp/ecran.log
+  if [ "$code" != 0 ] && [ -z "${CLIPIA_ECRAN_FIN:-}" ]; then
+    cage -s -- epiphany "$URL" 2>>/tmp/ecran.log; code=$?
+    echo "cage code=$code" >> /tmp/ecran.log
+  fi
+  echo "L'écran graphique s'est arrêté (code $code, voir /tmp/ecran.log)."
+fi
+exec /usr/local/bin/clipia-menu

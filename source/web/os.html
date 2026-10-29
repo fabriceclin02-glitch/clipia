@@ -1,0 +1,162 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clipia OS</title>
+<style>
+:root{--bg:#070b16;--fg:#eef1ff;--mut:#9aa3c7;--c:#7c5cff;--c2:#42d7ff;--ok:#3ddc97;--ko:#ff6b6b;--card:#ffffff0f;--bd:#ffffff22}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{background:radial-gradient(1200px 700px at 78% -10%,#2a1a7a55,transparent),radial-gradient(900px 600px at -10% 110%,#0b3a6a55,transparent),var(--bg);color:var(--fg);font:16px/1.5 system-ui,"Segoe UI",Ubuntu,sans-serif;overflow:hidden}
+#fond{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+#app{position:relative;z-index:1;height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:14px;padding:14px 26px;border-bottom:1px solid var(--bd);backdrop-filter:blur(8px);background:#070b1688}
+header b{font-size:20px;letter-spacing:3px}header .v{color:var(--mut);font-size:13px}
+nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+nav a{color:var(--mut);text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid transparent;font-size:14px;cursor:pointer}
+nav a:hover{color:#fff;border-color:var(--bd)}nav a.on{color:#fff;background:linear-gradient(135deg,var(--c),#4a38c8)}
+main{flex:1;overflow:auto;padding:26px;display:flex;justify-content:center}
+.col{width:min(980px,100%)}
+h1{margin:.2em 0 .1em;font-size:30px}h2{margin:0 0 8px;font-size:19px}p{color:var(--mut);margin:.3em 0 .8em}
+.carte{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px 20px;margin:14px 0;backdrop-filter:blur(10px)}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tuile{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;color:var(--fg);cursor:pointer;font:inherit;transition:.15s}
+.tuile:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 8px 28px #7c5cff33}
+.tuile .i{font-size:26px}.tuile small{color:var(--mut)}
+button.b,a.b{background:linear-gradient(135deg,var(--c),#4a38c8);color:#fff;border:0;border-radius:12px;padding:10px 18px;font:600 15px inherit;cursor:pointer;text-decoration:none;display:inline-block}
+button.b.s{background:#ffffff14;border:1px solid var(--bd)}button.b.r{background:linear-gradient(135deg,#e5484d,#a52a3a)}
+button.b:disabled{opacity:.45;cursor:not-allowed}
+input,select{background:#0b0f20;color:var(--fg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;font:inherit;min-width:0}
+.rang{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid var(--bd);font-size:12.5px;color:var(--mut)}
+.ok{color:var(--ok)}.ko{color:var(--ko)}
+.etapes{display:flex;gap:6px;margin:6px 0 16px}.etapes i{flex:1;height:5px;border-radius:9px;background:#ffffff1c}.etapes i.f{background:linear-gradient(90deg,var(--c),var(--c2))}
+.liste>div{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid #ffffff14;align-items:center}
+.liste>div:first-child{border-top:0}
+.journal{background:#03050c;border:1px solid var(--bd);border-radius:12px;padding:12px;font:12.5px/1.45 ui-monospace,monospace;white-space:pre-wrap;max-height:240px;overflow:auto;color:#b9c3ff}
+.grand{font-size:44px;font-weight:800;letter-spacing:4px;margin:0}
+.hero{text-align:center;padding:30px 0 10px}
+.touche{display:inline-block;border:1px solid var(--bd);border-bottom-width:3px;border-radius:8px;padding:1px 9px;background:#ffffff12;font-size:14px}
+@media(max-width:700px){header{flex-wrap:wrap}nav{margin-left:0}main{padding:14px}}
+</style></head><body>
+<canvas id="fond"></canvas>
+<div id="app"><header><b>CLIPIA&nbsp;OS</b><span class="v" id="ver"></span>
+<nav><a href="#/bureau" data-r="bureau">Accueil</a><a href="#/reglages" data-r="reglages">Réglages</a><a href="#/installer" data-r="installer" id="nav-inst">Installer</a><a href="#/bienvenue" data-r="bienvenue">Découvrir</a></nav></header>
+<main><div class="col" id="vue"></div></main></div>
+<script>
+const $=(s,r=document)=>r.querySelector(s),esc=t=>String(t??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const H={'x-clipia-accord':'1','content-type':'application/json'};
+const api=async(p,o={})=>{const r=await fetch(p,{...o,headers:{...(o.method==='POST'?H:{}),...(o.headers||{})}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.erreur||('Erreur '+r.status));return j};
+const post=(p,b={})=>api(p,{method:'POST',body:JSON.stringify(b)});
+const go=(n)=>{ $('#vue').dataset.n=n; };
+const taille=o=>o>=1e12?(o/1e12).toFixed(1)+' To':o>=1e9?(o/1e9).toFixed(1)+' Go':(o/1e6|0)+' Mo';
+
+/* ───────── Fond 3D : sphère de points, anneaux orbitaux, étoiles (canvas 2D, fonctionne sans GPU) ───────── */
+const cv=$('#fond'),cx=cv.getContext('2d');let W,Hh,DPR=Math.min(devicePixelRatio||1,2);
+const PT=[];{const N=900,g=Math.PI*(3-Math.sqrt(5));for(let i=0;i<N;i++){const y=1-2*i/(N-1),r=Math.sqrt(1-y*y),t=g*i;PT.push([Math.cos(t)*r,y,Math.sin(t)*r])}}
+const ET=Array.from({length:110},()=>[Math.random(),Math.random(),Math.random()*1.4+.3,Math.random()*6]);
+let ang=0,mode='calme',puls=0,cible={x:.74,y:.34,r:.2},cour={x:.74,y:.34,r:.2};
+window.sphere=(m)=>{mode=m||'calme'};window.positionSphere=(x,y,r)=>{cible={x,y,r}};
+function taillefond(){W=cv.width=innerWidth*DPR;Hh=cv.height=innerHeight*DPR}addEventListener('resize',taillefond);taillefond();
+function dessin(t){
+  cx.clearRect(0,0,W,Hh);const v=mode==='travail'?2.6:mode==='ecoute'?1.8:1;ang+=.0045*v;puls=Math.sin(t/(mode==='calme'?900:350));
+  for(const k of['x','y','r'])cour[k]+=(cible[k]-cour[k])*.06;
+  for(const e of ET){const a=.25+.35*Math.abs(Math.sin(t/1200+e[3]));cx.fillStyle=`rgba(190,200,255,${a})`;cx.fillRect(e[0]*W,e[1]*Hh,e[2]*DPR,e[2]*DPR)}
+  const R=cour.r*Math.min(W,Hh)*(1+.025*puls),X=cour.x*W,Y=cour.y*Hh;
+  const ca=Math.cos(ang),sa=Math.sin(ang),cb=Math.cos(.45),sb=Math.sin(.45);
+  const g=cx.createRadialGradient(X,Y,R*.2,X,Y,R*2);g.addColorStop(0,mode==='ecoute'?'rgba(255,154,92,.28)':'rgba(124,92,255,.28)');g.addColorStop(1,'rgba(124,92,255,0)');cx.fillStyle=g;cx.fillRect(X-R*2,Y-R*2,R*4,R*4);
+  const pts=PT.map(p=>{let x=p[0]*ca+p[2]*sa,z=-p[0]*sa+p[2]*ca,y=p[1];const y2=y*cb-z*sb,z2=y*sb+z*cb;return[x,y2,z2]}).sort((a,b)=>a[2]-b[2]);
+  for(const p of pts){const f=1/(1.9-p[2]*.6),px=X+p[0]*R*f*1.5,py=Y+p[1]*R*f*1.5,l=(p[2]+1)/2;
+    const c=mode==='ecoute'?`rgba(${255},${150+l*80|0},${90+l*60|0},${.25+l*.75})`:`rgba(${120+l*90|0},${110+l*110|0},255,${.2+l*.8})`;
+    cx.fillStyle=c;const s=(1.1+l*2.2)*DPR;cx.beginPath();cx.arc(px,py,s*.55,0,6.3);cx.fill()}
+  for(let k=0;k<3;k++){cx.save();cx.translate(X,Y);cx.rotate(ang*(k%2?-1:1)*.7+k*1.1);cx.scale(1,[.28,.4,.2][k]);cx.strokeStyle=['rgba(203,191,255,.55)','rgba(127,176,255,.45)','rgba(255,154,213,.4)'][k];cx.lineWidth=1.4*DPR;cx.beginPath();cx.arc(0,0,R*(1.35+k*.18),0,6.3);cx.stroke();cx.restore()}
+  requestAnimationFrame(dessin)}
+requestAnimationFrame(dessin);
+
+/* ───────── Pages ───────── */
+let E=null;
+const TUILES=[['clipia','🧠','Clipia','Ton assistant IA (fenêtre principale)'],['epiphany','🌐','Navigateur Web','Epiphany : rapide et léger'],['falkon','🧭','Navigateur Falkon','Moteur Chromium, extensions'],['fichiers','📁','Fichiers','Explorateur Thunar'],['terminal','⌨️','Terminal','Ligne de commande'],['editeur','📝','Éditeur de texte','Mousepad'],['reseau','📶','Réseau avancé','Wi-Fi, VPN, câble'],['son','🔊','Son','Volumes et sorties'],['pilotes','🧩','Pilotes','Détecter le matériel']];
+function appli(a){post('/api/os/lancer',{app:a}).catch(e=>alert(e.message))}
+window.appli=appli;
+async function charger(){try{E=await api('/api/os/etat')}catch{E={os:false}}
+  $('#ver').textContent=E.os?E.nom:'';$('#nav-inst').style.display=E.os&&E.live?'':'none'}
+
+const VUES={
+bureau(v){
+  v.innerHTML=`<div class="hero"><p class="grand">CLIPIA&nbsp;OS</p><p>${E.live?'Mode live : tu essaies le système sans rien installer.':'Système installé sur ce disque.'} Dis ou écris ce que tu veux à Clipia, ou ouvre une application ci-dessous.</p></div>
+  <div class="grille">${TUILES.map(t=>`<button class="tuile" onclick="appli('${t[0]}')"><span class="i">${t[1]}</span><b>${t[2]}</b><small>${t[3]}</small></button>`).join('')}</div>
+  <div class="carte rang" style="justify-content:space-between"><div><h2>Réseau : <span class="${E.reseau==='full'?'ok':'ko'}">${E.reseau==='full'?'connecté à Internet':'pas d’Internet'}</span></h2><span class="tag">${esc(E.connexions.map(c=>c.split(':')[1]).join(', ')||'aucune connexion')}</span> <span class="tag">${E.uefi?'UEFI':'BIOS'}</span> <span class="tag">${E.coeurs} cœurs · ${taille(E.ram)} RAM</span></div>
+  <div class="rang"><button class="b" onclick="location.hash='#/reglages'">Réglages</button>${E.live?'<button class="b s" onclick="location.hash=\'#/installer\'">Installer sur le disque</button>':''}</div></div>
+  <p>Astuce : appuie sur la <span class="touche">barre d’espace</span> dans Clipia pour lui parler, et à nouveau pour l’interrompre.</p>`;
+  positionSphere(.9,.2,.075);sphere('calme')},
+
+async reglages(v){
+  v.innerHTML=`<h1>Réglages</h1><p>Tout ce qu’il faut pour utiliser Clipia OS comme un vrai système.</p><div id="rg"></div>`;positionSphere(.86,.2,.09);sphere('calme');
+  const R=$('#rg');
+  const aff=()=>{R.innerHTML=`
+  <div class="carte"><h2>📶 Réseau</h2><div class="rang"><span class="${E.reseau==='full'?'ok':'ko'}">${E.reseau==='full'?'● Connecté à Internet':'● Pas d’Internet'}</span>${E.connexions.map(c=>`<span class="tag">${esc(c.split(':')[1]||c)}</span>`).join('')}</div>
+    <div class="rang"><button class="b s" id="wf">Chercher les réseaux Wi-Fi</button><button class="b s" onclick="appli('reseau')">Réseau avancé (VPN, IP…)</button></div><div id="wfl" class="liste"></div></div>
+  <div class="carte"><h2>⌨️ Clavier, heure, nom</h2><div class="rang"><label>Clavier <select id="kb">${Object.entries(E.claviers).map(([k,n])=>`<option value="${k}"${k===E.clavier?' selected':''}>${n}</option>`).join('')}</select></label>
+    <label>Fuseau <input id="fz" value="${esc(E.fuseau)}" size="20"></label><label>Nom de l’ordinateur <input id="nm" value="${esc(E.machine)}" size="14"></label><button class="b" id="ap">Appliquer</button></div><span id="ms" class="tag" style="display:none"></span></div>
+  <div class="carte"><h2>🔊 Son</h2><div class="rang"><input type="range" id="vol" min="0" max="100" value="70" style="width:260px"><span id="volv">70 %</span><button class="b s" onclick="appli('son')">Mixeur détaillé</button></div></div>
+  <div class="carte"><h2>🛡️ Autorisations de Clipia</h2>
+    <p>Dans Clipia OS, Clipia tourne comme administrateur de la machine : elle peut installer des logiciels, gérer les fichiers, le réseau et les services. Chaque action sensible (suppression, installation, droits administrateur, envoi de données) <b>te demande ton accord à l’écran</b> ; les clés, mots de passe et fichiers système critiques restent fermés quoi qu’il arrive.</p>
+    <div class="liste"><div><div><b>Accès à tout le disque</b><br><small>Sinon : ton dossier personnel et les dossiers que tu ouvres.</small></div><label><input type="checkbox" id="ac"${E.accesComplet?' checked':''}> activé</label></div>
+    <div><div><b>Lecture seule</b><br><small>Clipia peut lire mais plus rien modifier.</small></div><label><input type="checkbox" id="ls"${E.lectureSeule?' checked':''}> activé</label></div></div></div>
+  <div class="carte"><h2>💾 Stockage</h2><p>${E.live?(E.sansPersistance?'<span class="ko">Données NON conservées</span> : pas assez de place libre sur la clé.':'<span class="ok">Données conservées</span> sur la clé (partition CLIPIA-DATA) : Clipia retrouve sa mémoire à chaque démarrage.'):'Système installé : données sur le disque.'} Libre : <b>${taille(E.stockage.dispo)}</b> sur ${taille(E.stockage.taille)}.</p>
+    ${E.live?'<button class="b" onclick="location.hash=\'#/installer\'">Installer Clipia OS sur le disque…</button>':''}</div>
+  <div class="carte"><h2>ℹ️ À propos</h2><p>${esc(E.nom)} · base Ubuntu 24.04 LTS · ${esc(E.cpu)}<br>Mode : ${E.live?'live (clé / ISO)':'installé'} · démarrage ${E.uefi?'UEFI':'BIOS'}</p>
+    <div class="rang"><button class="b s" onclick="location.hash='#/bienvenue'">Revoir la visite</button><button class="b s" id="rb">Redémarrer</button><button class="b r" id="ex">Éteindre</button></div></div>`;
+  const ms=t=>{const m=$('#ms');m.style.display='';m.textContent=t};
+  $('#ap').onclick=async()=>{try{await post('/api/os/clavier',{disposition:$('#kb').value});await post('/api/os/fuseau',{zone:$('#fz').value.trim()});await post('/api/os/nom',{nom:$('#nm').value.trim()});ms('✓ Appliqué')}catch(e){ms('⚠ '+e.message)}};
+  $('#vol').oninput=e=>{$('#volv').textContent=e.target.value+' %';post('/api/os/volume',{pct:+e.target.value}).catch(()=>{})};
+  const acc=async()=>{try{await post('/api/os/acces',{complet:$('#ac').checked,lectureSeule:$('#ls').checked})}catch(e){alert(e.message)}};$('#ac').onchange=acc;$('#ls').onchange=acc;
+  $('#rb').onclick=()=>confirm('Redémarrer maintenant ?')&&post('/api/os/alimentation',{action:'redemarrer'});$('#ex').onclick=()=>confirm('Éteindre maintenant ?')&&post('/api/os/alimentation',{action:'eteindre'});
+  $('#wf').onclick=async()=>{const z=$('#wfl');z.innerHTML='<p>Recherche…</p>';try{const r=await api('/api/os/wifi');z.innerHTML=r.reseaux.length?r.reseaux.map(n=>`<div><span><b>${esc(n.ssid)}</b> <span class="tag">${n.signal}%</span> <span class="tag">${esc(n.securite)}</span>${n.connecte?' <span class="ok">connecté</span>':''}</span><button class="b s" data-s="${esc(n.ssid)}" data-o="${n.securite==='ouvert'||n.securite==='--'?1:0}">Se connecter</button></div>`).join(''):'<p>Aucun réseau Wi-Fi détecté (carte Wi-Fi absente ? utilise un câble ou une machine virtuelle avec réseau).</p>';
+    z.querySelectorAll('button').forEach(b=>b.onclick=async()=>{let mdp='';if(b.dataset.o!=='1'){mdp=prompt('Mot de passe du Wi-Fi « '+b.dataset.s+' » (saisi sur cet ordinateur uniquement)');if(mdp===null)return}b.textContent='Connexion…';try{await post('/api/os/wifi',{ssid:b.dataset.s,motdepasse:mdp});await charger();aff()}catch(e){b.textContent='Se connecter';alert(e.message)}})}catch(e){z.innerHTML='<p class="ko">'+esc(e.message)+'</p>'}};
+  };aff()},
+
+async installer(v){
+  if(!E.live){v.innerHTML=`<h1>Installer</h1><div class="carte"><p>Ce système est déjà installé sur le disque (ou tourne hors mode live).</p></div>`;return}
+  positionSphere(.9,.2,.075);sphere('calme');
+  let etape=0,D=[],S={disque:'',clavier:E.clavier,fuseau:E.fuseau,nom:'clipia-os'},poll=null;
+  const NOM=['Bienvenue','Disque','Options','Confirmation','Installation'];
+  const rendre=()=>{
+    const barre=`<div class="etapes">${NOM.map((_,i)=>`<i class="${i<=etape?'f':''}"></i>`).join('')}</div>`;
+    if(etape===0)v.innerHTML=`<h1>Installer Clipia OS</h1>${barre}<div class="carte"><p>Clipia OS va être copié sur un disque de cet ordinateur (ou d’une machine virtuelle) pour démarrer sans clé USB. Compte environ 10 à 20 minutes.</p>
+      <p><b class="ko">⚠ Le disque choisi sera entièrement effacé.</b> Cette installation ne conserve pas Windows ni macOS sur ce disque : pour un double démarrage, ou pour essayer sans risque, utilise le mode live ou une machine virtuelle.</p>
+      <p>Il te faut : un disque d’au moins 10 Go (20 Go conseillés), de préférence branché sur secteur. Secure Boot désactivé. Processeur x86-64 (Intel/AMD).</p>
+      <button class="b" id="n">Continuer</button></div>`;
+    if(etape===1)v.innerHTML=`<h1>Choisis le disque</h1>${barre}<div class="carte"><div class="liste" id="dl">${D.length?D.map(d=>`<div><label><input type="radio" name="d" value="${esc(d.nom)}"${S.disque===d.nom?' checked':''}> <b>${esc(d.modele)}</b> <span class="tag">${esc(d.nom)}</span> <span class="tag">${taille(d.taille)}</span> ${d.amovible?'<span class="tag">amovible / USB</span>':''}</label></div>`).join(''):'<p class="ko">Aucun disque disponible. Dans une machine virtuelle, ajoute un disque dur virtuel d’au moins 12 Go (20 conseillés).</p>'}</div>
+      <p class="tag">La clé ou l’ISO de démarrage n’apparaît jamais dans cette liste.</p><div class="rang"><button class="b s" id="p">Retour</button><button class="b" id="n"${S.disque?'':' disabled'}>Continuer</button></div></div>`;
+    if(etape===2)v.innerHTML=`<h1>Options</h1>${barre}<div class="carte"><div class="rang"><label>Clavier <select id="kb">${Object.entries(E.claviers).map(([k,n])=>`<option value="${k}"${k===S.clavier?' selected':''}>${n}</option>`).join('')}</select></label><label>Fuseau <input id="fz" value="${esc(S.fuseau)}"></label><label>Nom de l’ordinateur <input id="nm" value="${esc(S.nom)}"></label></div>
+      <p>Aucun mot de passe n’est demandé : la session s’ouvre automatiquement (tu pourras en ajouter un dans le terminal avec <code>passwd</code>).</p><div class="rang"><button class="b s" id="p">Retour</button><button class="b" id="n">Continuer</button></div></div>`;
+    if(etape===3){const d=D.find(x=>x.nom===S.disque);v.innerHTML=`<h1>Dernière vérification</h1>${barre}<div class="carte"><p>Tout le contenu de <b>${esc(d?.modele)} (${esc(S.disque)}, ${taille(d?.taille||0)})</b> va être <b class="ko">définitivement effacé</b>.</p><p>Pour confirmer, tape <b>EFFACER</b> :</p><div class="rang"><input id="cf" placeholder="EFFACER" autocomplete="off"><button class="b s" id="p">Retour</button><button class="b r" id="go" disabled>Installer maintenant</button></div></div>`}
+    if(etape===4)v.innerHTML=`<h1>Installation en cours…</h1>${barre}<div class="carte"><p id="st">Copie du système. Ne coupe pas l’ordinateur.</p><div class="journal" id="jr">…</div><div id="fin"></div></div>`;
+    const n=$('#n'),p=$('#p');if(p)p.onclick=()=>{etape--;rendre()};
+    if(etape===0)n.onclick=async()=>{D=(await api('/api/os/disques')).disques;etape=1;rendre()};
+    if(etape===1){v.querySelectorAll('input[name=d]').forEach(r=>r.onchange=()=>{S.disque=r.value;$('#n').disabled=false});n.onclick=()=>{etape=2;rendre()}}
+    if(etape===2)n.onclick=()=>{S.clavier=$('#kb').value;S.fuseau=$('#fz').value.trim();S.nom=$('#nm').value.trim();etape=3;rendre()};
+    if(etape===3){$('#cf').oninput=e=>$('#go').disabled=e.target.value!=='EFFACER';$('#go').onclick=async()=>{try{await post('/api/os/installer',{disque:S.disque,confirmation:'EFFACER',clavier:S.clavier,fuseau:S.fuseau,nom:S.nom});etape=4;rendre();sphere('travail');suivi()}catch(e){alert(e.message)}}}
+  };
+  const suivi=()=>{poll=setInterval(async()=>{if(!$('#jr')){clearInterval(poll);return}try{const s=await api('/api/os/installer/etat');$('#jr').textContent=s.journal.join('\n');$('#jr').scrollTop=1e9;
+    if(s.fini){clearInterval(poll);sphere('calme');$('#st').innerHTML=s.reussi?'<b class="ok">✓ Installation terminée.</b>':'<b class="ko">✗ L’installation a échoué (voir le journal).</b>';$('#fin').innerHTML=s.reussi?'<p>Retire la clé USB ou l’ISO, puis redémarre : Clipia OS démarre depuis le disque.</p><button class="b" id="rb">Redémarrer</button>':'';const r=$('#rb');if(r)r.onclick=()=>post('/api/os/alimentation',{action:'redemarrer'})}}catch{}},1500)};
+  rendre()},
+
+bienvenue(v){
+  const P=[
+   ['Bienvenue dans Clipia OS','Un vrai système d’exploitation, bâti sur Ubuntu, dont Clipia est le cerveau. Tu peux tout faire à la voix ou au clavier : ouvrir des applications, gérer tes fichiers, créer des clips, publier, automatiser. Cette visite prend deux minutes.','calme'],
+   ['Parle à Clipia','Dans la fenêtre Clipia, touche la sphère pour lui parler, ou appuie sur la barre d’espace : Clipia se met en pause et t’écoute. Rappuie sur espace à tout moment pour l’interrompre.','ecoute'],
+   ['Connecte Internet','Câble : rien à faire. Wi-Fi : Réglages › Réseau › Chercher les réseaux. Sans Internet, Clipia peut travailler hors ligne avec Ollama (modèle IA local à installer une fois).','calme'],
+   ['Donne-lui un cerveau','Dans Clipia, onglet Réglages : colle ta clé Groq gratuite (console.groq.com/keys) puis « Tester et activer », ou installe un modèle local. Tes clés restent sur cet ordinateur, jamais dans une conversation.','travail'],
+   ['Ses autorisations','Clipia peut agir sur toute la machine : fichiers, logiciels, réseau, services. Mais chaque action sensible te demande ton accord, et les clés et fichiers système critiques restent fermés. Tu règles tout dans Réglages › Autorisations.','calme'],
+   ['Tes applications','Navigateurs Epiphany et Falkon, fichiers, terminal, éditeur, son, pilotes : tout est dans l’Accueil. Pour garder Clipia sur ce PC, installe-la sur le disque (Installer) ; tu peux aussi rester en live sur ta clé : tes données sont conservées dans l’espace libre.','calme']];
+  let i=0;
+  const r=()=>{const p=P[i];v.innerHTML=`<div class="hero"><p class="grand">${esc(p[0])}</p></div><div class="etapes">${P.map((_,k)=>`<i class="${k<=i?'f':''}"></i>`).join('')}</div><div class="carte" style="font-size:18px"><p style="color:var(--fg)">${esc(p[1])}</p></div>
+   <div class="rang" style="justify-content:space-between"><button class="b s" id="p"${i?'':' disabled'}>Précédent</button><button class="b" id="n">${i<P.length-1?'Suivant':'Terminer'}</button></div>`;
+   positionSphere(i%2?.2:.8,.3,.17);sphere(p[2]);
+   $('#p').onclick=()=>{i--;r()};$('#n').onclick=async()=>{if(i<P.length-1){i++;r()}else{await post('/api/os/bienvenue-fait').catch(()=>{});location.hash='#/bureau'}}};r()}
+};
+
+async function route(){await charger();const r=(location.hash.slice(2)||'bureau').split('/')[0];const v=$('#vue');
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.r===r));
+  if(!E.os){v.innerHTML='<div class="carte"><h1>Clipia OS</h1><p>Cette page se contrôle depuis Clipia OS. Télécharge l’image ISO sur le site pour l’essayer dans une machine virtuelle ou sur un PC.</p></div>';return}
+  (VUES[r]||VUES.bureau)(v)}
+addEventListener('hashchange',route);route();
+</script></body></html>

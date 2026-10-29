@@ -1,0 +1,2 @@
+# lancé depuis ~/.bash_profile
+if [ "$(tty)" = "/dev/tty1" ]; then exec /usr/local/bin/clipia-ecran; fi

@@ -1,0 +1,20 @@
+[Unit]
+Description=Clipia — studio créatif IA et cerveau du système
+After=clipia-persistance.service network.target
+Requires=clipia-persistance.service
+
+[Service]
+User=clipia
+Group=clipia
+WorkingDirectory=/opt/clipia/app
+Environment=CLIPIA_DATA_DIR=/var/lib/clipia/data
+Environment=OLLAMA_MODELS=/var/lib/clipia/ollama
+Environment=CLIPIA_OS=1
+Environment=PORT=8787
+Environment=HOST=127.0.0.1
+ExecStart=/opt/clipia/runtime/node /opt/clipia/app/server/index.js
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

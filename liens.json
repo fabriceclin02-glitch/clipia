@@ -43,6 +43,51 @@
       "taille": "iPhone, iPad et Android"
     },
     "os": {
+      "nom": "Clipia-OS-4.0.iso (11 parties, à recoller)",
+      "parties": [
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part00"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part01"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part02"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part03"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part04"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part05"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part06"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part07"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part08"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part09"
+        },
+        {
+          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part10"
+        }
+      ],
+      "taille": "1,06 Go en 11 parties",
+      "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
+    },
+    "android": {
+      "nom": "Clipia-3.1.0.apk",
+      "url": "telechargements/Clipia-3.1.0.apk",
+      "taille": "3 Mo"
+    },
+    "os3": {
       "nom": "Clipia-USB.iso.zip (4 parties)",
       "parties": [
         {
@@ -60,11 +105,6 @@
       ],
       "taille": "262 Mo en 4 parties",
       "sha256": "09dd5bc29074ec5008a03cb62b30418c70339326c8467b476a8249661fd7abba"
-    },
-    "android": {
-      "nom": "Clipia-3.1.0.apk",
-      "url": "telechargements/Clipia-3.1.0.apk",
-      "taille": "3 Mo"
     }
   },
   "anciennes": [

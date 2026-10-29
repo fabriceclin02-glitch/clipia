@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Clipia OS — accueil
+Exec=/usr/local/bin/clipia-accueil
+X-GNOME-Autostart-enabled=true

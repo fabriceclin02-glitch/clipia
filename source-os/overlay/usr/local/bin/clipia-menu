@@ -1,0 +1,33 @@
+#!/bin/bash
+# Menu texte de Clipia OS (secours et maintenance).
+while true; do
+  clear
+  echo "=========================================="
+  echo "   CLIPIA OS — menu"
+  echo "=========================================="
+  etat=$(curl -fs -m 3 http://127.0.0.1:8787/api/auto >/dev/null 2>&1 && echo "en marche" || echo "ARRÊTÉ")
+  echo "   Clipia : $etat   |   adresse : http://127.0.0.1:8787"
+  [ -e /run/clipia-sans-persistance ] && echo "   ⚠ Tes données ne seront PAS conservées (pas de partition de données)."
+  echo
+  echo "   1) Ouvrir l'interface Clipia (plein écran)"
+  echo "   2) Réseau (Wi-Fi / câble)"
+  echo "   3) Installer Ollama (modèles IA gratuits hors ligne, nécessite Internet)"
+  echo "   4) Conseils du système (analyse et améliorations)"
+  echo "   5) Installer Clipia OS sur le disque de cet ordinateur"
+  echo "   6) Clavier (fr / us / be / ch / de / es)"
+  echo "   7) Terminal"
+  echo "   8) Redémarrer      9) Éteindre"
+  echo
+  read -rp "   Ton choix : " c
+  case "$c" in
+    1) CLIPIA_SANS_ECRAN= exec /usr/local/bin/clipia-ecran ;;
+    2) sudo nmtui ;;
+    3) sudo sh -c 'curl -fsSL https://ollama.com/install.sh | sh' ; read -rp "Entrée pour revenir…" _ ;;
+    4) curl -fs -m 20 -X POST http://127.0.0.1:8787/api/systeme/conseil | sed 's/\\n/\n/g;s/","modele.*//;s/{"texte":"//' | less; ;;
+    5) sudo clipia-installer-disque ;;
+    6) read -rp "Disposition (fr/us/be/ch/de/es) : " l; sudo sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$l\"/" /etc/default/keyboard; sudo loadkeys "$l" 2>/dev/null; read -rp "Appliqué. Entrée…" _ ;;
+    7) bash ;;
+    8) sudo systemctl reboot ;;
+    9) sudo systemctl poweroff ;;
+  esac
+done

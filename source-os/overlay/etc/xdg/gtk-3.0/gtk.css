@@ -1,0 +1,9 @@
+/* Clipia OS — accents violet/bleu */
+@define-color theme_selected_bg_color #7c5cff;
+@define-color theme_selected_fg_color #ffffff;
+@define-color selected_bg_color #7c5cff;
+@define-color accent_bg_color #7c5cff;
+selection, *:selected, row:selected, .view:selected, textview text selection, entry selection { background-color:#7c5cff; color:#ffffff; }
+progressbar progress, scale highlight, scale trough highlight, switch:checked, check:checked, radio:checked, notebook tab:checked { background-color:#7c5cff; background-image:none; border-color:#6a4cf0; }
+button.suggested-action, button.default { background-image:linear-gradient(135deg,#7c5cff,#2f8cff); color:#fff; border-color:#5b55ff; }
+*:focus { outline-color:#7c5cffaa; }

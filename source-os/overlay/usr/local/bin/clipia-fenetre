@@ -1,0 +1,7 @@
+#!/bin/bash
+# Ouvre Clipia dans sa propre fenêtre (navigateur en mode application).
+for i in $(seq 1 40); do curl -fs -m 2 http://127.0.0.1:8787/api/auto >/dev/null 2>&1 && break; sleep 1; done
+GSK_RENDERER=cairo GDK_BACKEND=x11 WEBKIT_DISABLE_COMPOSITING_MODE=1 WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1 epiphany http://127.0.0.1:8787 &
+pid=$!
+if [ "${1:-}" = "--maximise" ]; then sleep 5; wmctrl -r "Clipia" -b add,maximized_vert,maximized_horz 2>/dev/null; fi
+wait $pid

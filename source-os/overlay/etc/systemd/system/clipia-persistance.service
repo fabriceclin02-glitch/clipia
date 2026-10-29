@@ -1,0 +1,13 @@
+[Unit]
+Description=Clipia OS — données persistantes
+DefaultDependencies=no
+After=local-fs.target systemd-udevd.service
+Before=clipia.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/clipia-persistance
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Clipia OS
+Description=Orbe 3D de Clipia
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/clipia
+ScriptFile=/usr/share/plymouth/themes/clipia/clipia.script

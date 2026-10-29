@@ -1,0 +1,6 @@
+#!/bin/bash
+# Applique le fond d'écran Clipia (3 essais : Xfce n'est pas toujours prêt au premier appel).
+F=/usr/share/backgrounds/clipia/fond.jpg
+for i in 1 2 3 4 5; do sleep 2
+  for p in $(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep -E '/last-image$'); do xfconf-query -c xfce4-desktop -p "$p" -s "$F" 2>/dev/null; xfconf-query -c xfce4-desktop -p "${p%last-image}image-style" -n -t int -s 5 2>/dev/null || xfconf-query -c xfce4-desktop -p "${p%last-image}image-style" -s 5 2>/dev/null; done
+done

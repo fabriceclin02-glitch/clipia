@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Accueil Clipia OS
+Comment=Applications, visite guidée et état du système
+Exec=epiphany --new-window http://127.0.0.1:8787/os.html#/bureau
+Icon=clipia
+Categories=System;

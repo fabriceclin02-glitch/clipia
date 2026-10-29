@@ -1,0 +1,71 @@
+#!/bin/bash
+# Clipia OS — installation sur un disque interne.
+# EFFACE le disque choisi. Demande une confirmation explicite. Ne propose jamais la clé de démarrage.
+# Mode automatique (tests) : CLIPIA_INSTALL_AUTO=/dev/xxx CLIPIA_INSTALL_CONFIRME=EFFACER
+set -u
+[ "$(id -u)" = 0 ] || exec sudo "$0" "$@"
+LOG=/var/log/clipia-installation.log; exec > >(tee -a "$LOG") 2>&1
+die() { echo; echo "✗ $*"; exit 1; }
+live=$(findmnt -n -o SOURCE /cdrom 2>/dev/null); livedisk=""
+[ -n "$live" ] && livedisk=/dev/$(lsblk -no PKNAME "$live" 2>/dev/null | head -1)
+[ -d /rofs ] || die "Cette installation se lance depuis la clé Clipia OS (système live)."
+
+echo "== Installer Clipia OS sur un disque =="
+echo "Disques disponibles (la clé de démarrage est exclue) :"
+mapfile -t L < <(lsblk -dpno NAME,SIZE,MODEL,TYPE | awk '$NF=="disk"{print}' | grep -v "^$livedisk " | grep -vE "^/dev/(loop|ram|sr)")
+[ ${#L[@]} -gt 0 ] || die "Aucun disque trouvé."
+printf '  %s\n' "${L[@]}"
+if [ -n "${CLIPIA_INSTALL_AUTO:-}" ]; then D=$CLIPIA_INSTALL_AUTO; else read -rp "Disque à installer (ex. /dev/sda) : " D; fi
+[ "$D" = "$livedisk" ] && die "C'est la clé de démarrage : refusé."
+lsblk -dpno NAME "$D" >/dev/null 2>&1 || die "Disque inconnu : $D"
+[ "$(lsblk -dno TYPE "$D")" = disk ] || die "$D n'est pas un disque."
+echo; echo "⚠ TOUT le contenu de $D ($(lsblk -dno SIZE,MODEL "$D")) sera EFFACÉ. Aucun retour possible."
+echo "  Contenu actuel :"; lsblk -no NAME,SIZE,FSTYPE,LABEL "$D" | sed 's/^/    /'
+if [ -n "${CLIPIA_INSTALL_AUTO:-}" ]; then C=${CLIPIA_INSTALL_CONFIRME:-}; else read -rp "Pour confirmer, tape EFFACER : " C; fi
+[ "$C" = "EFFACER" ] || die "Annulé. Rien n'a été modifié."
+
+EFI=0; [ -d /sys/firmware/efi ] && EFI=1
+echo "• Partitionnement (GPT : BIOS-boot 2 Mio, ESP 512 Mio, système)…"
+swapoff -a 2>/dev/null; umount -R /mnt/clipia 2>/dev/null
+wipefs -a "$D" >/dev/null; sgdisk -Z "$D" >/dev/null
+sgdisk -n1:0:+2M -t1:ef02 -c1:bios "$D" >/dev/null && sgdisk -n2:0:+512M -t2:ef00 -c2:ESP "$D" >/dev/null && sgdisk -n3:0:0 -t3:8300 -c3:clipia "$D" >/dev/null || die "partitionnement impossible"
+partprobe "$D"; udevadm settle; sleep 1
+P=""; case "$D" in *nvme*|*mmcblk*|*loop*) P=p;; esac
+mkfs.vfat -F32 -n CLIPIA-EFI "${D}${P}2" >/dev/null && mkfs.ext4 -q -F -L clipia-os "${D}${P}3" || die "formatage impossible"
+mkdir -p /mnt/clipia && mount "${D}${P}3" /mnt/clipia && mkdir -p /mnt/clipia/boot/efi && mount "${D}${P}2" /mnt/clipia/boot/efi || die "montage impossible"
+
+echo "• Copie du système (quelques minutes)…"
+rsync -aHAX --info=progress2 --exclude='/proc/*' --exclude='/sys/*' --exclude='/dev/*' --exclude='/run/*' --exclude='/tmp/*' --exclude='/mnt/*' --exclude='/media/*' --exclude='/var/lib/clipia/*' --exclude='/cdrom' --exclude='/etc/fstab' /rofs/ /mnt/clipia/ 2>/dev/null || rsync -aHAX --exclude='/proc/*' --exclude='/sys/*' --exclude='/dev/*' --exclude='/run/*' --exclude='/tmp/*' --exclude='/mnt/*' --exclude='/var/lib/clipia/*' / /mnt/clipia/ || die "copie impossible"
+mkdir -p /mnt/clipia/{proc,sys,dev,run,tmp,mnt,media,var/lib/clipia/data,var/lib/clipia/ollama}; chmod 1777 /mnt/clipia/tmp
+UR=$(blkid -s UUID -o value "${D}${P}3"); UE=$(blkid -s UUID -o value "${D}${P}2")
+cat > /mnt/clipia/etc/fstab <<FS
+UUID=$UR / ext4 defaults,noatime 0 1
+UUID=$UE /boot/efi vfat umask=0077 0 2
+FS
+echo clipia-os > /mnt/clipia/etc/hostname
+echo "• Amorçage (GRUB)…"
+for m in dev dev/pts proc sys run; do mount --bind /$m /mnt/clipia/$m; done
+chroot /mnt/clipia chown -R clipia:clipia /var/lib/clipia /home/clipia
+chroot /mnt/clipia systemctl disable casper-md5check.service casper.service clipia-persistance.service clipia-diag.service >/dev/null 2>&1
+chroot /mnt/clipia sh -c 'update-initramfs -u -k all' >/dev/null 2>&1
+chroot /mnt/clipia grub-install --target=i386-pc --recheck "$D" >/dev/null 2>&1 && echo "  BIOS : ok" || echo "  BIOS : indisponible"
+chroot /mnt/clipia grub-install --target=x86_64-efi --efi-directory=/boot/efi --removable --no-nvram >/dev/null 2>&1 && echo "  UEFI : ok" || echo "  UEFI : indisponible"
+cat > /mnt/clipia/etc/default/grub <<'GR'
+GRUB_DEFAULT=0
+GRUB_TIMEOUT=2
+GRUB_DISTRIBUTOR="Clipia OS"
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"
+GRUB_CMDLINE_LINUX="console=tty0 console=ttyS0"
+GRUB_TERMINAL="console serial"
+GRUB_SERIAL_COMMAND="serial --speed=115200"
+GR
+chroot /mnt/clipia grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1 || die "grub-mkconfig a échoué"
+grep -q "linux.*root=" /mnt/clipia/boot/grub/grub.cfg || die "configuration GRUB sans noyau"
+# préférences choisies dans l'assistant graphique
+if [ -n "${CLIPIA_INSTALL_CLAVIER:-}" ]; then sed -i "s/^XKBLAYOUT=.*/XKBLAYOUT=\"$CLIPIA_INSTALL_CLAVIER\"/" /mnt/clipia/etc/default/keyboard; echo "KEYMAP=$CLIPIA_INSTALL_CLAVIER" > /mnt/clipia/etc/vconsole.conf; fi
+if [ -n "${CLIPIA_INSTALL_FUSEAU:-}" ] && [ -e "/mnt/clipia/usr/share/zoneinfo/$CLIPIA_INSTALL_FUSEAU" ]; then echo "$CLIPIA_INSTALL_FUSEAU" > /mnt/clipia/etc/timezone; ln -sf "/usr/share/zoneinfo/$CLIPIA_INSTALL_FUSEAU" /mnt/clipia/etc/localtime; fi
+if [ -n "${CLIPIA_INSTALL_NOM:-}" ]; then echo "$CLIPIA_INSTALL_NOM" > /mnt/clipia/etc/hostname; printf '127.0.0.1 localhost\n127.0.1.1 %s\n' "$CLIPIA_INSTALL_NOM" > /mnt/clipia/etc/hosts; fi
+touch /mnt/clipia/etc/clipia-installe
+for m in run sys proc dev/pts dev; do umount /mnt/clipia/$m 2>/dev/null; done
+umount /mnt/clipia/boot/efi; umount /mnt/clipia; sync
+echo; echo "✓ Clipia OS est installé sur $D. Retire la clé USB puis redémarre."

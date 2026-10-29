@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Installer Clipia OS sur le disque
+Comment=Assistant d'installation (efface le disque choisi)
+Exec=epiphany --new-window http://127.0.0.1:8787/os.html#/installer
+Icon=system-software-install
+Categories=System;

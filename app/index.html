@@ -165,7 +165,7 @@ input[type=range]{width:100%;accent-color:var(--violet);margin-bottom:6px}
 
   <div class="fil" id="fil">
     <div class="accueil" id="accueil">
-      <img src="icones/clipia-512.png" alt="">
+      <canvas id="orb3d" width="440" height="440" style="width:220px;height:220px;display:block;margin:0 auto" aria-label="Clipia"></canvas>
       <h1>Bonjour, je suis Clipia</h1>
       <p>Votre studio créatif et assistant IA. Écrivez-moi, ou appuyez sur le micro et parlons normalement.</p>
       <div class="idees">
@@ -895,6 +895,18 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
+</script>
+<script>
+/* Sphère 3D de Clipia (canvas 2D : fonctionne sans GPU) — réagit à l'état affiché (écoute / réflexion). */
+(function(){const cv=document.getElementById('orb3d');if(!cv)return;const cx=cv.getContext('2d'),S=440,P=[];
+const g=Math.PI*(3-Math.sqrt(5));for(let i=0;i<520;i++){const y=1-2*i/519,r=Math.sqrt(1-y*y),t=g*i;P.push([Math.cos(t)*r,y,Math.sin(t)*r])}
+let a=0,m='calme';const et=document.getElementById('etatTexte');
+if(et)new MutationObserver(()=>{const t=(et.textContent||'').toLowerCase();m=/écoute|ecoute/.test(t)?'ecoute':/réfl|pense|travaill|génèr/.test(t)?'travail':/parl/.test(t)?'parle':'calme'}).observe(et,{childList:true,characterData:true,subtree:true});
+function d(t){cx.clearRect(0,0,S,S);const v=m==='travail'?2.6:m==='ecoute'?1.8:1;a+=.005*v;const R=S*.26*(1+.03*Math.sin(t/(m==='calme'?900:350))),X=S/2,Y=S/2,ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(.45),sb=Math.sin(.45);
+const gr=cx.createRadialGradient(X,Y,R*.2,X,Y,R*2);gr.addColorStop(0,m==='ecoute'?'rgba(255,154,92,.3)':'rgba(124,92,255,.3)');gr.addColorStop(1,'rgba(124,92,255,0)');cx.fillStyle=gr;cx.fillRect(0,0,S,S);
+P.map(p=>{const x=p[0]*ca+p[2]*sa,z=-p[0]*sa+p[2]*ca,y=p[1];return[x,y*cb-z*sb,y*sb+z*cb]}).sort((u,w)=>u[2]-w[2]).forEach(p=>{const f=1/(1.9-p[2]*.6),l=(p[2]+1)/2;cx.fillStyle=m==='ecoute'?`rgba(255,${150+l*80|0},${90+l*60|0},${.25+l*.75})`:`rgba(${120+l*90|0},${110+l*110|0},255,${.2+l*.8})`;cx.beginPath();cx.arc(X+p[0]*R*f*1.5,Y+p[1]*R*f*1.5,(1+l*2)*.8,0,6.3);cx.fill()});
+[[.3,'rgba(203,191,255,.55)',.5],[.2,'rgba(127,176,255,.45)',-.9],[.38,'rgba(255,154,213,.4)',1.7]].forEach((r,k)=>{cx.save();cx.translate(X,Y);cx.rotate(a*(k%2?-1:1)*.7+r[2]);cx.scale(1,r[0]);cx.strokeStyle=r[1];cx.lineWidth=1.3;cx.beginPath();cx.arc(0,0,R*(1.35+k*.18),0,6.3);cx.stroke();cx.restore()});
+requestAnimationFrame(d)}requestAnimationFrame(d)})();
 </script>
 </body>
 </html>

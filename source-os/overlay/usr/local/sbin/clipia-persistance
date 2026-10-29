@@ -1,0 +1,50 @@
+#!/bin/bash
+# Clipia OS — données persistantes.
+# Monte la partition « CLIPIA-DATA » sur /var/lib/clipia. Si elle n'existe pas et que le système tourne depuis une
+# clé USB, elle est créée dans l'ESPACE LIBRE situé après les partitions de la clé. Rien n'est jamais écrasé ni
+# réduit, et aucun autre disque n'est touché.
+DATA=/var/lib/clipia
+LOG=/var/log/clipia-persistance.log
+log() { echo "$(date -Is) $*" | tee -a "$LOG" >&2; }
+mkdir -p "$DATA"
+
+monter() { mount "$1" "$DATA" && mkdir -p "$DATA/data" "$DATA/ollama" && chown -R clipia:clipia "$DATA" && log "données persistantes : $1 -> $DATA"; }
+
+udevadm settle --timeout=20 2>/dev/null
+# Recherche par sondage direct (sans dépendre du cache d'udev, pas encore prêt à ce stade du démarrage).
+cherche() { # $1 = étiquette ; $2 = disque facultatif
+  local lst; lst=$(lsblk -lnpo NAME ${2:-} 2>/dev/null | grep -E '[0-9]$')
+  for p in $lst; do
+    [ "$(blkid -p -s LABEL -o value "$p" 2>/dev/null)" = "$1" ] && [ "$(blkid -p -s TYPE -o value "$p" 2>/dev/null)" = "ext4" ] && { echo "$p"; return; }
+  done
+}
+dev=$(cherche CLIPIA-DATA)
+if [ -n "$dev" ]; then monter "$dev"; exit 0; fi
+
+# Pas de partition : crée-t-on sur la clé ?
+medium=$(findmnt -n -o SOURCE /run/live/medium 2>/dev/null || findmnt -n -o SOURCE /cdrom 2>/dev/null)
+if [ -z "$medium" ]; then
+  log "système installé sur disque : données dans $DATA (disque du système)"; mkdir -p "$DATA/data" "$DATA/ollama"; chown -R clipia:clipia "$DATA"; exit 0
+fi
+pk=$(lsblk -no PKNAME "$medium" 2>/dev/null | head -1)
+disk=${pk:+/dev/$pk}
+[ -z "$disk" ] && disk=$medium   # ISO écrite sans table de partitions
+# Le démarrage (casper) crée parfois lui-même une partition « writable » dans l'espace libre de la clé : on l'adopte.
+w=$(cherche writable "$disk")
+if [ -n "$w" ]; then monter "$w" && exit 0; fi
+if [ "$(lsblk -dno TYPE "$disk" 2>/dev/null)" != "disk" ] || { [ "$(lsblk -dno RM "$disk")" != "1" ] && [ "$(lsblk -dno TRAN "$disk")" != "usb" ] && [ "${CLIPIA_FORCE_PERSIST:-0}" != "1" ]; }; then
+  log "le support de démarrage ($disk) n'est pas une clé USB : pas de partition de données créée"; mkdir -p "$DATA/data" "$DATA/ollama"; chown -R clipia:clipia "$DATA"; exit 0
+fi
+fin=$(parted -ms "$disk" unit MiB print 2>/dev/null | awk -F: '/^[0-9]+:/{gsub("MiB","",$3); if ($3+0>m) m=$3+0} END{print int(m+1)}')
+taille=$(parted -ms "$disk" unit MiB print 2>/dev/null | sed -n 2p | awk -F: '{gsub("MiB","",$2); print int($2)}')
+libre=$(( ${taille:-0} - ${fin:-0} ))
+if [ "$libre" -lt 512 ]; then
+  log "pas assez d'espace libre sur la clé ($libre Mio) : données NON persistantes (tmpfs)"; mount -t tmpfs -o size=512m tmpfs "$DATA"; mkdir -p "$DATA/data" "$DATA/ollama"; chown -R clipia:clipia "$DATA"; touch /run/clipia-sans-persistance; exit 0
+fi
+log "création de la partition CLIPIA-DATA sur $disk (début ${fin} Mio, $libre Mio libres)"
+if parted -s "$disk" -- mkpart CLIPIA-DATA ext4 "${fin}MiB" 100% >>"$LOG" 2>&1; then
+  partprobe "$disk"; udevadm settle; sleep 1
+  nouveau=$(lsblk -lnpo NAME "$disk" | tail -1)
+  mkfs.ext4 -q -L CLIPIA-DATA -m 0 "$nouveau" >>"$LOG" 2>&1 && monter "$nouveau" && exit 0
+fi
+log "échec de la création : données NON persistantes"; mount -t tmpfs -o size=512m tmpfs "$DATA"; mkdir -p "$DATA/data" "$DATA/ollama"; chown -R clipia:clipia "$DATA"; touch /run/clipia-sans-persistance

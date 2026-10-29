@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Pilotes matériels
+Comment=Détecter et installer les pilotes
+Exec=xfce4-terminal --title="Pilotes" -x /usr/local/bin/clipia-pilotes
+Icon=preferences-system
+Categories=Settings;System;

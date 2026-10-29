@@ -1,0 +1,11 @@
+#!/bin/bash
+# Pilotes matériels : détecte, explique, installe (les pilotes propriétaires demandent Internet).
+echo "== Pilotes de cet ordinateur =="
+echo; echo "Matériel détecté (extrait) :"; lspci -nnk 2>/dev/null | grep -A3 -iE "vga|3d|network|audio" | grep -E "^[0-9a-f]|Kernel driver" | head -24
+echo; echo "Pilotes recommandés :"; ubuntu-drivers devices 2>/dev/null || echo "(aucun détecté)"
+echo
+if curl -fs -m 4 http://archive.ubuntu.com >/dev/null 2>&1; then
+  read -rp "Installer automatiquement les pilotes recommandés ? (o/N) " r
+  [ "$r" = "o" ] && sudo ubuntu-drivers autoinstall && echo "Redémarre l'ordinateur pour les activer."
+else echo "Pas d'Internet : connecte-toi (icône réseau) pour installer des pilotes supplémentaires. Les pilotes libres sont déjà inclus."; fi
+read -rp "Entrée pour fermer…" _

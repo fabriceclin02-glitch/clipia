@@ -1,0 +1,16 @@
+#!/bin/bash
+# Rapport de diagnostic sur la console série (démarrage avec clipia.diag=1). Utile pour le support et les tests.
+exec >/dev/ttyS0 2>&1
+for i in $(seq 1 90); do curl -fs -m 2 http://127.0.0.1:8787/api/auto >/dev/null && break; sleep 1; done
+sleep 8
+echo "=== CLIPIA-DIAG-DEBUT ==="
+echo "noyau: $(uname -r) | os: $(. /etc/os-release; echo $PRETTY_NAME)"
+echo "clipia.service: $(systemctl is-active clipia) | persistance: $(systemctl is-active clipia-persistance)"
+echo "--- journal persistance"; cat /var/log/clipia-persistance.log 2>/dev/null
+echo "--- montages"; findmnt -n /var/lib/clipia; lsblk -no NAME,SIZE,FSTYPE,LABEL
+echo "--- API"; curl -s -m 5 http://127.0.0.1:8787/api/auto; echo
+echo "--- système"; curl -s -m 20 http://127.0.0.1:8787/api/systeme | head -c 900; echo
+echo "--- écran"; pgrep -a cage; pgrep -a epiphany | head -1; ls /dev/dri 2>&1 | head -2; who
+echo "--- utilisateur tty1"; ps -eo user,tty,cmd | grep -E "tty1" | head -4
+echo "--- erreurs"; journalctl -p err -b --no-pager -o cat | head -8
+echo "=== CLIPIA-DIAG-FIN ==="
