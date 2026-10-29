@@ -44,7 +44,8 @@ export const GROUPES = {
   'ordinateur': 'Souris, clavier, applications et captures d\'écran (autorisation de 10 min)',
   'autocode': 'Lire et modifier le propre code de Clipia (accord requis, sauvegarde automatique)',
   'machine': 'Lire/écrire sur la machine, lancer des commandes (accord requis)',
-  'navigateur': 'Piloter un navigateur (accord requis pour les clics sensibles)'
+  'navigateur': 'Piloter un navigateur (accord requis pour les clics sensibles)',
+  'mcp': 'Outils externes branchés par MCP (accord requis à chaque appel)'
 };
 
 /* ══ LES AGENTS DE DÉPART ═════════════════════════════════════════════════ */

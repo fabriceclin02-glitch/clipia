@@ -84,7 +84,7 @@ export async function envoyerWhatsApp({ destinataire, texte, lienMedia, type = '
   const corps = type === 'video' && lienMedia
     ? { messaging_product: 'whatsapp', to: destinataire, type: 'video', video: { link: lienMedia, caption: texte || '' } }
     : { messaging_product: 'whatsapp', to: destinataire, type: 'text', text: { body: texte } };
-  const r = await fetch(`https://graph.facebook.com/v21.0/${phoneId}/messages`, {
+  const r = await fetch(`${process.env.CLIPIA_API_WHATSAPP || 'https://graph.facebook.com/v21.0'}/${phoneId}/messages`, {
     method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
     body: JSON.stringify(corps)
   });
@@ -104,12 +104,12 @@ export async function envoyerTelegram({ canal, texte, cheminVideo }) {
     fd.append('chat_id', canal);
     fd.append('caption', texte || '');
     fd.append('video', new Blob([fs.readFileSync(cheminVideo)]), 'video.mp4');
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendVideo`, { method: 'POST', body: fd });
+    const r = await fetch(`${process.env.CLIPIA_API_TELEGRAM || 'https://api.telegram.org'}/bot${token}/sendVideo`, { method: 'POST', body: fd });
     const j = await r.json();
     if (!j.ok) throw new Error(`Telegram : ${j.description}`);
     return { plateforme: 'telegram', id: j.result.message_id };
   }
-  const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const r = await fetch(`${process.env.CLIPIA_API_TELEGRAM || 'https://api.telegram.org'}/bot${token}/sendMessage`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ chat_id: canal, text: texte, parse_mode: 'HTML' })
   });

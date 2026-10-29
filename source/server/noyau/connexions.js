@@ -29,10 +29,10 @@ export const CONNEXIONS = [
     champs: [{ cle: 'connector:telegram:id', label: 'Jeton du bot', secret: true, placeholder: '123456:ABC…' }],
     lien: 'https://t.me/BotFather', guide: ['Dans Telegram, ouvre @BotFather et envoie /newbot.', 'Choisis un nom ; BotFather te donne un jeton.', 'Colle le jeton ici, puis écris un message à ton bot.'] },
   { id: 'slack', nom: 'Slack', icone: '💬', quoi: 'Lire des canaux et poster des messages dans ton espace Slack.',
-    champs: [{ cle: 'connexion:slack:token', label: 'Jeton du bot (xoxb-…)', secret: true, placeholder: 'xoxb-…' }],
+    champs: [{ cle: 'connexion:slack:token', label: 'Jeton du bot (xoxb-…)', secret: true, placeholder: 'xoxb-…' }, { cle: 'connector:slack:app', label: 'Jeton d\'application (xapp-…) — pour recevoir tes messages sans adresse publique', optionnel: true, secret: true, placeholder: 'xapp-…' }, { cle: 'connector:slack:signing', label: 'Signing secret — seulement si tu utilises une adresse publique', optionnel: true, secret: true }],
     lien: 'https://api.slack.com/apps', guide: ['api.slack.com/apps → Create New App → From scratch.', 'OAuth & Permissions : ajoute chat:write, channels:read, channels:history, groups:read.', 'Install to Workspace, copie le « Bot User OAuth Token » (xoxb-…), invite le bot dans les canaux voulus.'] },
   { id: 'whatsapp', nom: 'WhatsApp Business', icone: '🟢', quoi: 'Envoyer des messages WhatsApp (API Meta Cloud). Demande un compte Meta Business.',
-    champs: [{ cle: 'connector:whatsapp:id', label: 'Jeton d\'accès', secret: true }, { cle: 'connector:whatsapp:secret', label: 'Identifiant du numéro (Phone number ID)', secret: false }],
+    champs: [{ cle: 'connector:whatsapp:id', label: 'Jeton d\'accès', secret: true }, { cle: 'connector:whatsapp:secret', label: 'Identifiant du numéro (Phone number ID)', secret: false }, { cle: 'connector:whatsapp:appsecret', label: 'Secret de l\'application Meta — pour recevoir tes messages (obligatoire, sert à vérifier la signature)', optionnel: true, secret: true }, { cle: 'whatsapp:verify', label: 'Jeton de vérification (invente une phrase, recopie-la chez Meta)', optionnel: true, secret: true }],
     lien: 'https://developers.facebook.com/apps', guide: ['developers.facebook.com → Créer une application → type Business → ajoute WhatsApp.', 'Dans WhatsApp → API Setup : copie le jeton et le « Phone number ID ».', 'Ajoute ton numéro comme destinataire de test, puis colle les deux valeurs ici.'] },
   { id: 'google', nom: 'Google (Gmail, Agenda, Drive)', icone: '🔴', quoi: 'Lire et trier tes mails, créer des rendez-vous, chercher dans Drive. Envois : toujours avec ton accord.',
     champs: [{ cle: 'connexion:google:client_id', label: 'ID client OAuth', secret: false }, { cle: 'connexion:google:client_secret', label: 'Code secret client', secret: true }], oauth: 'google',
@@ -46,7 +46,7 @@ export function etatConnexions() {
   return CONNEXIONS.map(c => ({
     id: c.id, nom: c.nom, icone: c.icone, quoi: c.quoi, lien: c.lien, guide: c.guide, oauth: c.oauth || null,
     champs: c.champs.map(f => ({ cle: f.cle, label: f.label, secret: f.secret, placeholder: f.placeholder || '', rempli: Boolean(S(f.cle)) })),
-    configure: c.champs.every(f => Boolean(S(f.cle))),
+    configure: c.champs.every(f => f.optionnel || Boolean(S(f.cle))),
     connecte: c.oauth ? Boolean(S(`connexion:${c.oauth === 'google' ? 'google' : 'ms'}:refresh`)) : c.champs.every(f => Boolean(S(f.cle)))
   }));
 }

@@ -207,12 +207,12 @@ export function journal({ limite = 80 } = {}) {
    silencieux qui donne l'illusion d'être protégé.
    ───────────────────────────────────────────────────────────────────────── */
 const MOTIFS_INJECTION = [
-  /ignore[sz]?\s+(toutes?\s+)?(les\s+)?(instructions?|consignes?)\s+(pr[éе]c[éе]dentes?|ci-dessus|ant[éе]rieures?)/i,
+  /ignore[sz]?\s+(toutes?\s+)?((les|tes|vos|ces|ses)\s+)?(instructions?|consignes?)\s+(pr[éе]c[éе]dentes?|ci-dessus|ant[éе]rieures?)/i,
   /ignore\s+(all\s+)?(previous|prior|above)\s+(instructions?|prompts?)/i,
   /\b(you are now|tu es maintenant|d[éе]sormais tu es)\b/i,
   /\b(system\s*prompt|prompt\s*syst[èe]me|developer\s+mode)\b/i,
   /\b(ex[éе]cute|lance|run|execute)\s+(cette|ce|the following|la commande)/i,
-  /\b(envoie|send|exfiltr|upload)\b[^.\n]{0,60}\b(cl[ée]|key|token|password|mot de passe|id_rsa|\.env)\b/i,
+  /\b(envoie|send|exfiltr|upload)\b[^.\n]{0,60}(\b(cl[ée]|key|token|password|mot de passe|id_rsa)\b|\.env\b)/i,
   /\bcat\b[^|\n]{0,40}(id_rsa|\.env|shadow|credentials)/i,
   /<\|?(im_start|system|endoftext)\|?>/i
 ];

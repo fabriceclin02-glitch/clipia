@@ -39,6 +39,16 @@ import { contextePourPrompt as contexteTravaux } from './travaux.js';
 import { store } from '../lib/store.js';
 
 const MAX_ETAPES = 14;
+const LECTURES_REPETABLES = new Set(['chrome_lire', 'ordi_capturer', 'ordi_fenetres', 'travail_statut', 'chrome_onglets', 'plan_poser']);
+const ECRITURES = new Set(['fichier_ecrire', 'app_creer', 'code_clipia_modifier', 'executer', 'machine_executer']);
+const VERIFICATIONS = new Set(['fichier_lire', 'disque_lire', 'disque_lister', 'executer', 'machine_executer', 'chrome_lire', 'chrome_ouvrir', 'ordi_capturer', 'navigateur_lire', 'web_lire', 'app_lancer', 'app_tester']);
+/** Vrai si la dernière écriture réussie n'est suivie d'aucune vérification. */
+function aEcritSansVerifier(preuves, etapes) {
+  let dernier = -1;
+  etapes.forEach((e, i) => { if (e.ok && !e.simule && ECRITURES.has(e.outil) && e.outil !== 'executer' && e.outil !== 'machine_executer') dernier = i; });
+  if (dernier < 0) return false;
+  return !etapes.slice(dernier + 1).some(e => e.ok && VERIFICATIONS.has(e.outil));
+}
 const MAX_HISTORIQUE = 24;
 
 /* Ce qui vient du dehors et doit être emballé comme donnée. */
@@ -83,6 +93,14 @@ ${(!vocal && !String(mode || '').startsWith('psy-') && !role && !atelier) ? `\nC
 
 DEUX CERVEAUX — TOUJOURS DISPONIBLE (X8)
 Tu as deux cerveaux : celui-ci (l'ACCUEIL, la conversation) et des TRAVAILLEURS en arrière-plan. Règle d'or : la personne doit pouvoir te parler À TOUT MOMENT, même quand tu travailles. Donc dès qu'une demande prend plus d'une minute ou plus de 3 étapes (créer un site, une application, un dossier, une étude de marché, une campagne, un montage…), tu NE la fais PAS ici : tu appelles travail_lancer avec une mission complète et autonome, puis tu rends la main aussitôt en une phrase (« C'est lancé en arrière-plan, je continue d'être là »). Tu peux lancer plusieurs travaux en parallèle (3 au plus). Quand on te demande où tu en es, ce que tu fais ou pourquoi, tu réponds d'après la section « TRAVAUX EN ARRIÈRE-PLAN » ci-dessous (travail_statut pour le détail) : tu dis concrètement ce que fait chaque travailleur en ce moment, simplement, comme à un collègue. On peut te demander d'arrêter un travail (travail_arreter) ou de changer de priorité à tout moment. Les réponses rapides (une question, une info, un petit réglage) se font directement, sans travailleur.
+
+TES PRINCIPES D'AGENT
+- INITIATIVE : tu avances sans attendre qu'on te dise chaque geste. Les lectures et vérifications inoffensives, tu les fais seule ; tu ne t'arrêtes que pour ce qui engage (envoi, achat, suppression, installation, mot de passe).
+- MEILLEURE SOLUTION : avant d'agir sur quelque chose d'important, compare en une phrase deux ou trois voies (gratuite, rapide, robuste) et prends la meilleure ; dis laquelle et pourquoi. Ne choisis pas la plus compliquée par défaut.
+- VÉRIFIER : après avoir créé ou modifié, tu relis, tu testes ou tu ouvres le résultat avant de dire que c'est fini.
+- SE RÉPARER : si ça échoue, échelle de secours — 1) lire l'erreur, 2) corriger la cause, 3) autre outil ou autre méthode, 4) réduire le but à une version qui marche, 5) seulement alors poser UNE question précise à la personne. Tu ne refais jamais exactement la même action en espérant un autre résultat.
+- ANTICIPER : une fois la demande accomplie, tu proposes la suite la plus utile (une phrase), sans la faire sans accord si elle engage quelque chose.
+- ÉCONOMIE : peu d'étapes, des étapes utiles. Si la tâche est longue, travail_lancer.
 
 COMMANDES DIRECTES (À LA VOIX OU À L'ÉCRIT)
 Quand la personne donne un ordre court, tu l'exécutes tout de suite avec l'outil qui correspond, sans longue explication :
@@ -190,6 +208,8 @@ async function converserInterne(options = {}, onEvent = () => {}) {
   const etapes = [];
   let corrige = false;
   let echecsSuite = 0;
+  const signatures = new Map();       // outil+paramètres déjà exécutés dans ce tour
+  let verifie = false;
 
   /* Reprise après accord : on exécute d'abord l'action en attente. */
   if (reprise?.outil && OUTILS[reprise.outil]) {
@@ -233,8 +253,19 @@ async function converserInterne(options = {}, onEvent = () => {}) {
         fil.push({ role: 'user', content: "[contrôle] Tu annonces avoir fait quelque chose, mais aucun outil n'a réussi dans ce tour. Soit tu le fais maintenant avec un bloc action, soit tu corriges ta phrase en disant ce qui n'a pas été fait." });
         continue;
       }
-      onEvent({ type: 'texte', texte: dit });
-      return { texte: dit, preuves, etapes, modele: { provider: r.provider, model: r.model, ms: r.ms } };
+      /* Vérifier avant de conclure : on a écrit ou modifié quelque chose sans le relire ni le tester. */
+      if (!verifie && !vocal && !cadre.blanc && i < maxEtapes - 2 && aEcritSansVerifier(preuves, etapes)) {
+        verifie = true;
+        fil.push({ role: 'assistant', content: brut });
+        fil.push({ role: 'user', content: "[contrôle] Tu as créé ou modifié quelque chose sans le vérifier. Vérifie maintenant avec un outil (relis le fichier, lance le test, ouvre la page), corrige si besoin, puis conclus en disant ce que tu as constaté." });
+        continue;
+      }
+      let texteFinal = dit;
+      const ok = etapes.filter(e => e.ok && !e.simule && !e.attente);
+      if (!vocal && !options.roleSysteme && !options.atelier && ok.length >= 4 && new Set(ok.map(e => e.outil)).size >= 2 && !/workflow/i.test(dit))
+        texteFinal += '\n\n🔁 Cette tâche a demandé plusieurs étapes : si tu veux la refaire souvent, dis « enregistre-la en workflow » et je la garde.';
+      onEvent({ type: 'texte', texte: texteFinal });
+      return { texte: texteFinal, preuves, etapes, modele: { provider: r.provider, model: r.model, ms: r.ms } };
     }
 
     if (dit) onEvent({ type: 'message', texte: dit });
@@ -246,6 +277,16 @@ async function converserInterne(options = {}, onEvent = () => {}) {
       return { texte: t + reste, preuves, etapes };
     }
 
+    /* Jamais deux fois exactement la même action dans un tour : le résultat serait identique. */
+    const sig = action.outil + '|' + JSON.stringify(action.parametres || {});
+    const fois = (signatures.get(sig) || 0) + 1; signatures.set(sig, fois);
+    if (fois >= 2 && !LECTURES_REPETABLES.has(action.outil)) {
+      fil.push({ role: 'assistant', content: brut });
+      fil.push({ role: 'user', content: "[contrôle] Tu viens de refaire exactement la même action : le résultat serait identique, elle n'a pas été relancée. Change d'approche (autres paramètres, autre outil, ou corrige la cause) ou conclus." });
+      echecsSuite++;
+      if (echecsSuite >= 3) { fil.push({ role: 'user', content: "[contrôle] Tu tournes en rond. Dis à la personne ce qui bloque et propose UNE autre voie." }); echecsSuite = 0; }
+      continue;
+    }
     const sortie = await executer(action.outil, action.parametres || {}, projet, onEvent, preuves, etapes, cadre);
     echecsSuite = sortie.ok ? 0 : echecsSuite + 1;
 
@@ -332,7 +373,7 @@ async function executer(nom, params, projet, onEvent, preuves, etapes, cadre = {
   let corps = String(sortie.resume || '');
   if (sortie.donnees !== undefined && sortie.donnees !== null)
     corps += '\n' + (typeof sortie.donnees === 'string' ? sortie.donnees : JSON.stringify(sortie.donnees).slice(0, 4000));
-  if (DEHORS.has(nom) || outil.groupe === 'navigateur' || outil.groupe === 'web')
+  if (DEHORS.has(nom) || outil.groupe === 'navigateur' || outil.groupe === 'web' || outil.groupe === 'mcp')
     corps = enveloppeDonnees(nom, corps);
   if (sortie.preuve) corps += '\n[preuve] ' + JSON.stringify(sortie.preuve).slice(0, 400);
   return { ok: true, pourModele: corps.slice(0, 7000) };
@@ -341,7 +382,7 @@ async function executer(nom, params, projet, onEvent, preuves, etapes, cadre = {
 const GENRE_OUTIL = { web_chercher: 'web', web_lire: 'web', image_creer: 'creation', clip_monter: 'creation', musique_creer: 'creation', voix_dire: 'creation', son_apaisant: 'creation', transcrire: 'creation', fichier_ecrire: 'fichier', fichier_remplacer: 'fichier', fichier_lire: 'fichier', fichier_lister: 'fichier', executer: 'machine', openclaw_agent: 'agent' };
 function archiveOutil(nom, outil, params, sortie, projet) {
   if (nom === 'terminer' || nom === 'memoire_chercher') return;
-  const genre = outil.groupe === 'machine' ? 'machine' : outil.groupe === 'navigateur' ? 'web' : (GENRE_OUTIL[nom] || (outil.groupe === 'atelier' ? 'projet' : null));
+  const genre = outil.groupe === 'machine' ? 'machine' : (outil.groupe === 'navigateur' || outil.groupe === 'mcp') ? 'web' : (GENRE_OUTIL[nom] || (outil.groupe === 'atelier' ? 'projet' : null));
   if (!genre) return;
   archive.archiver({ genre, titre: `${nom.replace(/_/g, ' ')} — ${resumeParams(params)}`, texte: String(sortie.resume || ''),
     externe: genre === 'web' || genre === 'machine' || DEHORS.has(nom), ok: true, meta: { outil: nom }, projetId: typeof projet === 'string' ? projet : projet?.nom || null });

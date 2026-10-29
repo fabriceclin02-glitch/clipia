@@ -5,8 +5,8 @@
  * La version précédente servait le cache en priorité, ce qui figeait
  * l'interface sur une ancienne version après chaque mise à jour.
  */
-const CACHE = 'clipia-v35';
-const SECOURS = ['/', '/styles.css', '/app.js', '/appel-util.js', '/guide-util.js', '/v4.js','/v5.js','/v6.js','/widgets.js','/v61.js','/recherche.js','/livrable.js','/psy.js','/credit.js','/extensions.js','/studio.js','/depannage.js','/logitheque.js','/dictee.js','/openclaw.js','/telephone-vue.js','/promotion.js', '/travaux.js', '/communaute.js', '/entreprise.js', '/voix-naturelle.js', '/outils-data.js', '/manifest.json'];
+const CACHE = 'clipia-v38';
+const SECOURS = ['/', '/styles.css', '/app.js', '/appel-util.js', '/guide-util.js', '/v4.js','/v5.js','/v6.js','/widgets.js','/v61.js','/recherche.js','/livrable.js','/psy.js','/credit.js','/extensions.js','/studio.js','/depannage.js','/logitheque.js','/dictee.js','/openclaw.js','/telephone-vue.js','/promotion.js', '/travaux.js', '/communaute.js', '/pouvoirs.js', '/entreprise.js', '/accueil.js', '/voix-naturelle.js', '/outils-data.js', '/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SECOURS)).then(() => self.skipWaiting()));

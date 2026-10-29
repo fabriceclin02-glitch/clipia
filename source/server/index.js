@@ -8,6 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawnSync, spawn } from 'node:child_process';
+import './lib/restauration.js';
 import { loadEnv, ROOT, DATA_DIR, env, ffmpegBin, etatOutils } from './lib/env.js';
 loadEnv();
 
@@ -79,11 +80,15 @@ import './noyau/agent-perso.js';
 import * as travaux from './noyau/travaux.js';
 import * as communaute from './noyau/communaute.js';
 import * as ordinateur from './noyau/ordinateur.js';
+import * as mcp from './noyau/mcp-client.js';
+import * as planning from './noyau/planificateur.js';
+import * as sauvegarde from './noyau/sauvegarde.js';
+import * as initiative from './noyau/initiative.js';
 import * as extChrome from './noyau/extension.js';
 import * as installation from './noyau/installation.js';
 import { demarrer as demarrerMessagerie, arreter as arreterMessagerie,
          etatMessagerie, autoriser, retirerAutorisation, autorises,
-         webhookWhatsApp } from './connectors/messagerie.js';
+         webhookWhatsApp, webhookSlack, verifierAbonnementMeta } from './connectors/messagerie.js';
 
 const PORT = Number(env('PORT', '8787'));
 const HOST = env('HOST', '127.0.0.1');
@@ -244,7 +249,8 @@ const server = http.createServer(async (req, res) => {
 
   // X7 — accès distant : tout ce qui ne vient pas de l'ordinateur lui-même n'atteint que le téléphone/MCP, avec jeton.
   const distantReq = distant.estDistant(req);
-  if (distantReq && !RESEAU && !distant.cheminTelephone(p)) { res.writeHead(403, { 'content-type': 'text/plain; charset=utf-8' }); return res.end('Accès refusé : cette adresse ne donne accès qu\'à l\'appli téléphone de Clipia.'); }
+  const webhookSigne = req.method !== 'OPTIONS' && (p === '/api/webhooks/whatsapp' || p === '/api/webhooks/slack');   // authentifiés par signature (Meta, Slack)
+  if (distantReq && !RESEAU && !distant.cheminTelephone(p) && !webhookSigne) { res.writeHead(403, { 'content-type': 'text/plain; charset=utf-8' }); return res.end('Accès refusé : cette adresse ne donne accès qu\'à l\'appli téléphone de Clipia.'); }
   if (distantReq && distant.cheminTelephone(p)) {
     if (!distant.actif()) { res.writeHead(404); return res.end('Accès téléphone désactivé.'); }
     if (p === '/telephone' || p === '/telephone/') return serveStatic(res, path.join(WEB, 'telephone.html'), req);
@@ -285,7 +291,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '8.0.0', mode: 'opérationnel',
+        version: '8.2.0', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -709,6 +715,12 @@ const server = http.createServer(async (req, res) => {
       return json(res, { ok: extChrome.resultat(await jbody(req)) });
     }
     if (p === '/api/ext/etat' && req.method === 'GET') return json(res, { connectee: extChrome.connectee(), session: extChrome.sessionActive(), dossier: extChrome.DOSSIER });
+    if (p === '/api/ext/ouvrir-dossier' && req.method === 'POST') {
+      if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403);
+      const d = extChrome.preparer(PORT);
+      try { spawn(process.platform === 'win32' ? 'explorer' : process.platform === 'darwin' ? 'open' : 'xdg-open', [d], { detached: true, stdio: 'ignore' }).on('error', () => {}).unref(); } catch {}
+      return json(res, { ok: true, dossier: d });
+    }
     if (p === '/api/ext/preparer' && req.method === 'POST') return json(res, { dossier: extChrome.preparer(PORT) });
     if (p === '/api/ext/stop' && req.method === 'POST') return json(res, { ok: true, etait: extChrome.arreter() });
 
@@ -1133,7 +1145,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '8.0.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '8.2.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1451,6 +1463,92 @@ const server = http.createServer(async (req, res) => {
       return json(res, oublierLecon(decodeURIComponent(p.split('/')[3])));
     }
 
+    // ─── X8 : TÂCHES PLANIFIÉES ───
+    if (p === '/api/initiatives' && req.method === 'GET') return json(res, { initiatives: initiative.proposer() });
+    if (p === '/api/vscode/ouvrir' && req.method === 'POST') {
+      if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403);
+      const b = await jbody(req); const dossier = b.dossier ? path.resolve(String(b.dossier)) : PROJETS_DIR;
+      if (!fs.existsSync(dossier) || !fs.statSync(dossier).isDirectory()) return json(res, { erreur: "Ce dossier n'existe pas." }, 400);
+      const cmd = process.platform === 'win32' ? 'code.cmd' : 'code';
+      const t = spawnSync(process.platform === 'win32' ? 'where' : 'which', [process.platform === 'win32' ? 'code' : 'code'], { encoding: 'utf8' });
+      if (t.status !== 0) return json(res, { erreur: "Visual Studio Code n'est pas installé. Installe-le depuis la Logithèque (« Visual Studio Code »).", manquant: true }, 404);
+      try { spawn(cmd, [dossier], { detached: true, stdio: 'ignore', shell: process.platform === 'win32' }).unref(); return json(res, { ok: true, dossier }); }
+      catch (e) { return json(res, { erreur: e.message }, 500); }
+    }
+    if (p.startsWith('/api/sauvegarde')) {
+      const garde = () => { if (req.headers['x-clipia-accord'] !== '1') { json(res, { erreur: "Réservé à l'interface." }, 403); return false; } return true; };
+      if (p === '/api/sauvegarde' && req.method === 'GET') return json(res, sauvegarde.etat());
+      if (/^\/api\/sauvegarde\/telecharger\/[\w.-]+$/.test(p) && req.method === 'GET') {
+        let f; try { f = sauvegarde.cheminLocal(p.split('/').pop()); } catch { return json(res, { erreur: 'Nom invalide.' }, 400); }
+        if (!fs.existsSync(f)) return json(res, { erreur: 'Introuvable.' }, 404);
+        res.writeHead(200, { 'content-type': 'application/octet-stream', 'content-length': fs.statSync(f).size, 'content-disposition': 'attachment; filename="' + path.basename(f) + '"' });
+        return fs.createReadStream(f).pipe(res);
+      }
+      if (!garde()) return;
+      try {
+        if (p === '/api/sauvegarde/creer' && req.method === 'POST') {
+          const b = await jbody(req); const mdp = String(b.motdepasse || '');
+          if (mdp && mdp.length < 6) return json(res, { erreur: 'Mot de passe : 6 caractères au minimum.' }, 400);
+          const dest = b.destination || 'local';
+          const dossier = dest === 'dossier' || dest === 'usb' ? String(b.dossier || '') : sauvegarde.DOSSIER_LOCAL;
+          if (dest !== 'local' && dest !== 'dropbox' && (!dossier || !path.isAbsolute(dossier) || !fs.existsSync(dossier))) return json(res, { erreur: "Ce dossier n'existe pas ou n'est pas branché." }, 400);
+          const r = await sauvegarde.creer({ dossier: dest === 'dropbox' ? sauvegarde.DOSSIER_LOCAL : dossier, motdepasse: mdp });
+          let dropbox = null; if (dest === 'dropbox') dropbox = await sauvegarde.dropboxEnvoyer(r.fichier);
+          return json(res, { ...r, fichier: undefined, destination: dest, dossier: path.dirname(r.fichier), dropbox });
+        }
+        if (p === '/api/sauvegarde/liste' && req.method === 'POST') {
+          const b = await jbody(req);
+          if (b.destination === 'dropbox') return json(res, { sauvegardes: await sauvegarde.dropboxListe() });
+          const dossier = b.destination === 'local' || !b.dossier ? sauvegarde.DOSSIER_LOCAL : String(b.dossier);
+          return json(res, { sauvegardes: sauvegarde.liste(dossier) });
+        }
+        if (p === '/api/sauvegarde/restaurer' && req.method === 'POST') {
+          const b = await jbody(req); let f;
+          if (b.destination === 'dropbox') f = await sauvegarde.dropboxRecuperer(String(b.nom || ''));
+          else { const nom = String(b.nom || ''); if (!/^[\w.-]+$/.test(nom) || !nom.endsWith(sauvegarde.EXT)) return json(res, { erreur: 'Nom invalide.' }, 400); const dossier = b.destination === 'local' || !b.dossier ? sauvegarde.DOSSIER_LOCAL : String(b.dossier); f = path.join(dossier, nom); if (!fs.existsSync(f)) return json(res, { erreur: 'Fichier introuvable.' }, 404); }
+          try { return json(res, { ...(await sauvegarde.preparerRestauration(f, String(b.motdepasse || ''))), enAttente: true }); }
+          catch (e) { return json(res, { erreur: e.message, motdepasse: Boolean(e.mdp) }, e.mdp ? 401 : 400); }
+        }
+        if (p === '/api/sauvegarde/importer' && req.method === 'POST') {          // fichier envoyé depuis le navigateur
+          fs.mkdirSync(sauvegarde.DOSSIER_LOCAL, { recursive: true });
+          const nom = 'importee-' + Date.now() + sauvegarde.EXT, f = path.join(sauvegarde.DOSSIER_LOCAL, nom);
+          const sortie = fs.createWriteStream(f); let n = 0, trop = false;
+          for await (const c of req) { n += c.length; if (n > 4 * 1024 ** 3) { trop = true; break; } if (!sortie.write(c)) await new Promise(r => sortie.once('drain', r)); }
+          sortie.end(); await new Promise(r => sortie.once('close', r));
+          if (trop) { fs.rmSync(f, { force: true }); return json(res, { erreur: 'Fichier trop gros (4 Go max).' }, 413); }
+          try { return json(res, { ...(await sauvegarde.preparerRestauration(f, decodeURIComponent(String(req.headers['x-mot-de-passe'] || '')))), enAttente: true, nom }); }
+          catch (e) { return json(res, { erreur: e.message, motdepasse: Boolean(e.mdp), nom }, e.mdp ? 401 : 400); }
+        }
+        if (p === '/api/sauvegarde/annuler' && req.method === 'POST') { sauvegarde.annulerRestauration(); return json(res, { ok: true }); }
+        if (p === '/api/sauvegarde/auto' && req.method === 'POST') { const b = await jbody(req); store.setting('sauvegarde:auto', b.actif ? { actif: true, dossier: b.dossier || null, motdepasse: Boolean(b.motdepasse) } : null); return json(res, { ok: true }); }
+        if (p === '/api/sauvegarde/redemarrer' && req.method === 'POST') { json(res, { ok: true }); setTimeout(() => { flush(); process.exit(0); }, 600); return; }
+      } catch (e) { return json(res, { erreur: e.message }, 400); }
+    }
+    if (p.startsWith('/api/planning')) {
+      if (p === '/api/planning' && req.method === 'GET') return json(res, { taches: planning.liste(), max: planning.MAX_ACTIVES, minMinutes: planning.MIN_MINUTES });
+      if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403);
+      try {
+        if (p === '/api/planning' && req.method === 'POST') return json(res, planning.ajouter(await jbody(req)));
+        const m = /^\/api\/planning\/([\w-]+)(?:\/(activer))?$/.exec(p);
+        if (m && req.method === 'DELETE' && !m[2]) return json(res, { ok: planning.retirer(m[1]) });
+        if (m && m[2] === 'activer' && req.method === 'POST') return json(res, planning.activer(m[1], (await jbody(req)).actif));
+      } catch (e) { return json(res, { erreur: String(e.message).slice(0, 300) }, 400); }
+    }
+
+    // ─── X8 : OUTILS MCP (ajout / retrait réservés à l'interface) ───
+    if (p.startsWith('/api/mcp')) {
+      if (p === '/api/mcp' && req.method === 'GET') return json(res, { serveurs: mcp.liste(), presets: mcp.PRESETS });
+      if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403);
+      try {
+        if (p === '/api/mcp' && req.method === 'POST') return json(res, mcp.ajouter(await jbody(req)));
+        const m = /^\/api\/mcp\/([\w-]+)(?:\/(outils|confiance|arreter))?$/.exec(p);
+        if (m && req.method === 'DELETE' && !m[2]) return json(res, { ok: mcp.retirer(m[1]) });
+        if (m && m[2] === 'outils' && req.method === 'POST') return json(res, { outils: await mcp.outilsDe(m[1]) });
+        if (m && m[2] === 'confiance' && req.method === 'POST') return json(res, mcp.reglerConfiance(m[1], (await jbody(req)).confiance));
+        if (m && m[2] === 'arreter' && req.method === 'POST') { mcp.arreterSession(m[1]); return json(res, { ok: true }); }
+      } catch (e) { return json(res, { erreur: String(e.message).slice(0, 300) }, 400); }
+    }
+
     // ─── MESSAGERIE ENTRANTE ──────────────────────────────────────────────
     if (p === '/api/messagerie' && req.method === 'GET') return json(res, etatMessagerie());
     if (p === '/api/messagerie/demarrer' && req.method === 'POST') {
@@ -1467,15 +1565,15 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/webhooks/whatsapp') {
       if (req.method === 'GET') {        // vérification initiale de Meta
-        const def = vault.resolve('whatsapp:verify', 'WHATSAPP_VERIFY_TOKEN');
-        if (url.searchParams.get('hub.verify_token') === def && def) {
-          res.writeHead(200, { 'content-type': 'text/plain' });
-          return res.end(url.searchParams.get('hub.challenge') || '');
-        }
+        if (verifierAbonnementMeta(url.searchParams)) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end(url.searchParams.get('hub.challenge') || ''); }
         res.writeHead(403); return res.end('jeton invalide');
       }
-      const b = await jbody(req);
-      return json(res, await webhookWhatsApp(b, texte => repondreMessage(texte, {})));
+      const r = webhookWhatsApp(await body(req, 1_000_000), req.headers, texte => repondreMessage(texte, {}));
+      return json(res, r.corps, r.code);
+    }
+    if (p === '/api/webhooks/slack' && req.method === 'POST') {
+      const r = webhookSlack(await body(req, 1_000_000), req.headers, texte => repondreMessage(texte, {}));
+      return json(res, r.corps, r.code);
     }
 
     // ─── MÉDIATHÈQUE ──────────────────────────────────────────────────────
@@ -1550,7 +1648,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.0.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.2.0' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)
@@ -1566,7 +1664,8 @@ function ecouteTelephone() {
 }
 if (distant.actif()) setTimeout(ecouteTelephone, 400);
 server.listen(PORT, HOST, () => {
-  try { travaux.reprisePostDemarrage(); } catch {}
+  try { travaux.reprisePostDemarrage(); planning.demarrer();
+sauvegarde.demarrer(); } catch {}
   try { extChrome.preparer(PORT); } catch (e) { console.error('extension Chrome :', e.message); }
   const url = `http://${HOST}:${PORT}`;
   console.log(`

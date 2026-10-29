@@ -242,4 +242,52 @@ Jamais de messages en masse ni d'envois sans accord. Des messages personnalisés
 2. Ouvrir l'écran « Communauté & évolution » : le bouton « Proposer une idée » ouvre GitHub avec le formulaire déjà rempli (la personne valide elle-même ; Clipia ne publie rien sans son clic).
 3. Expliquer le circuit : idée publiée → le propriétaire du projet l'approuve → Clipia prépare une amélioration dans une proposition (pull request) → les tests passent → le propriétaire accepte → une nouvelle version est publiée, les anciennes restent téléchargeables.
 4. Pour les mises à jour : « Vérifier les mises à jour » compare la version installée à la dernière version publiée.`),
+  sk('tiktok-strategie', 'TikTok Project : stratégie de croissance', 'Choisir une niche, un plan de 30 jours et une routine pour gagner des vues sur TikTok.', `
+# Quand l'utiliser
+« Je veux percer sur TikTok », « plus de vues », « TikTok Project ».
+# Méthode
+1. Demande (une seule fois) : le sujet ou la niche, l'objectif (vues, ventes, musique, clients), le temps par semaine, le compte existant. Ne redemande pas ce qui est donné.
+2. Étude : web_chercher les formats qui marchent dans cette niche (5 comptes comparables, leurs formats, durées, fréquences). Cite les sources. Ne promets jamais un nombre de vues.
+3. Propose 3 positionnements (angle, public, promesse en une phrase) ; recommande UN et dis pourquoi (le plus simple à tenir pour la personne).
+4. Plan 30 jours : 3 à 5 vidéos par semaine, 3 piliers de contenu, un format récurrent (série), l'accroche des 2 premières secondes, l'appel à l'action. Enregistre dans un projet « TikTok » (fichier_ecrire).
+5. Routine : propose un bilan hebdomadaire (planning_ajouter, avec accord) : quelles vidéos ont retenu, lesquelles refaire.
+# Règles
+Contenu original, pas de faux comptes, pas d'achat de vues ni d'abonnés, pas de « follow for follow » (contre les règles de TikTok). Les chiffres des programmes changent : renvoie vers l'application TikTok pour les conditions officielles.`),
+  sk('tiktok-scripts', 'TikTok : accroches et scripts', 'Écrire des accroches, scripts de 15 à 60 s et légendes avec hashtags.', `
+# Méthode
+1. Pour chaque idée : accroche (≤ 2 s, une promesse ou une question), corps en 3 temps, fin avec une raison de commenter ou de s'abonner.
+2. Donne 3 variantes d'accroche par vidéo ; la meilleure en premier.
+3. Légende courte + 3 à 5 hashtags (un large, deux de niche, un de série).
+4. Si la personne a un morceau : propose de créer le clip avec « Audio → Vidéo » (format vertical) et de le publier avec « Publier partout » (accord à chaque envoi).
+# Pièges
+Pas de musique protégée sans droits. Mentionne « contenu généré par IA » quand c'est le cas, comme la plateforme le demande.`),
+  sk('tiktok-monetisation', 'TikTok : revenus par paliers', 'Plan de monétisation honnête, adapté au niveau actuel du compte.', `
+# Repères à vérifier dans l'application TikTok (ils changent)
+- LIVE cadeaux : environ 1 000 abonnés, 18 ans et plus.
+- TikTok Shop (affiliation) : environ 1 000 abonnés pour commencer, vérification d'identité, compte actif depuis 30 jours ; commission par vente.
+- Creator Rewards Program : 10 000 abonnés, 100 000 vues valides sur 30 jours, 18 ans et plus, vidéos originales de plus d'une minute, pays éligibles dont la France ; paiement variable (de l'ordre de quelques dixièmes à 1 € les 1 000 vues qualifiées).
+- Sans seuil officiel : partenariats de marques, contenus UGC pour des marques, liens d'affiliation en bio, produits à soi (musique, e-books, modèles Etsy).
+# Méthode
+1. Situe la personne (abonnés, vues sur 30 jours, objectif). 2. Indique le prochain palier réaliste et ce qui manque (en chiffres). 3. Propose 2 sources de revenus accessibles MAINTENANT sans seuil et un plan d'action de 14 jours. 4. Dis clairement que rien n'est garanti et qu'aucun revenu ne vient sans régularité.
+# Règles
+Pas de promesse de gains, pas de « méthode secrète », pas d'achat d'abonnés. Les démarches (identité, paiement, contrats) restent à la personne.`),
+  sk('youtube-strategie', 'YouTube Project : chaîne, contenu et visibilité', 'Choisir sa niche, planifier les vidéos, optimiser titres, miniatures et description, puis publier.', `
+# Quand l'utiliser
+« Je veux lancer ma chaîne YouTube », « plus de visibilité », « YouTube Project ».
+# Méthode
+1. Demande une seule fois : sujet, objectif (visibilité, clients, musique, revenus), temps par semaine, chaîne existante. 
+2. Étude : web_chercher 5 chaînes comparables (formats, durées, fréquence, titres qui marchent). Cite les sources. Aucune promesse de vues.
+3. Positionnement : 3 angles, UN recommandé (le plus tenable). Promesse de la chaîne en une phrase.
+4. Plan de 30 jours : 1 à 2 vidéos longues + 3 Shorts par semaine, piliers, série récurrente. Pour chaque vidéo : 3 titres (≤ 60 caractères, mot-clé au début), idée de miniature (3 mots maximum, visage ou objet lisible), description avec mots-clés et chapitres, 5 hashtags. Enregistre dans le projet « YouTube » (fichier_ecrire).
+5. Production avec les outils de Clipia : clip vertical ou horizontal depuis un morceau (« Audio → Vidéo »), montage (Studio), miniature (image_creer), autres moteurs (« Moteurs de clip »).
+6. Publication : « Publier partout » ouvre YouTube Studio dans le Chrome de la personne ; tu remplis titre, description, miniature, visibilité, et tu demandes « Je publie ? » avant l'envoi final. Jamais de mot de passe tapé.
+7. Bilan hebdomadaire (planning_ajouter, avec accord) : durée de visionnage, taux de clic sur la miniature, vidéos à refaire.
+# Règles
+Contenu original, pas d'achat de vues ni d'abonnés, pas de musique protégée sans droits, indiquer le contenu généré par IA quand YouTube le demande.`),
+  sk('youtube-monetisation', 'YouTube : revenus par paliers', 'Programme Partenaire YouTube et autres sources de revenus, avec les seuils à vérifier.', `
+# Repères à vérifier dans YouTube Studio (les seuils changent)
+- Programme Partenaire (pubs) : de l'ordre de 1 000 abonnés et 4 000 heures de visionnage publiques sur 12 mois, ou 10 millions de vues publiques de Shorts sur 90 jours ; un palier d'entrée existe avec moins d'abonnés (environ 500) pour les abonnements et le soutien des fans.
+- Sans seuil : partenariats de marques, affiliation (liens dans la description), produits à soi (musique, e-books, modèles Etsy), prestations (sites, tatouage, design).
+# Méthode
+Situer la chaîne (abonnés, heures, vues Shorts), dire ce qui manque en chiffres, proposer 2 sources de revenus accessibles tout de suite et un plan de 14 jours. Rien n'est garanti ; les démarches (identité, paiement, contrats) restent à la personne.`),
 ];

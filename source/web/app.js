@@ -20,7 +20,9 @@ import { installerOpenClaw } from './openclaw.js';
 import { installerPromotion } from './promotion.js';
 import { installerTravaux } from './travaux.js';
 import { installerCommunaute } from './communaute.js';
+import { installerPouvoirs } from './pouvoirs.js';
 import { installerEntreprise } from './entreprise.js';
+import { installerAccueil } from './accueil.js';
 import { installerTelephone } from './telephone-vue.js';
 import { installerDictee } from './dictee.js';
 const $ = (s, r = document) => r.querySelector(s);
@@ -198,7 +200,18 @@ const MENU = [
   { id:'logitheque', ic:'📦', t:'Logithèque' },
   { id:'openclaw', ic:'🦞', t:'Pont OpenClaw' },
   { id:'travaux', ic:'⚙️', t:'Travaux en arrière-plan' },
+  { id:'youtube', ic:'▶️', t:'YouTube Project' },
+  { id:'tiktok', ic:'🎵', t:'TikTok Project' },
+  { id:'mobile', ic:'📱', t:'Sur mon téléphone (QR)' },
+  { id:'chrome', ic:'🧩', t:'Extension Chrome (important)' },
+  { id:'vscode', ic:'🧑‍💻', t:'Visual Studio Code' },
+  { id:'sauvegarde', ic:'💾', t:'Sauvegarder mon IA' },
+  { id:'moteurs', ic:'🎞', t:'Moteurs de clip (Canva…)' },
+  { id:'chanteur', ic:'🎤', t:'Créer mon chanteur / chanteuse' },
+  { id:'publier', ic:'📣', t:'Publier partout' },
   { id:'entreprise', ic:'🏢', t:'Lancer mon entreprise' },
+  { id:'planning', ic:'⏰', t:'Tâches planifiées' },
+  { id:'mcp', ic:'🔌', t:'Outils MCP' },
   { id:'communaute', ic:'🌍', t:'Communauté & évolution' },
   { id:'promotion', ic:'📣', t:'Promotion en 1 clic' },
   { id:'telephone', ic:'📱', t:'Téléphone & MCP' },
@@ -1705,6 +1718,7 @@ VUES.clipia = async (v) => {
     </button>
     <div class="question">Que me veux-tu ?</div>
     <div class="etat-voix" id="etat">Touchez l'orbe — je vous accueille et je vous écoute.</div>
+    <div class="etat-voix" style="font-size:12.5px;opacity:.85"><kbd style="border:1px solid #ffffff44;border-radius:6px;padding:1px 8px">Espace</kbd> = Clipia se tait et t'écoute (à tout moment) · ré-appuie pour envoyer · <label><input type="checkbox" id="espaceOn" checked> activé</label></div>
     <div style="display:flex;justify-content:center;margin:6px 0 14px">
       <button id="grosMicro" aria-pressed="false" style="display:flex;align-items:center;gap:12px;padding:16px 34px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:999px;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#2563eb);box-shadow:0 8px 30px rgba(124,58,237,.45)">
         <span id="grosMicroIc" style="font-size:24px">🎙</span><span id="grosMicroTxt">Parler à Clipia</span>
@@ -1723,6 +1737,7 @@ VUES.clipia = async (v) => {
       <button class="sugg">Transcris les paroles d'un fichier</button>
       <button class="sugg">Qu'est-ce que tu sais faire ?</button>
     </div>
+    <div id="vitrine"></div>
   </div>
 
   <div class="convo">
@@ -2810,6 +2825,21 @@ VUES.clipia = async (v) => {
     if (parleEnCours()) return interrompre();
     $('#bConvVocale').onclick();
   };
+  // Barre d'espace : elle se tait aussitôt et m'écoute ; un second appui envoie ce que j'ai dit.
+  const espaceOn = () => { try { return localStorage.getItem('clipia:espace') !== 'off'; } catch { return true; } };
+  if (window.__espaceHandler) document.removeEventListener('keydown', window.__espaceHandler, true);
+  window.__espaceHandler = ev => {
+    if (ev.code !== 'Space' || ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat || !espaceOn()) return;
+    if (!$('#orbe')?.isConnected) return;
+    const c = ev.target; if (c && (/^(INPUT|TEXTAREA|SELECT|BUTTON|A|SUMMARY)$/.test(c.tagName) || c.isContentEditable)) return;
+    ev.preventDefault();
+    vocalActif = true;
+    if (parleEnCours()) return interrompre();
+    if (enEcoute) return arreter();
+    atoiCacher(); couperVoix(); ecouter();
+  };
+  document.addEventListener('keydown', window.__espaceHandler, true);
+  const casEspace = $('#espaceOn'); if (casEspace) { casEspace.checked = espaceOn(); casEspace.onchange = () => { try { localStorage.setItem('clipia:espace', casEspace.checked ? 'on' : 'off'); } catch {} }; }
   $('#experience').onclick = () => {
     vocalActif = true;
     $('#bVoix').classList.add('actif');
@@ -2819,6 +2849,7 @@ VUES.clipia = async (v) => {
   };
   $('#bulleEcoute').onclick = arreter;
   v.querySelector('.question').onclick = accueillir;
+  try { const vt = v.querySelector('#vitrine'); if (vt && window.__vitrineAccueil) vt.append(window.__vitrineAccueil()); } catch {}
   v.querySelectorAll('.sugg').forEach(b => b.onclick = () => {
     $('#saisie').value = b.textContent; envoyer(false);
   });
@@ -3538,7 +3569,7 @@ VUES.messagerie = async (v) => {
       <div class="rang" style="gap:10px">
         <span class="puce ${et.enMarche ? 'ok' : 'neutre'}"></span>
         <b>${et.enMarche ? 'À l\'écoute' : 'Arrêté'}</b>
-        ${et.configure ? '' : '<span class="etiq att">jeton Telegram manquant</span>'}
+        ${et.configure ? '' : '<span class="etiq att">aucun jeton Telegram ou Slack enregistré</span>'}
       </div>
       <button class="btn ${et.enMarche ? '' : 'or'}" id="bascule" ${et.configure ? '' : 'disabled'}>
         ${et.enMarche ? 'Arrêter' : 'Démarrer l\'écoute'}</button>
@@ -3569,10 +3600,21 @@ VUES.messagerie = async (v) => {
     <button class="btn or mini" id="ajouter">Autoriser</button>
   </div>
 
-  <h2>WhatsApp — demande une adresse publique</h2>
+  <h2>Slack — fonctionne depuis chez vous (mode Socket)</h2>
+  <div class="carte">
+    <p style="color:var(--texte-doux);margin:0 0 14px">Comme Telegram, le mode Socket ne demande aucune adresse publique : Clipia se connecte à Slack elle-même. ${et.canaux?.slack?.socket ? '<span style="color:var(--ok)">✓ jeton d\'application enregistré</span>' : ''}</p>
+    <div class="pas"><span class="n">1</span><div><b>Créez l'application</b>
+      <p>api.slack.com/apps → Create New App. Menu « Socket Mode » : activez-le et créez un jeton d'application (<code>xapp-…</code>, droit <code>connections:write</code>).</p></div></div>
+    <div class="pas"><span class="n">2</span><div><b>Abonnez-la aux messages</b>
+      <p>« Event Subscriptions » : ajoutez <code>message.im</code> et <code>app_mention</code>. « OAuth &amp; Permissions » : <code>chat:write</code>, <code>im:history</code>, <code>app_mentions:read</code>. Installez l'application et copiez le jeton du bot (<code>xoxb-…</code>).</p></div></div>
+    <div class="pas"><span class="n">3</span><div><b>Enregistrez les deux jetons</b>
+      <p>Dans <a href="#/connexions">Connexions → Slack</a>. Puis démarrez l'écoute et écrivez un message privé à l'application. Elle vous donnera votre identifiant Slack (<code>U…</code>) : ajoutez-le ci-dessous.</p></div></div>
+  </div>
+
+  <h2>WhatsApp — demande une adresse publique et une signature</h2>
   <div class="carte creux">
     <p style="color:var(--texte-doux);margin:0">WhatsApp fonctionne à l'envers de Telegram : c'est Meta qui appelle votre serveur quand un message arrive. Il faut donc une adresse HTTPS joignable depuis Internet — un petit serveur, ou un tunnel comme <code>ngrok</code> ou <code>cloudflared</code>.</p>
-    <p style="color:var(--texte-doux);margin-top:10px">Adresse à déclarer dans la console Meta :</p>
+    <p style="color:var(--texte-doux);margin-top:10px">Adresse à déclarer dans la console Meta, avec le « jeton de vérification » que vous avez choisi. Clipia refuse tout message dont la signature Meta ne correspond pas au <b>secret de l'application</b> (à enregistrer dans Connexions → WhatsApp) :</p>
     <pre style="margin-top:7px">https://votre-domaine/api/webhooks/whatsapp</pre>
     <p style="color:var(--texte-faible);font-size:12.5px;margin-top:9px">${wa?.configure ? '✓ Jeton WhatsApp enregistré — il ne manque que l\'adresse publique.' : 'Jeton WhatsApp non enregistré pour l\'instant.'} L\'envoi de messages, lui, fonctionne déjà sans rien de tout cela.</p>
   </div>
@@ -3589,7 +3631,9 @@ VUES.messagerie = async (v) => {
       <ul style="margin:9px 0 0;padding-left:19px;color:var(--texte-doux);font-size:13.5px">
         <li><code>/aide</code> — ce qu'il sait faire</li>
         <li><code>/start</code> — obtenir votre identifiant</li>
-        <li><code>/stop</code> — il cesse d'écouter</li>
+        <li><code>/etat</code> — ce qui tourne en arrière-plan</li>
+        <li><code>/travail …</code> — lancer un projet en parallèle</li>
+        <li><code>/stop</code> — arrête les travaux en cours</li>
       </ul></div>
   </div>`));
 
@@ -5888,7 +5932,9 @@ installerTelephone({ $, el, esc, api, API, VUES, toast });
 installerPromotion({ $, el, esc, api, API, VUES, toast });
 installerTravaux({ $, el, esc, api, API, VUES, toast });
 installerCommunaute({ $, el, esc, api, API, VUES, toast });
+installerPouvoirs({ $, el, esc, api, VUES, toast });
 installerEntreprise({ $, el, esc, api, API, VUES, toast });
+installerAccueil({ $, el, esc, api, API, VUES, toast });
 installerDictee({ $, el, toast });
 buildNav();
 window.addEventListener('hashchange', route);
