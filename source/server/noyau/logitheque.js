@@ -14,6 +14,14 @@ export const CATALOGUE = [
   { id: 'obs', cat: 'video', nom: 'OBS Studio', licence: 'GPL', quoi: 'Enregistrer l\'écran, la webcam, faire du direct.', winget: 'OBSProject.OBSStudio', brew: 'obs', cask: true, apt: 'obs-studio', bin: ['obs'], lien: 'https://obsproject.com' },
   { id: 'handbrake', cat: 'video', nom: 'HandBrake', licence: 'GPL', quoi: 'Convertir et alléger des vidéos.', winget: 'HandBrake.HandBrake', brew: 'handbrake', cask: true, apt: 'handbrake', bin: ['HandBrakeCLI', 'ghb'], lien: 'https://handbrake.fr' },
   { id: 'vlc', cat: 'video', nom: 'VLC', licence: 'GPL', quoi: 'Lire toutes les vidéos et musiques.', winget: 'VideoLAN.VLC', brew: 'vlc', cask: true, apt: 'vlc', bin: ['vlc'], lien: 'https://www.videolan.org' },
+  { id: 'kodi', cat: 'video', nom: 'Kodi (centre multimédia)', licence: 'GPL', quoi: 'Ton centre multimédia libre : films, séries, musique et photos de ta bibliothèque, sur grand écran. Clipia le pilote à la voix (« ouvre Kodi », « pause », « mets plus fort »). Clipia ne fournit aucun contenu.', winget: 'XBMCFoundation.Kodi', brew: 'kodi', cask: true, apt: 'kodi', bin: ['kodi'], lien: 'https://kodi.tv' },
+  { id: 'stream-primevideo', cat: 'streaming', nom: 'Amazon Prime Video', licence: 'abonnement Amazon', quoi: 'Films et séries d\'Amazon : tu te connectes toi-même avec ton compte Amazon. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.primevideo.com' },
+  { id: 'stream-netflix', cat: 'streaming', nom: 'Netflix', licence: 'abonnement Netflix', quoi: 'Films et séries : tu te connectes toi-même avec ton compte Netflix. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.netflix.com/fr/' },
+  { id: 'stream-tf1plus', cat: 'streaming', nom: 'TF1+ (ex-MyTF1)', licence: 'gratuit avec publicité', quoi: 'Replay et direct de TF1 et des chaînes du groupe. Gratuit (avec publicité), compte facultatif. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.tf1.fr' },
+  { id: 'stream-m6plus', cat: 'streaming', nom: 'M6+ (ex-6play)', licence: 'gratuit avec publicité', quoi: 'Replay et direct de M6 et W9. Gratuit (avec publicité), compte facultatif. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.m6.fr' },
+  { id: 'stream-francetv', cat: 'streaming', nom: 'France.tv', licence: 'gratuit', quoi: 'Replay et direct des chaînes publiques, gratuit. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.france.tv' },
+  { id: 'stream-arte', cat: 'streaming', nom: 'Arte.tv', licence: 'gratuit', quoi: 'Films, séries et documentaires, gratuit. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://www.arte.tv/fr/' },
+  { id: 'stream-plutotv', cat: 'streaming', nom: 'Pluto TV', licence: 'gratuit avec publicité', quoi: 'Des dizaines de chaînes de films et séries, gratuites et légales. Clipia l\'ouvre à ta demande ; elle ne tape jamais ton mot de passe.', lienSeul: true, lien: 'https://pluto.tv/fr' },
   { id: 'ffmpeg', cat: 'video', nom: 'FFmpeg', licence: 'LGPL/GPL', quoi: 'Le moteur de montage de Clipia (déjà fourni avec l\'installateur Windows).', winget: 'Gyan.FFmpeg', brew: 'ffmpeg', cask: false, apt: 'ffmpeg', bin: ['ffmpeg'], lien: 'https://ffmpeg.org' },
   /* Images & 3D */
   { id: 'blender', cat: 'image', nom: 'Blender', licence: 'GPL', quoi: '3D, animation, effets visuels et même montage vidéo.', winget: 'BlenderFoundation.Blender', brew: 'blender', cask: true, apt: 'blender', bin: ['blender'], lien: 'https://www.blender.org' },
@@ -70,7 +78,7 @@ export const CATALOGUE = [
 ];
 
 const pf = () => process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux';
-export const CATEGORIES = { musique: '🎵 Musique', video: '🎬 Vidéo', image: '🖼 Image & 3D', code: '💻 Code', ia: '🧠 IA locale', google: '🔵 Google', agents: '🔌 Téléphone, MCP & agents', bureau: '📄 Bureautique & documents', entreprise: '🚀 Entreprise & automatisation' };
+export const CATEGORIES = { musique: '🎵 Musique', video: '🎬 Vidéo', image: '🖼 Image & 3D', code: '💻 Code', ia: '🧠 IA locale', google: '🔵 Google', agents: '🔌 Téléphone, MCP & agents', bureau: '📄 Bureautique & documents', entreprise: '🚀 Entreprise & automatisation', streaming: '📺 Films, séries & TV' };
 
 export function commande(id) {
   const e = CATALOGUE.find(x => x.id === id); if (!e || e.lienSeul) return null;

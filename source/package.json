@@ -1,6 +1,6 @@
 {
   "name": "clipia",
-  "version": "8.2.0",
+  "version": "8.3.0",
   "description": "Clipia — Studio créatif IA (CLENDAX). Passerelle multi-LLM, génération image/vidéo/audio, pipeline musique→clip, connecteurs sociaux, abonnements.",
   "type": "module",
   "main": "server/index.js",

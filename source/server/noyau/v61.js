@@ -90,7 +90,7 @@ export const definirBlanc = (v) => { store.setting('blanc', Boolean(v)); return 
 /** Ce qui engage quelque chose : on le simule en mode « à blanc ». */
 export const RISQUES = new Set(['fichier_ecrire', 'fichier_remplacer', 'disque_ecrire', 'machine_executer', 'executer',
   'telegram_envoyer', 'slack_envoyer', 'whatsapp_envoyer', 'google_gmail_envoyer', 'google_agenda_creer', 'ms_outlook_envoyer',
-  'ms_agenda_creer', 'chrome_cliquer', 'chrome_taper', 'ordi_souris', 'ordi_clavier', 'ordi_ouvrir_app', 'code_clipia_modifier']);
+  'ms_agenda_creer', 'chrome_cliquer', 'chrome_taper', 'ordi_souris', 'ordi_clavier', 'ordi_ouvrir_app', 'code_clipia_modifier', 'kodi']);
 export const decrireSimulation = (nom, params = {}) => {
   const p = { ...params }; delete p.accord;
   for (const k of Object.keys(p)) if (typeof p[k] === 'string' && p[k].length > 300) p[k] = p[k].slice(0, 300) + '…';

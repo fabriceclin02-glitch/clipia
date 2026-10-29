@@ -1,41 +1,41 @@
 {
-  "version": "8.2.0",
+  "version": "8.3.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-8.2.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-8.2.0-windows-x64.exe",
+      "nom": "Clipia-Setup-8.3.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-8.3.0-windows-x64.exe",
       "taille": "76 Mo",
-      "sha256": "49248c935778ff66d2ce707f134e74d8324678f9fc0b989fc1caf3070492672d"
+      "sha256": "ff4a1d9626b07f279fffae4a3f4c44e37a00827b2afbe5a8a2176eadfc84139a"
     },
     "portable": {
-      "nom": "Clipia-Portable-8.2.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-8.2.0-windows-x64.zip",
+      "nom": "Clipia-Portable-8.3.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-8.3.0-windows-x64.zip",
       "taille": "41 Mo",
-      "sha256": "c5d505afb3f74c9248cb1d18e2639312554ede34e3c31a01b41f056df8c05999"
+      "sha256": "1c6956fae74c6044c92f830720f036c0374eda51c7a91b450ad82a88a1b913d4"
     },
     "linux": {
-      "nom": "clipia_8.2.0_amd64.deb",
-      "url": "telechargements/clipia_8.2.0_amd64.deb",
+      "nom": "clipia_8.3.0_amd64.deb",
+      "url": "telechargements/clipia_8.3.0_amd64.deb",
       "taille": "33 Mo",
-      "sha256": "a2f7e7ac3d3ebda0bb9db999356b8dce66316625345c8c5bc1a94db6c5a4c470"
+      "sha256": "7b8937f79d33b1cc3743274915363317803822e570b047d838ad67a6b3cc0b13"
     },
     "macos": {
-      "nom": "Clipia-8.2.0-macos.zip",
-      "url": "telechargements/Clipia-8.2.0-macos.zip",
+      "nom": "Clipia-8.3.0-macos.zip",
+      "url": "telechargements/Clipia-8.3.0-macos.zip",
       "taille": "47 Mo",
-      "sha256": "992b40e126907bf9d45042ba3460cd027243f8793fac4ce4e2e02782038cae89"
+      "sha256": "5ee11ae37a7e49156ffb544aa59f608fef1e8be70b6860875c9ea51092cb7bce"
     },
     "iso": {
-      "nom": "Clipia-V8.2.0-windows.iso.zip (2 parties)",
+      "nom": "Clipia-V8.3.0-windows.iso.zip (2 parties)",
       "parties": [
         {
-          "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part00"
+          "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part00"
         },
         {
-          "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part01"
+          "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part01"
         }
       ],
-      "taille": "117 Mo en 2 parties"
+      "taille": "116 Mo en 2 parties"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",
@@ -82,12 +82,6 @@
       "taille": "1,06 Go en 11 parties",
       "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
     },
-    "android": {
-      "nom": "Clipia-3.1.0.apk",
-      "url": "telechargements/Clipia-3.1.0.apk",
-      "taille": "2.6 Mo",
-      "sha256": "b70eaceec16a421e804fcdc9e81f2055774f5dce1a61af3fed2cc9bbe019031a"
-    },
     "os3": {
       "nom": "Clipia-USB.iso.zip (4 parties)",
       "parties": [
@@ -106,9 +100,57 @@
       ],
       "taille": "262 Mo en 4 parties",
       "sha256": "09dd5bc29074ec5008a03cb62b30418c70339326c8467b476a8249661fd7abba"
+    },
+    "android": {
+      "nom": "Clipia-3.1.0.apk",
+      "url": "telechargements/Clipia-3.1.0.apk",
+      "taille": "2.6 Mo",
+      "sha256": "b70eaceec16a421e804fcdc9e81f2055774f5dce1a61af3fed2cc9bbe019031a"
     }
   },
   "anciennes": [
+    {
+      "version": "8.2.0",
+      "note": "Sauvegarder mon IA, accueil vitrine, moteurs de clip (Canva…), touche Espace.",
+      "fichiers": {
+        "windows": {
+          "nom": "Clipia-Setup-8.2.0-windows-x64.exe",
+          "url": "telechargements/Clipia-Setup-8.2.0-windows-x64.exe",
+          "taille": "76 Mo",
+          "sha256": "49248c935778ff66d2ce707f134e74d8324678f9fc0b989fc1caf3070492672d"
+        },
+        "portable": {
+          "nom": "Clipia-Portable-8.2.0-windows-x64.zip",
+          "url": "telechargements/Clipia-Portable-8.2.0-windows-x64.zip",
+          "taille": "41 Mo",
+          "sha256": "c5d505afb3f74c9248cb1d18e2639312554ede34e3c31a01b41f056df8c05999"
+        },
+        "linux": {
+          "nom": "clipia_8.2.0_amd64.deb",
+          "url": "telechargements/clipia_8.2.0_amd64.deb",
+          "taille": "33 Mo",
+          "sha256": "a2f7e7ac3d3ebda0bb9db999356b8dce66316625345c8c5bc1a94db6c5a4c470"
+        },
+        "macos": {
+          "nom": "Clipia-8.2.0-macos.zip",
+          "url": "telechargements/Clipia-8.2.0-macos.zip",
+          "taille": "47 Mo",
+          "sha256": "992b40e126907bf9d45042ba3460cd027243f8793fac4ce4e2e02782038cae89"
+        },
+        "iso": {
+          "nom": "Clipia-V8.2.0-windows.iso.zip (2 parties)",
+          "parties": [
+            {
+              "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part00"
+            },
+            {
+              "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part01"
+            }
+          ],
+          "taille": "117 Mo en 2 parties"
+        }
+      }
+    },
     {
       "version": "8.0.0",
       "note": "X8 « deux cerveaux » : travaux en arrière-plan, OpenClaw, entreprise.",

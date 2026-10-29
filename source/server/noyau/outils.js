@@ -408,6 +408,37 @@ export const OUTILS = {
 
   /* ── LE STUDIO ─────────────────────────────────────────────────────────── */
 
+  kodi: {
+    groupe: 'machine',
+    description: 'Pilote Kodi (centre multimédia libre) à la voix. Paramètre : action = ouvrir | activer (commande à distance, accord requis) | etat | lecture | pause | stop | suivant | precedent | avancer | reculer | volume (valeur : 0-100, plus, moins) | muet | haut | bas | gauche | droite | ok | retour | accueil | menu | info | aller (valeur : films, musique, photos, tv, radio, extensions, reglages) | jouer (chemin : fichier, adresse http ou ta propre liste M3U) | quitter. « Mets de la musique » : aller musique puis navigue avec haut/bas/ok.',
+    async run({ action, valeur, chemin, accord }) {
+      const K = await import('./kodi.js');
+      if (String(action).toLowerCase() === 'activer') {
+        const { consommer } = await import('./machine.js'); const cle = 'kodi:activer';
+        if (!(accord && consommer(accord, cle)))
+          return { resume: 'Je voudrais activer la commande à distance de Kodi (réglage local, protégé par un mot de passe aléatoire) pour le piloter à la voix. J\'attends ton accord.', arret: 'accord',
+            effet: { genre: 'accord', commande: cle, categorie: 'kodi', pourquoi: 'activer la commande à distance de Kodi' }, preuve: { genre: 'accord-demande', outil: 'kodi' } };
+        const t = K.activer(); return { resume: t, preuve: { genre: 'reglage', cible: 'kodi', action: 'activer' } };
+      }
+      const t = await K.piloter({ action, valeur, chemin });
+      return { resume: t, preuve: preuveHttp('kodi:' + String(action), 200, t.length) };
+    }
+  },
+
+  streaming_ouvrir: {
+    groupe: 'machine',
+    description: 'Ouvre un service de films, séries ou TV dans le navigateur par défaut. Paramètre : service = prime | netflix | tf1 | m6 | francetv | arte | pluto. La personne se connecte elle-même (Prime Video et Netflix sont des abonnements) : tu ne tapes jamais de mot de passe. Pour sa propre médiathèque, utilise plutôt kodi.',
+    async run({ service }) {
+      const L = { prime: 'https://www.primevideo.com', netflix: 'https://www.netflix.com/fr/', tf1: 'https://www.tf1.fr', mytf1: 'https://www.tf1.fr', m6: 'https://www.m6.fr', '6play': 'https://www.m6.fr', francetv: 'https://www.france.tv', arte: 'https://www.arte.tv/fr/', pluto: 'https://pluto.tv/fr' };
+      const url = L[String(service || '').toLowerCase().trim()];
+      if (!url) throw new AgentError('Service inconnu. Choix : prime, netflix, tf1, m6, francetv, arte, pluto.');
+      const { spawn: sp } = await import('node:child_process');
+      const [cmd, args] = process.platform === 'win32' ? ['cmd', ['/c', 'start', '', url]] : process.platform === 'darwin' ? ['open', [url]] : ['xdg-open', [url]];
+      const p = sp(cmd, args, { detached: true, stdio: 'ignore', windowsHide: true }); p.on('error', () => {}); p.unref();
+      return { resume: `Page ouverte : ${url}. Connecte-toi toi-même si le service le demande.`, preuve: preuveHttp(url, 200, 0) };
+    }
+  },
+
   section_ouvrir: {
     groupe: 'studio',
     description: 'Ouvre une section de l\'application devant la personne. Paramètre : nom (clip, image, musique, paroles, agent, medias, neuro, coffre, locales, modeles, utilitaires…).',

@@ -379,7 +379,7 @@ async function executer(nom, params, projet, onEvent, preuves, etapes, cadre = {
   return { ok: true, pourModele: corps.slice(0, 7000) };
 }
 
-const GENRE_OUTIL = { web_chercher: 'web', web_lire: 'web', image_creer: 'creation', clip_monter: 'creation', musique_creer: 'creation', voix_dire: 'creation', son_apaisant: 'creation', transcrire: 'creation', fichier_ecrire: 'fichier', fichier_remplacer: 'fichier', fichier_lire: 'fichier', fichier_lister: 'fichier', executer: 'machine', openclaw_agent: 'agent' };
+const GENRE_OUTIL = { web_chercher: 'web', web_lire: 'web', image_creer: 'creation', clip_monter: 'creation', musique_creer: 'creation', voix_dire: 'creation', son_apaisant: 'creation', transcrire: 'creation', fichier_ecrire: 'fichier', fichier_remplacer: 'fichier', fichier_lire: 'fichier', fichier_lister: 'fichier', executer: 'machine', kodi: 'machine', streaming_ouvrir: 'machine', openclaw_agent: 'agent' };
 function archiveOutil(nom, outil, params, sortie, projet) {
   if (nom === 'terminer' || nom === 'memoire_chercher') return;
   const genre = outil.groupe === 'machine' ? 'machine' : (outil.groupe === 'navigateur' || outil.groupe === 'mcp') ? 'web' : (GENRE_OUTIL[nom] || (outil.groupe === 'atelier' ? 'projet' : null));
