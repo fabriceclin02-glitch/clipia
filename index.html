@@ -184,6 +184,19 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
 </div></section>
 
 
+
+<section id="extension-chrome"><div class="c">
+  <h2 class="rv">🧩 Important : l'extension Chrome, les mains de Clipia <span class="nv">À INSTALLER</span></h2>
+  <p class="sous rv">C'est elle qui permet à Clipia de <b>prendre la main sur ton navigateur</b> (tes onglets, tes comptes déjà connectés) : ouvrir des sites, remplir des formulaires, publier tes clips. Elle est fournie <b>dans Clipia</b> ; l'installation prend deux minutes. Rien ne se fait sans ton accord : une carte « Autoriser » ouvre une session de 10 minutes, que tu peux stopper à tout moment.</p>
+  <ol class="rv" style="max-width:760px;margin:0 auto;line-height:1.9;text-align:left">
+    <li>Dans Clipia, clique sur <b>« 🧩 Installer l'extension Chrome »</b> (barre latérale ou bandeau de l'accueil), puis <b>« Préparer l'extension »</b>.</li>
+    <li>Dans Chrome, ouvre <code>chrome://extensions</code> et active le <b>Mode développeur</b>.</li>
+    <li><b>« Charger l'extension non empaquetée »</b> → choisis le dossier indiqué par Clipia.</li>
+    <li>Le statut passe à <b>« connectée »</b> dans Clipia. C'est prêt.</li>
+  </ol>
+  <p class="sous rv" style="margin-top:12px">Pas (encore) sur le Chrome Web Store : le mode développeur permet d'installer une extension locale dont tu peux lire tout le code. Elle ne tape jamais tes mots de passe ni ta carte bancaire.</p>
+</div></section>
+
 <section id="demo-x8"><div class="c">
   <h2 class="rv">Demande, réponse, action : Clipia X8 en 1 minute <span class="nv">DÉMO</span></h2>
   <p class="sous rv">Une demande à la voix, la sphère 3D qui répond, le travail qui part en arrière-plan, une routine créée après ton accord, puis le pilotage depuis le téléphone. Scénario mis en scène pour illustrer les fonctions.</p>
@@ -198,6 +211,14 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
   <p class="sous rv" style="margin:14px auto 0;text-align:center"><a href="Clipia-Espace-demo.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo</a></p>
 </div></section>
 
+<section id="demo-projets"><div class="c">
+  <h2 class="rv">TikTok Project et YouTube Project <span class="nv">NOUVEAU</span></h2>
+  <p class="sous rv">Clipia t'aide à bâtir une stratégie pour gagner des vues, puis des revenus : niche, plan de 30 jours, scripts, titres, miniatures, clip, publication sur ta chaîne (avec ton accord) et paliers de monétisation expliqués. Aucune promesse de gains : régularité, contenu original, jamais d'achat de vues. Scénario mis en scène.</p>
+  <div class="vid2 rv"><video controls preload="metadata" poster="img/poster-projets.jpg" playsinline><source src="Clipia-Projets-demo.mp4" type="video/mp4"></video></div>
+  <p class="sous rv" style="margin:14px auto 0;text-align:center"><a href="Clipia-Projets-demo.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo</a></p>
+</div></section>
+
+
 <section id="nouveautes-82"><div class="c">
   <h2 class="rv">Nouveautés de la 8.2 <span class="nv">8.2</span></h2>
   <ul class="rv" style="max-width:820px;margin:0 auto;line-height:1.8;text-align:left">
@@ -206,6 +227,9 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
     <li><b>🎨 Moteurs de clip</b> : Canva (dans ton compte), Remotion, Revideo, Editly, Shotstack, Creatomate.</li>
     <li><b>🧑‍💻 Visual Studio Code</b> : tes projets s'ouvrent en un clic.</li>
     <li><b>⎵ Barre d'espace</b> : elle se tait et t'écoute.</li>
+    <li><b>🎵 TikTok Project</b> et <b>▶️ YouTube Project</b> : stratégie, plan, scripts, visibilité, publication, paliers de revenus (sans promesse de gains).</li>
+    <li><b>📱 QR codes iPhone / Android</b> avec la sphère 3D sur le téléphone, et <b>🧩 extension Chrome</b> pour qu'elle prenne la main sur le navigateur.</li>
+    <li><b>🤖 Agent plus autonome</b> : jamais deux fois la même action, vérification avant de conclure, échelle de secours, initiatives proposées.</li>
   </ul>
 </div></section>
 
@@ -395,6 +419,7 @@ footer{border-top:1px solid #2a307055;padding:30px 0 100px;color:var(--doux);fon
 <section id="telecharger" class="dl"><div class="c">
   <h2 class="rv">Télécharger Clipia</h2><p class="sous rv">Version <span id="ver">8.0.0</span> · gratuit · Node.js déjà inclus.</p>
   <div class="g" id="liste"></div>
+  <div id="anciennes" class="rv" style="max-width:900px;margin:30px auto 0;text-align:left"></div>
   <p class="note rv" style="margin-top:16px">Les logiciels ne sont pas signés par un éditeur payant : Windows (« Exécuter quand même ») et macOS (clic droit → Ouvrir) afficheront un avertissement normal. Vérifie l'empreinte SHA-256 sous chaque fichier. <b>Extrais toujours tout le zip avant de lancer Clipia.exe</b> (ne le lance pas depuis WinRAR).</p>
 </div></section>
 
@@ -501,6 +526,9 @@ fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
    const bouton=parties?`<div class="parts">${parties.map((p,n)=>p.url?`<a class="btn p" style="padding:8px 14px;font-size:13px" href="${p.url}" rel="noopener">Partie ${n+1}</a>`:'').join('')}</div>`
      :(f.url?`<a class="btn p" href="${f.url}" rel="noopener">${k==='telephone'?"Ouvrir l'application":'Télécharger'}</a>`:`<span class="btn" aria-disabled="true">Lien bientôt disponible</span>`);
    return `<div class="k rv">${ic(i)}<h3>${t}</h3><p>${s}${f.taille?' · '+f.taille:''}</p>${bouton}<small>${f.nom||''}${f.sha256?`<br>SHA-256 : <code>${f.sha256}</code>`:''}</small></div>`}).join('');
+  const AN=L.anciennes||[];
+  $('#anciennes').innerHTML=AN.length?`<h3 style="text-align:center">Versions précédentes</h3><p class="note" style="text-align:center">Rien n'est retiré : chaque version reste téléchargeable (par exemple la X7).</p>`+AN.map(a=>{const lib={windows:'Windows (installeur)',portable:'Windows (portable)',linux:'Linux (.deb)',macos:'macOS',iso:'Image .iso'};
+   return `<details style="margin:10px 0;background:#ffffff0d;border:1px solid #ffffff22;border-radius:12px;padding:12px 16px"><summary style="cursor:pointer;font-weight:700">Clipia ${a.version}${a.note?' — '+a.note:''}</summary><div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">`+Object.keys(a.fichiers).map(k=>{const f=a.fichiers[k];return f.parties?f.parties.map((p,n)=>`<a class="btn" style="padding:8px 14px;font-size:13px" href="${p.url}">${lib[k]} · partie ${n+1}</a>`).join(''):`<a class="btn" style="padding:8px 14px;font-size:13px" href="${f.url}" title="SHA-256 ${f.sha256||''}">${lib[k]||k}</a>`}).join('')+`</div></details>`}).join(''):'';
   observer();
 }).catch(()=>{$('#liste').innerHTML='<p class="note">Liste des téléchargements indisponible. Écris à fabriceclin02@gmail.com.</p>'});
 /* animations */
