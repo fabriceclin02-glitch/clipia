@@ -1,38 +1,38 @@
 {
-  "version": "8.0.0",
+  "version": "8.2.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-8.0.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-8.0.0-windows-x64.exe",
+      "nom": "Clipia-Setup-8.2.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-8.2.0-windows-x64.exe",
       "taille": "76 Mo",
-      "sha256": "05ebe1dc33c133df8387b02137560f702f25afd6dd1c62d9daf0d66af563ef12"
+      "sha256": "49248c935778ff66d2ce707f134e74d8324678f9fc0b989fc1caf3070492672d"
     },
     "portable": {
-      "nom": "Clipia-Portable-8.0.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-8.0.0-windows-x64.zip",
-      "taille": "40 Mo",
-      "sha256": "ae178471e1b0c177364513f8ef392ae13bfec1e3e096c884135443cb9da1f028"
+      "nom": "Clipia-Portable-8.2.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-8.2.0-windows-x64.zip",
+      "taille": "41 Mo",
+      "sha256": "c5d505afb3f74c9248cb1d18e2639312554ede34e3c31a01b41f056df8c05999"
     },
     "linux": {
-      "nom": "clipia_8.0.0_amd64.deb",
-      "url": "telechargements/clipia_8.0.0_amd64.deb",
+      "nom": "clipia_8.2.0_amd64.deb",
+      "url": "telechargements/clipia_8.2.0_amd64.deb",
       "taille": "33 Mo",
-      "sha256": "f8c0334e6b3f3086141f47e5e57f89028ae8e096a42bbdb462f97351cc943ec2"
+      "sha256": "a2f7e7ac3d3ebda0bb9db999356b8dce66316625345c8c5bc1a94db6c5a4c470"
     },
     "macos": {
-      "nom": "Clipia-8.0.0-macos.zip",
-      "url": "telechargements/Clipia-8.0.0-macos.zip",
+      "nom": "Clipia-8.2.0-macos.zip",
+      "url": "telechargements/Clipia-8.2.0-macos.zip",
       "taille": "47 Mo",
-      "sha256": "d02bd176f38c344637399545c7e7d1df52e2dfcb04008ab6c64bf755e7ec2276"
+      "sha256": "992b40e126907bf9d45042ba3460cd027243f8793fac4ce4e2e02782038cae89"
     },
     "iso": {
-      "nom": "Clipia-V8.0.0-windows.iso.zip (2 parties)",
+      "nom": "Clipia-V8.2.0-windows.iso.zip (2 parties)",
       "parties": [
         {
-          "url": "telechargements/Clipia-V8.0.0-windows.iso.zip.part00"
+          "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part00"
         },
         {
-          "url": "telechargements/Clipia-V8.0.0-windows.iso.zip.part01"
+          "url": "telechargements/Clipia-V8.2.0-windows.iso.zip.part01"
         }
       ],
       "taille": "117 Mo en 2 parties"
@@ -68,6 +68,48 @@
     }
   },
   "anciennes": [
+    {
+      "version": "8.0.0",
+      "note": "X8 « deux cerveaux » : travaux en arrière-plan, OpenClaw, entreprise.",
+      "fichiers": {
+        "windows": {
+          "nom": "Clipia-Setup-8.0.0-windows-x64.exe",
+          "url": "telechargements/Clipia-Setup-8.0.0-windows-x64.exe",
+          "taille": "76 Mo",
+          "sha256": "05ebe1dc33c133df8387b02137560f702f25afd6dd1c62d9daf0d66af563ef12"
+        },
+        "portable": {
+          "nom": "Clipia-Portable-8.0.0-windows-x64.zip",
+          "url": "telechargements/Clipia-Portable-8.0.0-windows-x64.zip",
+          "taille": "40 Mo",
+          "sha256": "ae178471e1b0c177364513f8ef392ae13bfec1e3e096c884135443cb9da1f028"
+        },
+        "linux": {
+          "nom": "clipia_8.0.0_amd64.deb",
+          "url": "telechargements/clipia_8.0.0_amd64.deb",
+          "taille": "33 Mo",
+          "sha256": "f8c0334e6b3f3086141f47e5e57f89028ae8e096a42bbdb462f97351cc943ec2"
+        },
+        "macos": {
+          "nom": "Clipia-8.0.0-macos.zip",
+          "url": "telechargements/Clipia-8.0.0-macos.zip",
+          "taille": "47 Mo",
+          "sha256": "d02bd176f38c344637399545c7e7d1df52e2dfcb04008ab6c64bf755e7ec2276"
+        },
+        "iso": {
+          "nom": "Clipia-V8.0.0-windows.iso.zip (2 parties)",
+          "parties": [
+            {
+              "url": "telechargements/Clipia-V8.0.0-windows.iso.zip.part00"
+            },
+            {
+              "url": "telechargements/Clipia-V8.0.0-windows.iso.zip.part01"
+            }
+          ],
+          "taille": "117 Mo en 2 parties"
+        }
+      }
+    },
     {
       "version": "7.0.1",
       "note": "X7 : voix et sphère 3D, Logithèque, accès ordinateur.",
