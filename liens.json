@@ -83,10 +83,10 @@
       "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
     },
     "android": {
-      "nom": "Clipia-8.9.0.apk",
-      "url": "telechargements/Clipia-8.9.0.apk",
+      "nom": "Clipia-8.9.1.apk",
+      "url": "telechargements/Clipia-8.9.1.apk",
       "taille": "2.6 Mo",
-      "sha256": "b573aa3aaa330b8944a1d4298d9090e0b258a99d170f8ef9604824ab63fef431"
+      "sha256": "aa20093a54cfeedee04474118bd8f0481c86f3fd96c9a094eb0197dff679f509"
     }
   },
   "anciennes": [
