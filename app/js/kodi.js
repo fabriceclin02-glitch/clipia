@@ -28,14 +28,24 @@ const Kodi=(()=>{
       if(a==='film'||a==='musique'||a==='serie'){
         if(!q)return 'Précise le titre à chercher.';
         const f=(champ)=>({filter:{field:champ,operator:'contains',value:q},limits:{start:0,end:5}});
-        if(a==='film'){const r=await k.rpc('VideoLibrary.GetMovies',f('title'));const m=(r.movies||[])[0];if(!m)return `Aucun film « ${q} » dans la bibliothèque Kodi.`;await k.rpc('Player.Open',{item:{movieid:m.movieid}});return `Lecture du film « ${m.label} ».`}
+        if(a==='film'){let r=await k.rpc('VideoLibrary.GetMovies',f('title'));let m=(r.movies||[])[0];
+          if(!m){const g=await k.rpc('VideoLibrary.GetGenres',{type:'movie'});const nq=norm(q).replace(/^(un |une |des |le |la )?(film |films )?(de |d')?/,'');const ge=((g&&g.genres)||[]).find(x=>norm(x.label).includes(nq)||nq.includes(norm(x.label)));
+            if(ge||/hasard|nimporte|surprise/.test(norm(q))){const fl=ge?{filter:{field:'genre',operator:'is',value:ge.label}}:{};const t=await k.rpc('VideoLibrary.GetMovies',Object.assign({sort:{method:'random'},limits:{start:0,end:1}},fl,{filter:ge?{and:[{field:'genre',operator:'is',value:ge.label},{field:'playcount',operator:'is',value:'0'}]}:{field:'playcount',operator:'is',value:'0'}}));m=(t.movies||[])[0];
+              if(!m&&ge){const t2=await k.rpc('VideoLibrary.GetMovies',{sort:{method:'random'},limits:{start:0,end:1},filter:{field:'genre',operator:'is',value:ge.label}});m=(t2.movies||[])[0]}}}
+          if(!m)return `Aucun film « ${q} » (titre ou genre) dans la bibliothèque Kodi : ajoute tes films à la bibliothèque.`;await k.rpc('Player.Open',{item:{movieid:m.movieid}});return `Lecture du film « ${m.label} ».`}
         if(a==='serie'){const r=await k.rpc('VideoLibrary.GetTVShows',f('title'));const s=(r.tvshows||[])[0];if(!s)return `Aucune série « ${q} » dans la bibliothèque Kodi.`;
           const e=await k.rpc('VideoLibrary.GetEpisodes',{tvshowid:s.tvshowid,filter:{field:'playcount',operator:'is',value:'0'},limits:{start:0,end:1}});const ep=(e.episodes||[])[0];if(!ep)return `Plus d'épisode non vu pour « ${s.label} ».`;await k.rpc('Player.Open',{item:{episodeid:ep.episodeid}});return `Lecture de « ${s.label} » : ${ep.label}.`}
         let r=await k.rpc('AudioLibrary.GetSongs',f('title'));let s=(r.songs||[])[0];
         if(!s){r=await k.rpc('AudioLibrary.GetArtists',f('artist'));const ar=(r.artists||[])[0];if(ar){await k.rpc('Player.Open',{item:{artistid:ar.artistid}});return `Lecture de ${ar.label}.`}return `Aucun titre ni artiste « ${q} » dans la bibliothèque Kodi.`}
         await k.rpc('Player.Open',{item:{songid:s.songid}});return `Lecture de « ${s.label} ».`}
+      if(a==='chaine'||a==='radio'){
+        const ty=a==='radio'?'radio':'tv';const r=await k.rpc('PVR.GetChannels',{channelgroupid:a==='radio'?'allradio':'alltv'}).catch(()=>null);const l=(r&&r.channels)||[];
+        if(!l.length)return 'Aucune chaîne : installe un client PVR (ex. PVR IPTV Simple) et charge ta liste de chaînes dans Kodi.';
+        const nq=norm(q),c=l.find(x=>norm(x.label)===nq)||l.find(x=>norm(x.label).includes(nq)&&nq);
+        if(!c)return `Chaîne « ${q} » introuvable. Chaînes disponibles : ${l.slice(0,12).map(x=>x.label).join(', ')}.`;
+        await k.rpc('Player.Open',{item:{channelid:c.channelid}});return `Lecture de « ${c.label} ».`}
       if(a==='addon'){if(!q)return 'Précise l\'identifiant du module (ex : plugin.video.youtube).';await k.rpc('Addons.ExecuteAddon',{addonid:q});return 'Module « '+q+' » lancé.'}
-      return 'Action inconnue. Actions : film, serie, musique, pause, stop, suivant, precedent, avancer, reculer, volume, muet, haut, bas, gauche, droite, ok, retour, accueil, en_cours, message, addon.';
+      return 'Action inconnue. Actions : chaine, radio, film, serie, musique, pause, stop, suivant, precedent, avancer, reculer, volume, muet, haut, bas, gauche, droite, ok, retour, accueil, en_cours, message, addon.';
     }
   };
   return k;
