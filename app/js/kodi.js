@@ -2,6 +2,7 @@
 /* Clipia X8 — pilotage de Kodi (lecteur multimédia) par la voix, via son interface JSON-RPC. */
 const Kodi=(()=>{
   const cfg=()=>Object.assign({on:false,url:'http://localhost:8080',user:'kodi',mdp:''},M.lire('kodi.cfg',{}));
+  const Kodi_yt=async()=>{try{const r=await k.rpc('Addons.GetAddonDetails',{addonid:'plugin.video.youtube',properties:['enabled']});return !!(r&&r.addon&&r.addon.enabled)}catch(e){return false}};
   const k={
     cfg,set(o){M.ecrire('kodi.cfg',Object.assign(cfg(),o))},actif:()=>cfg().on,
     async rpc(method,params){
@@ -44,8 +45,16 @@ const Kodi=(()=>{
         const nq=norm(q),c=l.find(x=>norm(x.label)===nq)||l.find(x=>norm(x.label).includes(nq)&&nq);
         if(!c)return `Chaîne « ${q} » introuvable. Chaînes disponibles : ${l.slice(0,12).map(x=>x.label).join(', ')}.`;
         await k.rpc('Player.Open',{item:{channelid:c.channelid}});return `Lecture de « ${c.label} ».`}
+      if(a==='youtube'){
+        if(!q)return 'Précise la chanson ou la vidéo à chercher.';
+        const dir='plugin://plugin.video.youtube/kodion/search/query/?q='+encodeURIComponent(q);
+        if(!await Kodi_yt())return 'L\'extension YouTube n\'est pas installée dans Kodi : installe-la (Clipia — Accueil → YouTube).';
+        try{const r=await k.rpc('Files.GetDirectory',{directory:dir,media:'video',limits:{start:0,end:15}});
+          const f=((r&&r.files)||[]).find(x=>x.filetype==='file'&&x.file);
+          if(f){await k.rpc('Player.Open',{item:{file:f.file}});return `Lecture sur YouTube : « ${f.label||q} ».`}}catch(e){}
+        await k.rpc('GUI.ActivateWindow',{window:'videos',parameters:[dir]});return `Résultats YouTube pour « ${q} » affichés dans Kodi : choisis la vidéo (lecture automatique impossible).`}
       if(a==='addon'){if(!q)return 'Précise l\'identifiant du module (ex : plugin.video.youtube).';await k.rpc('Addons.ExecuteAddon',{addonid:q});return 'Module « '+q+' » lancé.'}
-      return 'Action inconnue. Actions : chaine, radio, film, serie, musique, pause, stop, suivant, precedent, avancer, reculer, volume, muet, haut, bas, gauche, droite, ok, retour, accueil, en_cours, message, addon.';
+      return 'Action inconnue. Actions : youtube, chaine, radio, film, serie, musique, pause, stop, suivant, precedent, avancer, reculer, volume, muet, haut, bas, gauche, droite, ok, retour, accueil, en_cours, message, addon.';
     }
   };
   return k;
