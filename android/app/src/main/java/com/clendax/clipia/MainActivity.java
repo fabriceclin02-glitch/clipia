@@ -37,6 +37,12 @@ import androidx.core.content.ContextCompat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -91,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
         s.setTextZoom(100);
-        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/3.1.0");
+        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/4.0.0");
 
         vue.setBackgroundColor(0xFF080A1C);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -247,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 versJs("window.__clipiaVoix&&window.__clipiaVoix.debut()");
             }
             @Override public void onBeginningOfSpeech() {}
-            @Override public void onRmsChanged(float v) {}
+            @Override public void onRmsChanged(float v) { versJs("window.__clipiaVoix&&window.__clipiaVoix.niveau&&window.__clipiaVoix.niveau(" + v + ")"); }
             @Override public void onBufferReceived(byte[] b) {}
             @Override public void onEndOfSpeech() {}
 
@@ -366,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
     private class Pont {
 
         @JavascriptInterface
-        public String version() { return "3.1.0"; }
+        public String version() { return "4.0.0"; }
 
         @JavascriptInterface
         public boolean voixNative() { return true; }
@@ -411,6 +417,43 @@ public class MainActivity extends AppCompatActivity {
                 }
             } catch (Exception ignore) {}
             return out.toString();
+        }
+
+        /** Appel vers Clipia sur le PC de la personne (adresse locale en http possible). Reponse rendue a la page par __clipiaPC(id, ok, texte). */
+        @JavascriptInterface
+        public void requetePC(final String id, final String url, final String jeton, final String corps) {
+            new Thread(() -> {
+                boolean ok = false; String texte;
+                HttpURLConnection c = null;
+                try {
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setRequestMethod("POST");
+                    c.setConnectTimeout(8000);
+                    c.setReadTimeout(120000);
+                    c.setDoOutput(true);
+                    c.setRequestProperty("Content-Type", "application/json");
+                    c.setRequestProperty("Accept", "application/json");
+                    if (jeton != null && !jeton.isEmpty()) c.setRequestProperty("Authorization", "Bearer " + jeton);
+                    byte[] b = corps.getBytes(StandardCharsets.UTF_8);
+                    try (OutputStream o = c.getOutputStream()) { o.write(b); }
+                    int code = c.getResponseCode();
+                    java.io.InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+                    StringBuilder sb = new StringBuilder();
+                    if (in != null) {
+                        try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+                            String l; while ((l = r.readLine()) != null) sb.append(l).append('\n');
+                        }
+                    }
+                    ok = code < 400;
+                    texte = ok ? sb.toString() : ("HTTP " + code + " " + sb);
+                } catch (Exception e) {
+                    texte = String.valueOf(e.getMessage());
+                } finally {
+                    if (c != null) c.disconnect();
+                }
+                final boolean fok = ok; final String ft = texte;
+                versJs("window.__clipiaPC&&window.__clipiaPC(" + texteJs(id) + "," + fok + "," + texteJs(ft) + ")");
+            }).start();
         }
 
         @JavascriptInterface
