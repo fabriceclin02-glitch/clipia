@@ -142,6 +142,17 @@
    "url": "https://f-droid.org/packages/org.kiwix.kiwixmobile/",
    "icone": "📚",
    "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "org.xbmc.kodi",
+   "nom": "Kodi",
+   "desc": "Lecteur multimédia open source. Clipia peut le piloter à la voix (Réglages → Kodi).",
+   "cat": "Vidéo",
+   "type": "fdroid",
+   "pkg": "org.xbmc.kodi",
+   "url": "https://kodi.tv/download/android/",
+   "icone": "📺",
+   "dev": "Kodi (site officiel)"
   }
  ]
 }
