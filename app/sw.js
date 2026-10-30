@@ -2,13 +2,17 @@
    Role : rendre l'application disponible hors ligne et accelerer son ouverture.
    Les appels aux modeles IA ne sont JAMAIS mis en cache. */
 
-const VERSION = 'clipia-8.4.0-mobile';
+const VERSION = 'clipia-8.4.1-mobile';
 const CACHE = `${VERSION}-coquille`;
 
 const COQUILLE = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './js/core.js',
+  './js/media.js',
+  './js/agent.js',
+  './js/ui.js',
   './icones/clipia-192.png',
   './icones/clipia-512.png',
   './icones/clipia-180.png',
@@ -57,6 +61,17 @@ self.addEventListener('fetch', (e) => {
           return rep;
         })
         .catch(() => caches.match('./index.html').then((r) => r || caches.match('./')))
+    );
+    return;
+  }
+
+  // Scripts : reseau d'abord (toujours la derniere version), cache en secours.
+  if (url.pathname.endsWith('.js')) {
+    e.respondWith(
+      fetch(req).then((rep) => {
+        if (rep && rep.status === 200) { const copie = rep.clone(); caches.open(CACHE).then((c) => c.put(req, copie)); }
+        return rep;
+      }).catch(() => caches.match(req))
     );
     return;
   }

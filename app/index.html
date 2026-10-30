@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
-<title>Clipia</title>
-<meta name="description" content="Clipia sur téléphone : une sphère 3D qui t'écoute et te répond, conversation vocale continue, moteur gratuit sans clé, Groq gratuit, et ton PC en option.">
+<title>Clipia X8</title>
+<meta name="description" content="Clipia X8 sur téléphone : parle-lui, elle code, crée images, musiques et vidéos, et dirige des agents.">
 <meta name="theme-color" content="#080a1c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icones/favicon-32.png">
@@ -14,403 +14,151 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Clipia">
 <style>
-:root{
-  --bg:#080a1c;--bg2:#0d1030;--carte:#11153a;--carte2:#1a1f4d;--texte:#eef0ff;--doux:#a9afd6;--bord:#2a3070;
-  --violet:#7c5cff;--bleu:#2f8cff;--rose:#c26bff;--cyan:#42d7ff;--ok:#43e6a8;--alerte:#ff7a8a;--orange:#ff9a5c;
-  --grad:linear-gradient(135deg,#7c5cff 0%,#2f8cff 100%);
-  --haut:env(safe-area-inset-top);--bas:env(safe-area-inset-bottom);
-}
+:root{--bg:#080a1c;--bg2:#0d1030;--carte:#11153a;--carte2:#1a1f4d;--texte:#eef0ff;--doux:#a9afd6;--bord:#2a3070;--violet:#7c5cff;--bleu:#2f8cff;--cyan:#42d7ff;--ok:#43e6a8;--alerte:#ff7a8a;--grad:linear-gradient(135deg,#7c5cff,#2f8cff);--haut:env(safe-area-inset-top);--bas:env(safe-area-inset-bottom);--tab:60px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--texte);overflow:hidden;font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
-#scene{position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%;touch-action:none}
-.app{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;pointer-events:none}
-.app>*{pointer-events:auto}
-header{display:flex;align-items:center;gap:10px;padding:calc(var(--haut) + 10px) 14px 8px;pointer-events:none}
-header>*{pointer-events:auto}
-.logo{font-weight:800;letter-spacing:.6px;font-size:18px}
-.logo small{color:#c9a0ff;font-size:12px;margin-left:4px}
+html,body{height:100%;margin:0;overflow:hidden}
+body{background:var(--bg);color:var(--texte);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+#scene{position:fixed;inset:0;z-index:0;width:100%;height:100%;touch-action:none;display:block}
+.vue{position:fixed;inset:0 0 calc(var(--tab) + var(--bas)) 0;z-index:2;display:none;flex-direction:column;pointer-events:none}
+.vue.on{display:flex}
+.vue>*{pointer-events:auto}
+.plein{background:var(--bg);pointer-events:auto;overflow-y:auto;overscroll-behavior:contain;padding:calc(var(--haut) + 14px) 16px 24px;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text}
+header.h{display:flex;align-items:center;gap:10px;padding:calc(var(--haut) + 10px) 14px 6px;pointer-events:none}
+header.h>*{pointer-events:auto}
+.logo{font-weight:800;letter-spacing:.6px;font-size:18px}.logo small{color:#c9a0ff;font-size:12px;margin-left:4px}
 .etat{font-size:12px;color:var(--doux);display:flex;align-items:center;gap:6px}
-.point{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px var(--ok)}
-.point.off{background:var(--alerte);box-shadow:0 0 9px var(--alerte)}
-.point.att{background:var(--cyan);box-shadow:0 0 9px var(--cyan);animation:pulse 1.1s infinite}
+.point{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 9px var(--ok)}.point.off{background:var(--alerte);box-shadow:0 0 9px var(--alerte)}.point.att{background:var(--cyan);box-shadow:0 0 9px var(--cyan);animation:pulse 1.1s infinite}
 @keyframes pulse{50%{opacity:.35}}
-.ico{margin-left:auto;display:flex;gap:8px}
-.bico{width:42px;height:42px;border-radius:13px;border:1px solid var(--bord);background:#10143a99;backdrop-filter:blur(10px);color:var(--texte);font-size:18px;display:grid;place-items:center;cursor:pointer}
-.bico:active{transform:scale(.94)}
-.moteur{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:99px;border:1px solid var(--bord);background:#10143a99;font-size:12px;color:var(--doux);cursor:pointer;margin-left:6px}
+.moteur{margin-left:auto;padding:6px 12px;border-radius:99px;border:1px solid var(--bord);background:#10143a99;font-size:12px;color:var(--doux);cursor:pointer;max-width:48vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .espace{flex:1 1 auto;min-height:0}
-/* sous-titres : ce que Clipia entend / dit */
-.sous{flex:0 1 34%;overflow-y:auto;padding:0 22px 8px;text-align:center;pointer-events:auto;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text}
+.sous{flex:0 1 38%;overflow-y:auto;padding:0 18px 8px;text-align:center;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text}
 .sous .moi{font-size:15px;color:#b7bdf0;margin-bottom:8px}
-.sous .elle{font-size:19px;line-height:1.45;color:#fff;text-shadow:0 2px 18px #000b}
-.sous .sys{font-size:13.5px;color:var(--doux);border:1px dashed var(--bord);border-radius:14px;padding:10px 12px;display:inline-block}
-.idees{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:0 16px 8px}
+.sous .elle{font-size:19px;line-height:1.45;color:#fff;text-shadow:0 2px 18px #000b;white-space:pre-wrap}
+.sous .sys{font-size:13.5px;color:var(--doux);border:1px dashed var(--bord);border-radius:14px;padding:10px 12px;display:inline-block;text-align:left}
+.sous .etape{font-size:13px;color:var(--cyan);margin:6px 0}
+.idees{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:0 14px 8px}
 .idee{padding:9px 14px;border-radius:99px;border:1px solid var(--bord);background:#161b4acc;font-size:13.5px;cursor:pointer}
-.idee:active{transform:scale(.96)}
-/* barre du bas */
-.bas{padding:6px 14px calc(var(--bas) + 14px)}
-.saisie{display:none;align-items:flex-end;gap:8px;margin-bottom:10px}
-.saisie.on{display:flex}
-textarea{flex:1;resize:none;max-height:120px;min-height:46px;padding:12px 14px;border-radius:16px;border:1px solid var(--bord);background:#11153aee;color:var(--texte);font:inherit;font-size:16px;outline:none;user-select:text;-webkit-user-select:text}
+.bas{padding:6px 14px 12px}
+.saisie{display:none;align-items:flex-end;gap:8px;margin-bottom:10px}.saisie.on{display:flex}
+textarea,input[type=text],input[type=password],input[type=url],input[type=number],select{width:100%;padding:12px 13px;border-radius:13px;border:1px solid var(--bord);background:var(--carte);color:var(--texte);font:inherit;font-size:16px;outline:none;user-select:text;-webkit-user-select:text}
+textarea{resize:none;max-height:120px;min-height:46px;flex:1}
+input,select,textarea{margin-bottom:0}
+.champ{margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--doux);margin:0 0 6px}
 .rond{width:46px;height:46px;border-radius:50%;border:1px solid var(--bord);background:var(--carte2);color:#fff;font-size:19px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
 .rond.p{background:var(--grad);border-color:transparent}
-.rond:active{transform:scale(.93)}
 .cmd{display:flex;align-items:center;justify-content:center;gap:18px}
-.micro{width:78px;height:78px;border-radius:50%;border:none;color:#fff;font-size:32px;display:grid;place-items:center;cursor:pointer;background:var(--grad);box-shadow:0 10px 34px #5a4dff77}
+.micro{width:74px;height:74px;border-radius:50%;border:none;color:#fff;font-size:30px;display:grid;place-items:center;cursor:pointer;background:var(--grad);box-shadow:0 10px 34px #5a4dff77}
 .micro.on{background:linear-gradient(135deg,#ff6ba8,#ff9a5c);animation:respire 1.2s ease-in-out infinite;box-shadow:0 10px 40px #ff6ba877}
-.micro:active{transform:scale(.95)}
 @keyframes respire{50%{transform:scale(1.08)}}
-.cmd .petit{width:50px;height:50px;font-size:20px}
-.mode{text-align:center;font-size:12px;color:var(--doux);margin-top:8px}
-/* panneaux */
-.voile{position:fixed;inset:0;background:#04061299;backdrop-filter:blur(4px);z-index:20;display:none}
-.voile.on{display:block}
-.feuille{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--bg2);border-top:1px solid var(--bord);border-radius:22px 22px 0 0;padding:8px 18px calc(var(--bas) + 20px);max-height:90dvh;overflow-y:auto;transform:translateY(100%);transition:transform .26s ease;user-select:text;-webkit-user-select:text}
-.feuille.on{transform:translateY(0)}
-.poignee{width:42px;height:4px;border-radius:99px;background:var(--bord);margin:6px auto 14px}
-.feuille h2{margin:0 0 4px;font-size:20px}
-.feuille h3{margin:20px 0 8px;font-size:12.5px;text-transform:uppercase;letter-spacing:1px;color:var(--doux)}
-.feuille p{color:var(--doux);font-size:14px;margin:0 0 12px}
-label{display:block;font-size:13px;color:var(--doux);margin:0 0 6px}
-input[type=text],input[type=password],input[type=url],select{width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--bord);background:var(--carte);color:var(--texte);font:inherit;font-size:16px;outline:none;margin-bottom:12px}
-input[type=range]{width:100%;accent-color:var(--violet)}
+.mode{text-align:center;font-size:12px;color:var(--doux);margin-top:6px}
+/* barre d'onglets */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:12;height:calc(var(--tab) + var(--bas));padding-bottom:var(--bas);display:flex;background:#0b0e2af2;border-top:1px solid var(--bord)}
+nav.tabs button{flex:1;background:none;border:0;color:var(--doux);font:inherit;font-size:11.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+nav.tabs button span{font-size:21px;line-height:1}
+nav.tabs button.on{color:#fff}nav.tabs button.on span{filter:drop-shadow(0 0 8px #7c5cff)}
+/* contenus */
+h1{font-size:24px;margin:0 0 4px}h2{font-size:20px;margin:0 0 4px}h3{margin:22px 0 8px;font-size:12.5px;text-transform:uppercase;letter-spacing:1px;color:var(--doux)}
+p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12.5px;color:#8a91bd;margin:6px 0 12px}.aide a,a.lien{color:var(--cyan)}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border-radius:13px;border:1px solid var(--bord);background:var(--carte2);color:var(--texte);text-decoration:none;font-weight:650;cursor:pointer;font-size:15px;width:100%;margin-bottom:10px}
-.btn.p{background:var(--grad);border-color:transparent}
-.btn.danger{border-color:#5a2740;color:var(--alerte)}
-.aide{font-size:12.5px;color:#8a91bd;margin:-6px 0 14px;line-height:1.5}
-.aide a{color:var(--cyan)}
+.btn.p{background:var(--grad);border-color:transparent}.btn.danger{border-color:#5a2740;color:var(--alerte)}.btn.mini{width:auto;padding:8px 14px;font-size:13px;margin:0}
+.rang{display:flex;gap:8px;flex-wrap:wrap}
+.choix{padding:10px 14px;border-radius:12px;border:1px solid var(--bord);background:var(--carte);font-size:14px;cursor:pointer}
+.choix.on{border-color:var(--violet);background:#7c5cff30;color:#fff}
 .carte-m{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;border:1px solid var(--bord);background:var(--carte);margin-bottom:10px;cursor:pointer}
 .carte-m.on{border-color:var(--violet);background:#7c5cff22}
 .carte-m b{display:block;font-size:15px}.carte-m span{font-size:12.5px;color:var(--doux)}
 .carte-m .r{width:18px;height:18px;border-radius:50%;border:2px solid var(--bord);flex:0 0 auto;margin-top:2px}
 .carte-m.on .r{border-color:var(--violet);background:var(--violet);box-shadow:inset 0 0 0 3px var(--carte)}
 .ok{color:var(--ok)}.ko{color:var(--alerte)}
-.hist .m{margin:0 0 10px;padding:10px 13px;border-radius:15px;max-width:90%;white-space:pre-wrap;word-wrap:break-word;font-size:15px}
-.hist .m.moi{margin-left:auto;background:var(--grad)}
-.hist .m.elle{background:var(--carte);border:1px solid var(--bord)}
-.banniere{position:fixed;left:12px;right:12px;bottom:calc(var(--bas) + 130px);z-index:15;background:var(--carte2);border:1px solid var(--violet);border-radius:16px;padding:12px 14px;display:none;align-items:center;gap:12px;font-size:13.5px}
-.banniere.on{display:flex}.banniere div{flex:1}
-.banniere button{padding:9px 14px;border-radius:11px;border:none;background:var(--grad);color:#fff;font-weight:700;cursor:pointer}
-.banniere .x{background:none;color:var(--doux);padding:6px}
+.grille{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.cr{border:1px solid var(--bord);border-radius:14px;background:var(--carte);overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.cr .ap{aspect-ratio:1;display:grid;place-items:center;background:#0a0d2b;font-size:38px;overflow:hidden}.cr .ap img,.cr .ap video{width:100%;height:100%;object-fit:cover}
+.cr .tt{padding:8px 10px;font-size:12.5px;color:var(--doux);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pouvoirs{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:8px 0 14px}
+.pv{padding:14px;border-radius:16px;border:1px solid var(--bord);background:linear-gradient(180deg,#151a47,#0f1336);cursor:pointer}.pv b{display:block;font-size:15px}.pv span{font-size:12px;color:var(--doux)}.pv i{font-style:normal;font-size:26px;display:block;margin-bottom:4px}
+.ag{border:1px solid var(--bord);border-radius:16px;background:var(--carte);padding:14px;margin-bottom:10px}
+.ag b{font-size:16px}.ag .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.ag .tags i{font-style:normal;font-size:11.5px;padding:3px 9px;border-radius:99px;background:#1a1f4d;border:1px solid var(--bord);color:#cdbfff}
+.ag.actif{border-color:var(--violet);box-shadow:0 0 0 3px #7c5cff22}
+/* feuilles */
+.voile{position:fixed;inset:0;background:#04061299;backdrop-filter:blur(4px);z-index:20;display:none}.voile.on{display:block}
+.feuille{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--bg2);border-top:1px solid var(--bord);border-radius:22px 22px 0 0;padding:8px 18px calc(var(--bas) + 20px);max-height:92dvh;overflow-y:auto;overscroll-behavior:contain;transform:translateY(105%);transition:transform .26s ease;user-select:text;-webkit-user-select:text}
+.feuille.on{transform:none}.poignee{width:42px;height:4px;border-radius:99px;background:var(--bord);margin:6px auto 14px}
+.m{margin:0 0 10px;padding:10px 13px;border-radius:15px;max-width:92%;white-space:pre-wrap;word-wrap:break-word;font-size:15px}.m.moi{margin-left:auto;background:var(--grad)}.m.elle{background:var(--carte);border:1px solid var(--bord)}
+/* cartes de création dans la conversation */
+.cc{margin:8px 0;border:1px solid var(--bord);border-radius:14px;background:var(--carte);overflow:hidden;text-align:left}
+.cc img,.cc video{display:block;width:100%;max-height:46dvh;object-fit:contain;background:#000}.cc audio{display:block;width:100%}
+.cc .pied{display:flex;gap:8px;align-items:center;padding:8px 10px;flex-wrap:wrap}.cc .pied b{flex:1;font-size:13px;min-width:90px}
+.cc .pied button{padding:7px 12px;border-radius:10px;border:1px solid var(--bord);background:var(--carte2);color:#fff;font-size:12.5px;cursor:pointer}
+.cc iframe{width:100%;height:55dvh;border:0;background:#fff;display:block}
+.plein-v{position:fixed;inset:0;z-index:30;background:var(--bg);display:none;flex-direction:column;padding-top:var(--haut)}.plein-v.on{display:flex}
+.plein-v .barre{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--bord)}.plein-v .barre b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plein-v iframe,.plein-v pre{flex:1;border:0;background:#fff;width:100%}.plein-v pre{background:#0a0d2b;color:#dfe3ff;margin:0;padding:12px;overflow:auto;font-size:12.5px;white-space:pre-wrap;user-select:text}
+.toast{position:fixed;left:14px;right:14px;bottom:calc(var(--tab) + var(--bas) + 12px);z-index:40;background:var(--carte2);border:1px solid var(--violet);border-radius:14px;padding:12px 14px;font-size:14px;display:none}.toast.on{display:block}
+/* assistant de démarrage */
+#assist{position:fixed;inset:0;z-index:50;background:var(--bg);display:none;flex-direction:column;padding:calc(var(--haut) + 12px) 18px calc(var(--bas) + 14px)}
+#assist.on{display:flex}
+#assist .corps{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:6px 2px 14px;user-select:text;-webkit-user-select:text}
+#assist .prog{display:flex;gap:5px;margin-bottom:14px}#assist .prog i{flex:1;height:4px;border-radius:9px;background:var(--bord)}#assist .prog i.f{background:var(--grad)}
+#assist .pied{display:flex;gap:10px}#assist .pied .btn{margin:0}
+.banniere{position:fixed;left:12px;right:12px;bottom:calc(var(--tab) + var(--bas) + 130px);z-index:15;background:var(--carte2);border:1px solid var(--violet);border-radius:16px;padding:12px 14px;display:none;align-items:center;gap:12px;font-size:13.5px}.banniere.on{display:flex}.banniere div{flex:1}.banniere button{padding:9px 14px;border-radius:11px;border:none;background:var(--grad);color:#fff;font-weight:700}.banniere .x{background:none;color:var(--doux)}
 </style>
 </head>
 <body>
-<canvas id="scene" aria-label="Sphère 3D de Clipia : touche-la pour lui parler"></canvas>
+<canvas id="scene" aria-label="Sphère 3D de Clipia"></canvas>
 
-<div class="app">
-  <header>
-    <div><div class="logo">CLIPIA<small>X8</small></div>
-      <div class="etat"><span class="point" id="point"></span><span id="etatTexte">Prête</span></div></div>
-    <span class="moteur" id="moteurAff" role="button" tabindex="0">⚡ …</span>
-    <div class="ico">
-      <button class="bico" id="bHist" aria-label="Historique">🗨</button>
-      <button class="bico" id="bReglages" aria-label="Réglages">⚙</button>
-    </div>
+<!-- PARLER -->
+<section class="vue on" id="v-parler">
+  <header class="h">
+    <div><div class="logo">CLIPIA<small>X8</small></div><div class="etat"><span class="point" id="point"></span><span id="etatTexte">Prête</span></div></div>
+    <span class="moteur" id="moteurAff" role="button">⚡ …</span>
+    <button class="rond" id="bHist" aria-label="Historique" style="width:40px;height:40px;font-size:17px">🗨</button>
   </header>
-
   <div class="espace"></div>
-
   <div id="idees" class="idees"></div>
   <div class="sous" id="sous"></div>
-
   <div class="bas">
-    <div class="saisie" id="saisie">
-      <textarea id="zone" rows="1" placeholder="Écris à Clipia…" enterkeyhint="send" autocapitalize="sentences"></textarea>
-      <button class="rond p" id="bEnvoi" aria-label="Envoyer">➤</button>
-    </div>
+    <div class="saisie" id="saisie"><textarea id="zone" rows="1" placeholder="Écris à Clipia…" enterkeyhint="send"></textarea><button class="rond p" id="bEnvoi" aria-label="Envoyer">➤</button></div>
     <div class="cmd">
-      <button class="rond petit" id="bClavier" aria-label="Clavier">⌨</button>
-      <button class="micro" id="bMicro" aria-label="Parler à Clipia">🎙</button>
-      <button class="rond petit" id="bMuet" aria-label="Voix de Clipia">🔊</button>
+      <button class="rond" id="bClavier" aria-label="Clavier">⌨</button>
+      <button class="micro" id="bMicro" aria-label="Parler">🎙</button>
+      <button class="rond" id="bMuet" aria-label="Voix">🔊</button>
     </div>
-    <div class="mode" id="modeTexte">Touche la sphère ou le micro : conversation vocale continue</div>
+    <div class="mode" id="modeTexte"></div>
   </div>
-</div>
+</section>
 
-<div class="banniere" id="banniere"><div>Installe Clipia sur ton écran d'accueil.</div><button id="bInstaller">Installer</button><button class="x" id="bFermerBanniere" aria-label="Fermer">✕</button></div>
+<!-- CRÉER -->
+<section class="vue" id="v-creer"><div class="plein" id="pCreer">
+  <h1>Créer</h1><p class="doux">Choisis un pouvoir, décris ce que tu veux : Clipia s'occupe du reste.</p>
+  <div class="pouvoirs" id="pouvoirs"></div>
+  <h3>Mes créations</h3><div class="grille" id="galerie"></div><p class="aide" id="galVide">Rien pour l'instant : tes images, musiques, vidéos et codes apparaîtront ici et seront enregistrés dans le téléphone.</p>
+</div></section>
+
+<!-- AGENTS -->
+<section class="vue" id="v-agents"><div class="plein" id="pAgents"></div></section>
+
+<!-- RÉGLAGES -->
+<section class="vue" id="v-reglages"><div class="plein" id="pReglages"></div></section>
+
+<nav class="tabs">
+  <button data-v="parler" class="on"><span>🎙</span>Parler</button>
+  <button data-v="creer"><span>✨</span>Créer</button>
+  <button data-v="agents"><span>🧩</span>Agents</button>
+  <button data-v="reglages"><span>⚙</span>Réglages</button>
+</nav>
+
 <div class="voile" id="voile"></div>
+<div class="feuille" id="feuilleHist"><div class="poignee"></div><h2>Conversation</h2><div id="hist" style="margin-top:12px"></div></div>
+<div class="feuille" id="feuilleLibre"><div class="poignee"></div><div id="libreContenu"></div></div>
+<div class="plein-v" id="visu"><div class="barre"><button class="rond" id="visuFermer" style="width:40px;height:40px">✕</button><b id="visuTitre"></b><button class="btn mini" id="visuSauver">⬇ Enregistrer</button></div><div id="visuCorps" style="flex:1;display:flex;flex-direction:column;min-height:0"></div></div>
+<div class="toast" id="toast"></div>
+<div class="banniere" id="banniere"><div>Installe Clipia sur ton écran d'accueil.</div><button id="bInstaller">Installer</button><button class="x" id="bFermerBanniere" aria-label="Fermer">✕</button></div>
+<div id="assist"></div>
 
-<!-- Historique -->
-<div class="feuille" id="feuilleHist"><div class="poignee"></div><h2>Conversation</h2><div class="hist" id="hist" style="margin-top:12px"></div></div>
-
-<!-- Réglages -->
-<div class="feuille" id="feuilleReglages">
-  <div class="poignee"></div><h2>Réglages</h2>
-  <h3>Cerveau de Clipia</h3>
-  <div id="moteurs"></div>
-  <div id="champsMoteur"></div>
-  <h3>Voix</h3>
-  <div class="carte-m" id="bVoix" role="switch"><span class="r"></span><div><b>Clipia me répond à voix haute</b><span>Désactive pour lire seulement.</span></div></div>
-  <label for="voix">Voix</label><select id="voix"></select>
-  <label for="vitesse">Vitesse <span id="vitesseVal">1.0</span>×</label><input type="range" id="vitesse" min="0.6" max="1.6" step="0.05" value="1">
-  <div class="aide" id="aideVoix"></div>
-  <h3>Application</h3>
-  <button class="btn" id="bRelire">▶ Revoir la présentation</button>
-  <button class="btn danger" id="bEffacer">🗑 Effacer la conversation</button>
-  <p style="text-align:center;font-size:12.5px;margin-top:6px">Clipia <span id="versionAff"></span> — CLENDAX · Clin Fabrice<br>Tes clés restent sur ce téléphone, jamais envoyées ailleurs que chez le fournisseur choisi.</p>
-</div>
-
-<!-- Présentation -->
-<div class="feuille" id="feuilleBienvenue">
-  <div class="poignee"></div><h2>Bienvenue 👋</h2>
-  <p>Je suis Clipia. Touche la sphère (ou le micro), parle, et je te réponds à voix haute — la conversation continue toute seule.</p>
-  <div class="carte-m on"><span class="r"></span><div><b>⚡ Clipia Libre — prête tout de suite</b><span>Un cerveau gratuit, sans compte ni clé. Service communautaire : pas de garantie de disponibilité ni de confidentialité.</span></div></div>
-  <div class="carte-m" id="bGroqB"><span class="r"></span><div><b>🚀 Groq — gratuit et ultra-rapide (1 minute)</b><span>Crée une clé gratuite chez Groq et colle-la ici : réponses plus rapides et plus fiables.</span></div></div>
-  <div class="carte-m" id="bPcB"><span class="r"></span><div><b>🖥 Mon PC</b><span>Relie l'appli à Clipia sur ton ordinateur pour tout ce qu'elle sait y faire (avec ton accord sur le PC).</span></div></div>
-  <button class="btn p" id="bGo">C'est parti</button>
-</div>
-
-<div class="feuille" id="feuilleIOS"><div class="poignee"></div><h2>Sur iPhone</h2><p>Safari → Partager → <b>« Sur l'écran d'accueil »</b>.</p><button class="btn p" id="bFermerIOS">J'ai compris</button></div>
-
-<script>
-'use strict';
-const VERSION='8.4.0';
-const $=(s)=>document.querySelector(s);
-const M={lire(c,d){try{const v=localStorage.getItem('clipia.'+c);return v===null?d:JSON.parse(v)}catch(e){return d}},ecrire(c,v){try{localStorage.setItem('clipia.'+c,JSON.stringify(v))}catch(e){}},vider(c){try{localStorage.removeItem('clipia.'+c)}catch(e){}}};
-
-/* ══ MOTEURS ═══════════════════════════════════════════════════════════════
-   Aucune clé n'est embarquée dans l'application : « Libre » n'en demande pas ;
-   Groq et OpenRouter utilisent la clé gratuite de la personne, gardée sur le téléphone. */
-const MOTEURS={
-  libre:{nom:'Clipia Libre',court:'⚡ Libre',desc:'Gratuit, sans clé ni compte (service communautaire Pollinations).',url:'https://text.pollinations.ai/openai',cle:false,modeles:['openai-fast','openai','mistral','llama'],defaut:'openai-fast'},
-  groq:{nom:'Groq',court:'🚀 Groq',desc:'Gratuit avec ta clé Groq : très rapide.',url:'https://api.groq.com/openai/v1/chat/completions',cle:true,lien:'https://console.groq.com/keys',ph:'gsk_…',modeles:['llama-3.3-70b-versatile','llama-3.1-8b-instant','openai/gpt-oss-120b','qwen/qwen3-32b'],defaut:'llama-3.3-70b-versatile'},
-  openrouter:{nom:'OpenRouter (modèles gratuits)',court:'🌐 OpenRouter',desc:'Modèles gratuits avec ta clé OpenRouter.',url:'https://openrouter.ai/api/v1/chat/completions',cle:true,lien:'https://openrouter.ai/keys',ph:'sk-or-v1-…',modeles:['meta-llama/llama-3.3-70b-instruct:free','deepseek/deepseek-chat-v3-0324:free','google/gemma-3-27b-it:free','qwen/qwen3-235b-a22b:free'],defaut:'meta-llama/llama-3.3-70b-instruct:free'},
-  pc:{nom:'Mon PC (Clipia sur ordinateur)',court:'🖥 Mon PC',desc:'Envoie tes demandes à Clipia sur ton ordinateur.',cle:true,pc:true}
-};
-const CONSIGNE=["Tu es Clipia, l'assistante personnelle de CLENDAX, créée par Clin Fabrice.","Tu parles français, de façon naturelle, chaleureuse et directe, comme dans une vraie conversation à voix haute.","Tes réponses sont courtes (2 à 4 phrases) car elles sont lues à voix haute ; tu développes seulement si on te le demande.","Pas de listes, pas d'emoji, pas de mise en forme lourde.","Sur ce téléphone tu conseilles, rédiges, expliques, aides à créer et à organiser. Tu ne prétends jamais avoir agi sur le téléphone, sur des comptes ou sur un ordinateur : pour cela, la personne doit relier l'appli à son PC (réglage « Mon PC »).","Si tu ne sais pas, tu le dis simplement."].join(' ');
-
-let etat={messages:M.lire('messages',[]),moteur:M.lire('moteur','libre'),cles:M.lire('cles',{}),modeles:M.lire('modeles',{}),pc:M.lire('pc',{url:'',jeton:''}),voixActive:M.lire('voixActive',true),voixNom:M.lire('voixNom',''),vitesse:M.lire('vitesse',1),conversation:false,occupe:false,ecoute:false,parle:false,mode:'calme',niveau:0};
-
-/* ══ SPHÈRE 3D ═════════════════════════════════════════════════════════════ */
-const cv=$('#scene'),cx=cv.getContext('2d');let W=0,H=0,DPR=1;
-const N=900,PTS=[];{const g=Math.PI*(3-Math.sqrt(5));for(let i=0;i<N;i++){const y=1-2*(i+.5)/N,r=Math.sqrt(1-y*y),t=g*i;PTS.push([Math.cos(t)*r,y,Math.sin(t)*r,Math.random()])}}
-function dim(){DPR=Math.min(window.devicePixelRatio||1,2.5);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0)}
-addEventListener('resize',dim);dim();
-const S3={rot:0,tiltX:.25,tiltY:0,vx:0,vy:0,amp:0,ray:1,vit:1,teinte:0,pulse:0};
-const COUL={calme:[150,130,255],ecoute:[255,140,120],travail:[80,210,255],parle:[190,120,255]};
-let couleur=[150,130,255];
-function cibleMode(){return etat.ecoute?'ecoute':etat.occupe?'travail':etat.parle?'parle':'calme'}
-function dessiner(t){
-  const m=cibleMode();const c=COUL[m];for(let i=0;i<3;i++)couleur[i]+=(c[i]-couleur[i])*.06;
-  const vit=m==='travail'?2.8:m==='ecoute'?1.5:m==='parle'?1.2:.55;S3.vit+=(vit-S3.vit)*.05;
-  let amp=0;if(m==='ecoute')amp=.05+etat.niveau*.12;else if(m==='parle')amp=.06+.05*Math.abs(Math.sin(t/140))*Math.abs(Math.sin(t/330+1));else if(m==='travail')amp=.04*Math.sin(t/180);else amp=.015*Math.sin(t/1200);
-  S3.amp+=(amp-S3.amp)*.18;
-  S3.rot+=.004*S3.vit;S3.tiltX+=S3.vy;S3.tiltY+=S3.vx;S3.vx*=.94;S3.vy*=.94;S3.tiltX+=(.25-S3.tiltX)*.01;
-  const base=Math.min(W,H*.62)*.30*(1+S3.amp);const cxp=W/2,cyp=H*.38;
-  cx.clearRect(0,0,W,H);
-  const g=cx.createRadialGradient(cxp,cyp,base*.2,cxp,cyp,base*2.3);const [r,gg,b]=couleur.map(Math.round);
-  g.addColorStop(0,`rgba(${r},${gg},${b},.30)`);g.addColorStop(.5,`rgba(${r},${gg},${b},.08)`);g.addColorStop(1,'rgba(8,10,28,0)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
-  const ca=Math.cos(S3.rot+S3.tiltY),sa=Math.sin(S3.rot+S3.tiltY),cb=Math.cos(S3.tiltX),sb=Math.sin(S3.tiltX);
-  const out=[];for(let i=0;i<N;i++){const p=PTS[i];
-    const wob=1+S3.amp*1.4*Math.sin(t/260+p[0]*5+p[1]*4+(m==='parle'?p[2]*6:0));
-    const x0=p[0]*wob,y0=p[1]*wob,z0=p[2]*wob;const x=x0*ca+z0*sa,z=-x0*sa+z0*ca;out.push([x,y0*cb-z*sb,y0*sb+z*cb,p[3]])}
-  out.sort((a,b)=>a[2]-b[2]);
-  for(const p of out){const f=1/(1.9-p[2]*.62),l=(p[2]+1)/2;const s=(1.2+p[3]*1.8)*f*(base/110)*(.6+l*.8);
-    cx.fillStyle=`rgba(${Math.min(255,r+Math.round(l*60))},${Math.min(255,gg+Math.round(l*50))},${Math.min(255,b+20)},${.18+l*.8})`;
-    cx.beginPath();cx.arc(cxp+p[0]*base*f*1.08,cyp+p[1]*base*f*1.08,Math.max(.5,s),0,6.283);cx.fill()}
-  // anneaux
-  [[.34,.5,1],[.22,-.9,-1],[.42,1.7,1]].forEach((q,k)=>{cx.save();cx.translate(cxp,cyp);cx.rotate(S3.rot*q[2]*.8+q[1]);cx.scale(1,q[0]);cx.strokeStyle=`rgba(${r},${gg},${b},${.28-k*.05})`;cx.lineWidth=1.3;cx.setLineDash([2,7]);cx.beginPath();cx.arc(0,0,base*(1.32+k*.08),0,6.283);cx.stroke();cx.restore()});
-  // onde d'écoute
-  if(m==='ecoute'||m==='parle'){cx.strokeStyle=`rgba(${r},${gg},${b},.35)`;cx.lineWidth=2;for(let k=0;k<3;k++){const ph=((t/900)+k/3)%1;cx.globalAlpha=1-ph;cx.beginPath();cx.arc(cxp,cyp,base*(1.1+ph*.9),0,6.283);cx.stroke()}cx.globalAlpha=1}
-  cx.setLineDash([]);
-  requestAnimationFrame(dessiner);
-}
-requestAnimationFrame(dessiner);
-// interaction : glisser fait tourner la sphère ; toucher = parler
-let dp=null;
-cv.addEventListener('pointerdown',e=>{dp={x:e.clientX,y:e.clientY,t:Date.now(),m:false}});
-cv.addEventListener('pointermove',e=>{if(!dp)return;const dx=e.clientX-dp.x,dy=e.clientY-dp.y;if(Math.abs(dx)+Math.abs(dy)>8)dp.m=true;S3.vx+=dx*.00018;S3.vy+=dy*.00018;dp.x=e.clientX;dp.y=e.clientY});
-cv.addEventListener('pointerup',()=>{if(dp&&!dp.m&&Date.now()-dp.t<500)basculeConv();dp=null});
-
-/* ══ INTERFACE ═════════════════════════════════════════════════════════════ */
-const zone=$('#zone'),sous=$('#sous');
-function majEtat(t,type){$('#etatTexte').textContent=t;$('#point').className='point'+(type?' '+type:'')}
-function esc(t){return String(t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
-function afficher(moi,elle,sys){sous.innerHTML=(moi?`<div class="moi">${esc(moi)}</div>`:'')+(elle?`<div class="elle">${esc(elle)}</div>`:'')+(sys?`<div class="sys">${esc(sys)}</div>`:'');sous.scrollTop=sous.scrollHeight;$('#idees').style.display=(etat.messages.length||moi||elle||sys)?'none':'flex'}
-function sauver(){M.ecrire('messages',etat.messages.slice(-60))}
-function majMoteur(){$('#moteurAff').textContent=MOTEURS[etat.moteur].court}
-const IDEES=['Donne-moi une idée de clip','Aide-moi à écrire un message','Explique-moi comme à un enfant','Organise ma journée'];
-$('#idees').innerHTML=IDEES.map(t=>`<span class="idee">${t}</span>`).join('');
-$('#idees').addEventListener('click',e=>{if(e.target.classList.contains('idee'))demander(e.target.textContent)});
-
-/* ══ DEMANDER ══════════════════════════════════════════════════════════════ */
-let annul=null;
-function messageErreur(code,det){if(code===401||code===403)return'Clé refusée : vérifie-la dans les réglages.';if(code===402)return'Crédit épuisé : choisis un modèle gratuit ou un autre moteur.';if(code===429)return'Trop de demandes d\'un coup. Patiente quelques secondes.';if(code===404)return'Ce modèle n\'est plus disponible : change-le dans les réglages.';return'Erreur '+code+(det?' — '+det:'')}
-async function flux(url,entetes,corps,onBout){
-  const ctl=new AbortController();annul=ctl;const r=await fetch(url,{method:'POST',headers:entetes,body:JSON.stringify(corps),signal:ctl.signal});
-  if(!r.ok){let d='';try{const j=await r.json();d=(j.error&&(j.error.message||j.error))||''}catch(e){}throw new Error(messageErreur(r.status,typeof d==='string'?d:''))}
-  const ct=r.headers.get('content-type')||'';
-  if(!/event-stream/.test(ct)){const j=await r.json();const t=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;if(t)onBout(t);return t||''}
-  const lec=r.body.getReader(),dec=new TextDecoder();let tampon='',tout='';
-  for(;;){const{done,value}=await lec.read();if(done)break;tampon+=dec.decode(value,{stream:true});const lignes=tampon.split('\n');tampon=lignes.pop();
-    for(const l0 of lignes){const l=l0.trim();if(!l.startsWith('data:'))continue;const d=l.slice(5).trim();if(d==='[DONE]')continue;try{const j=JSON.parse(d);const b=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(b){tout+=b;onBout(b)}}catch(e){}}}
-  return tout;
-}
-let pcSeq=0,pcAttente={};
-window.__clipiaPC=function(id,ok,texte){const f=pcAttente[id];if(!f)return;delete pcAttente[id];f(ok,texte)};
-async function appelPC(texte){
-  const base=(etat.pc.url||'').trim().replace(/\/+$/,'');if(!base)throw new Error('Indique l\'adresse de ton PC dans les réglages (Mon PC).');
-  const corps={jsonrpc:'2.0',id:1,method:'tools/call',params:{name:'clipia_demander',arguments:{message:texte}}};
-  let brut;
-  if(window.ClipiaAndroid&&window.ClipiaAndroid.requetePC){brut=await new Promise((res,rej)=>{const id='p'+(++pcSeq);pcAttente[id]=(ok,t)=>ok?res(t):rej(new Error('Mon PC ne répond pas : '+t));window.ClipiaAndroid.requetePC(id,base+'/mcp',etat.pc.jeton||'',JSON.stringify(corps))})}
-  else{const r=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+(etat.pc.jeton||'')},body:JSON.stringify(corps)});if(!r.ok)throw new Error('Mon PC a répondu '+r.status);brut=await r.text()}
-  let j;try{j=JSON.parse(brut)}catch(e){throw new Error('Réponse illisible de mon PC.')}
-  if(j.error)throw new Error(j.error.message||'Erreur de mon PC');
-  const t=(j.result&&j.result.content||[]).map(c=>c.text||'').join('\n').trim();if(!t)throw new Error('Mon PC n\'a rien répondu.');return t;
-}
-async function repondre(texte,onBout){
-  const hist=etat.messages.slice(-14).map(m=>({role:m.role,content:m.contenu}));
-  const ordre=[etat.moteur];if(etat.moteur!=='libre'&&etat.moteur!=='pc')ordre.push('libre');
-  let derniere=null;
-  for(const id of ordre){
-    const mo=MOTEURS[id];
-    try{
-      if(id==='pc'){const t=await appelPC(texte);onBout(t);return t}
-      const cle=(etat.cles[id]||'').trim();if(mo.cle&&!cle){derniere=new Error('Colle ta clé '+mo.nom+' dans les réglages.');continue}
-      const h={'content-type':'application/json'};if(cle)h.authorization='Bearer '+cle;if(id==='openrouter'){h['HTTP-Referer']=location.origin;h['X-Title']='Clipia'}
-      const t=await flux(mo.url,h,{model:etat.modeles[id]||mo.defaut,stream:true,messages:[{role:'system',content:CONSIGNE}].concat(hist)},onBout);
-      if(!t)throw new Error('Le modèle n\'a rien renvoyé.');
-      if(id!==etat.moteur)afficherSecours=mo.nom;
-      return t;
-    }catch(e){if(e.name==='AbortError')throw e;derniere=e}
-  }
-  throw derniere||new Error('Aucun moteur disponible.');
-}
-let afficherSecours=null;
-async function demander(texte){
-  texte=(texte||'').trim();if(!texte||etat.occupe)return;
-  stopParole();arreterEcoute();
-  etat.occupe=true;zone.value='';ajusteZone();$('#bEnvoi').disabled=true;
-  etat.messages.push({role:'user',contenu:texte});afficher(texte,'');majEtat('Clipia réfléchit…','att');
-  let acc='';afficherSecours=null;
-  try{
-    const rep=await repondre(texte,b=>{acc+=b;afficher(texte,acc)});
-    etat.messages.push({role:'assistant',contenu:rep});sauver();afficher(texte,rep,afficherSecours?'Le moteur choisi n\'a pas répondu : j\'ai utilisé '+afficherSecours+'.':'');majEtat('Prête');
-    etat.occupe=false;
-    if(etat.voixActive)parler(rep);else if(etat.conversation)relancerEcoute();
-  }catch(e){
-    etat.occupe=false;if(e.name==='AbortError'){majEtat('Prête');return}
-    etat.messages.pop();afficher(texte,'',e.message||'Connexion impossible. Vérifie ton réseau.');majEtat('Erreur','off');
-    if(etat.moteur==='libre'&&!M.lire('conseilGroq',false)){M.ecrire('conseilGroq',true);setTimeout(()=>ouvrir('#feuilleReglages'),600)}
-  }finally{etat.occupe=false;$('#bEnvoi').disabled=false}
-}
-
-/* ══ VOIX : Clipia parle ═══════════════════════════════════════════════════ */
-const synth=window.speechSynthesis;let voixDispo=[];
-function nettoyer(t){return t.replace(/```[\s\S]*?```/g,' (code à lire à l\'écran) ').replace(/[*_#`>]/g,'').replace(/\s+/g,' ').trim()}
-function chargerVoix(){if(!synth)return;voixDispo=synth.getVoices().filter(v=>/^fr/i.test(v.lang));if(!voixDispo.length)voixDispo=synth.getVoices();const sel=$('#voix');sel.innerHTML=voixDispo.map(v=>`<option value="${esc(v.name)}">${esc(v.name)} (${esc(v.lang)})</option>`).join('');if(etat.voixNom&&voixDispo.some(v=>v.name===etat.voixNom))sel.value=etat.voixNom;else if(voixDispo[0]){etat.voixNom=voixDispo[0].name;sel.value=etat.voixNom}$('#aideVoix').textContent=voixDispo.length?voixDispo.length+' voix disponible(s).':'Aucune voix détectée : installe « Synthèse vocale Google » depuis le Play Store.'}
-if(synth){chargerVoix();synth.onvoiceschanged=chargerVoix}
-function finParole(){etat.parle=false;majEtat('Prête');if(etat.conversation)relancerEcoute()}
-let parler=function(texte){
-  if(!synth){finParole();return}
-  synth.cancel();arreterEcoute();const u=new SpeechSynthesisUtterance(nettoyer(texte));const v=voixDispo.find(x=>x.name===etat.voixNom);if(v){u.voice=v;u.lang=v.lang}else u.lang='fr-FR';u.rate=etat.vitesse;
-  u.onstart=()=>{etat.parle=true;majEtat('Clipia parle…','att')};u.onend=finParole;u.onerror=finParole;synth.speak(u)};
-let stopParole=function(){if(synth)synth.cancel();etat.parle=false};
-
-/* ══ VOIX : Clipia écoute ══════════════════════════════════════════════════ */
-const Reco=window.SpeechRecognition||window.webkitSpeechRecognition;let reco=null,recoActive=false,arretVoulu=false;
-function creerReco(){if(!Reco)return null;const r=new Reco();r.lang='fr-FR';r.continuous=false;r.interimResults=true;
-  r.onstart=()=>{recoActive=true;etat.ecoute=true;$('#bMicro').classList.add('on');majEtat('Je t\'écoute…','att')};
-  r.onresult=ev=>{let f='',i2='';for(let i=0;i<ev.results.length;i++){const t=ev.results[i][0].transcript;if(ev.results[i].isFinal)f+=t;else i2+=t}zone.value=(f||i2).trim();afficher(zone.value,'');etat.niveau=.5};
-  r.onerror=ev=>{recoActive=false;etat.ecoute=false;$('#bMicro').classList.remove('on');if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){etat.conversation=false;majMode();afficher('','','Le micro est bloqué : autorise-le dans les réglages du navigateur, puis réessaie.');majEtat('Micro refusé','off')}else if(ev.error==='no-speech'){majEtat('Prête');if(etat.conversation)relancerEcoute()}else majEtat('Prête')};
-  r.onend=()=>{recoActive=false;etat.ecoute=false;$('#bMicro').classList.remove('on');const t=zone.value.trim();if(!arretVoulu&&t)demander(t);else if(!arretVoulu&&etat.conversation)relancerEcoute();else majEtat('Prête');arretVoulu=false};
-  return r}
-let demarrerEcoute=function(){if(!Reco){afficher('','','La dictée n\'est pas disponible dans ce navigateur : utilise Chrome, ou l\'application Android.');return}if(recoActive)return;stopParole();if(!reco)reco=creerReco();zone.value='';try{reco.start()}catch(e){}};
-let arreterEcoute=function(){if(reco&&recoActive){arretVoulu=true;try{reco.stop()}catch(e){}}};
-function relancerEcoute(){if(!etat.conversation||etat.occupe)return;setTimeout(()=>{if(etat.conversation&&!etat.occupe&&!etat.ecoute&&!etat.parle)demarrerEcoute()},350)}
-function majMode(){$('#bMicro').classList.toggle('on',etat.conversation||etat.ecoute);$('#modeTexte').textContent=etat.conversation?'Conversation vocale active — touche pour arrêter':'Touche la sphère ou le micro : conversation vocale continue'}
-function basculeConv(){
-  if(etat.parle){stopParole();etat.conversation=true;majMode();relancerEcoute();return}
-  etat.conversation=!etat.conversation;majMode();
-  if(etat.conversation)demarrerEcoute();else{arreterEcoute();stopParole();majEtat('Prête')}}
-$('#bMicro').addEventListener('click',basculeConv);
-$('#bClavier').addEventListener('click',()=>{$('#saisie').classList.toggle('on');if($('#saisie').classList.contains('on'))zone.focus()});
-$('#bEnvoi').addEventListener('click',()=>demander(zone.value));
-zone.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();demander(zone.value)}});
-function ajusteZone(){zone.style.height='auto';zone.style.height=Math.min(zone.scrollHeight,120)+'px'}
-zone.addEventListener('input',ajusteZone);
-function majMuet(){$('#bMuet').textContent=etat.voixActive?'🔊':'🔇'}
-$('#bMuet').addEventListener('click',()=>{etat.voixActive=!etat.voixActive;M.ecrire('voixActive',etat.voixActive);majMuet();majBasculeVoix();if(!etat.voixActive)stopParole()});
-
-/* ══ PANNEAUX ══════════════════════════════════════════════════════════════ */
-function ouvrir(s){$('#voile').classList.add('on');$(s).classList.add('on')}
-function fermerTout(){$('#voile').classList.remove('on');document.querySelectorAll('.feuille').forEach(f=>f.classList.remove('on'))}
-$('#voile').addEventListener('click',fermerTout);
-$('#bReglages').addEventListener('click',()=>{dessinerMoteurs();ouvrir('#feuilleReglages')});
-$('#moteurAff').addEventListener('click',()=>{dessinerMoteurs();ouvrir('#feuilleReglages')});
-$('#bHist').addEventListener('click',()=>{$('#hist').innerHTML=etat.messages.length?etat.messages.map(m=>`<div class="m ${m.role==='user'?'moi':'elle'}">${esc(m.contenu)}</div>`).join(''):'<p>Rien pour l\'instant : parle à Clipia.</p>';ouvrir('#feuilleHist')});
-function majBasculeVoix(){$('#bVoix').classList.toggle('on',etat.voixActive)}
-$('#bVoix').addEventListener('click',()=>{etat.voixActive=!etat.voixActive;M.ecrire('voixActive',etat.voixActive);majBasculeVoix();majMuet();if(!etat.voixActive)stopParole()});
-$('#voix').addEventListener('change',()=>{etat.voixNom=$('#voix').value;M.ecrire('voixNom',etat.voixNom);parler('Voici ma voix.')});
-$('#vitesse').value=etat.vitesse;$('#vitesseVal').textContent=Number(etat.vitesse).toFixed(1);
-$('#vitesse').addEventListener('input',()=>{etat.vitesse=parseFloat($('#vitesse').value);$('#vitesseVal').textContent=etat.vitesse.toFixed(1);M.ecrire('vitesse',etat.vitesse)});
-$('#bEffacer').addEventListener('click',()=>{if(!confirm('Effacer toute la conversation ?'))return;etat.messages=[];M.vider('messages');afficher('','');fermerTout()});
-$('#bRelire').addEventListener('click',()=>{fermerTout();setTimeout(()=>ouvrir('#feuilleBienvenue'),250)});
-$('#versionAff').textContent=VERSION;
-
-function dessinerMoteurs(){
-  $('#moteurs').innerHTML=Object.entries(MOTEURS).map(([id,m])=>`<div class="carte-m ${etat.moteur===id?'on':''}" data-m="${id}"><span class="r"></span><div><b>${esc(m.nom)}</b><span>${esc(m.desc)}</span></div></div>`).join('');
-  $('#moteurs').querySelectorAll('.carte-m').forEach(c=>c.addEventListener('click',()=>{etat.moteur=c.dataset.m;M.ecrire('moteur',etat.moteur);majMoteur();dessinerMoteurs()}));
-  const id=etat.moteur,m=MOTEURS[id];let h='';
-  if(m.pc){h=`<label for="pcUrl">Adresse de Clipia sur ton PC</label><input type="url" id="pcUrl" placeholder="http://192.168.1.20:4000" value="${esc(etat.pc.url||'')}" autocomplete="off"><label for="pcJeton">Jeton (écran « Téléphone & MCP » de Clipia)</label><input type="password" id="pcJeton" placeholder="jeton" value="${esc(etat.pc.jeton||'')}" autocomplete="off"><div class="aide">Même Wi-Fi que le PC, ou Tailscale / Cloudflare Tunnel pour sortir de chez toi. Les actions sensibles demandent toujours ton accord <b>sur le PC</b>.</div><button class="btn" id="pcTest">Tester la connexion</button><div class="aide" id="pcMsg"></div>`}
-  else{if(m.cle)h+=`<label for="cleM">Clé ${esc(m.nom)} <a href="${m.lien}" target="_blank" rel="noopener" style="color:var(--cyan)">(créer une clé gratuite)</a></label><input type="password" id="cleM" placeholder="${esc(m.ph||'')}" value="${esc(etat.cles[id]||'')}" autocomplete="off" spellcheck="false"><button class="btn p" id="cleOk">Tester et activer</button><div class="aide" id="cleMsg">Ta clé reste sur ce téléphone. Ne la colle jamais dans une conversation.</div>`;
-    h+=`<label for="modM">Modèle</label><select id="modM">${m.modeles.map(x=>`<option ${((etat.modeles[id]||m.defaut)===x)?'selected':''}>${esc(x)}</option>`).join('')}</select>`}
-  $('#champsMoteur').innerHTML=h;
-  const mm=$('#modM');if(mm)mm.addEventListener('change',()=>{etat.modeles[id]=mm.value;M.ecrire('modeles',etat.modeles)});
-  const ok=$('#cleOk');if(ok)ok.addEventListener('click',async()=>{const v=$('#cleM').value.trim(),msg=$('#cleMsg');if(v.length<15||/\s/.test(v)){msg.innerHTML='<span class="ko">Ça ne ressemble pas à une clé.</span>';return}msg.textContent='Je teste…';
-    try{const r=await fetch(m.url,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+v},body:JSON.stringify({model:etat.modeles[id]||m.defaut,max_tokens:12,messages:[{role:'user',content:'Réponds : ok'}]})});if(!r.ok)throw new Error(messageErreur(r.status));etat.cles[id]=v;M.ecrire('cles',etat.cles);etat.moteur=id;M.ecrire('moteur',id);majMoteur();dessinerMoteurs();$('#cleMsg').innerHTML='<span class="ok">✓ Clé valide : '+esc(m.nom)+' est activé.</span>'}catch(e){msg.innerHTML='<span class="ko">'+esc(e.message||'Échec du test')+'</span>'}});
-  const t=$('#pcTest');if(t)t.addEventListener('click',async()=>{etat.pc={url:$('#pcUrl').value.trim(),jeton:$('#pcJeton').value.trim()};M.ecrire('pc',etat.pc);$('#pcMsg').textContent='Je teste…';try{const r=await appelPC('Réponds simplement : connexion établie.');$('#pcMsg').innerHTML='<span class="ok">✓ '+esc(r.slice(0,120))+'</span>'}catch(e){$('#pcMsg').innerHTML='<span class="ko">'+esc(e.message)+'</span>'}});
-}
-
-/* présentation (première ouverture) */
-$('#bGo').addEventListener('click',()=>{M.ecrire('vu',true);fermerTout();setTimeout(()=>{if(!etat.conversation)basculeConv()},400)});
-$('#bGroqB').addEventListener('click',()=>{etat.moteur='groq';M.ecrire('moteur','groq');majMoteur();M.ecrire('vu',true);fermerTout();setTimeout(()=>{dessinerMoteurs();ouvrir('#feuilleReglages')},300)});
-$('#bPcB').addEventListener('click',()=>{etat.moteur='pc';M.ecrire('moteur','pc');majMoteur();M.ecrire('vu',true);fermerTout();setTimeout(()=>{dessinerMoteurs();ouvrir('#feuilleReglages')},300)});
-
-/* installation (navigateur) */
-let invite=null;const dejaInst=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,estIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();invite=e;if(!dejaInst&&!M.lire('banniereFermee',false))$('#banniere').classList.add('on')});
-$('#bInstaller').addEventListener('click',async()=>{if(invite){invite.prompt();await invite.userChoice;invite=null;$('#banniere').classList.remove('on')}else if(estIOS){$('#banniere').classList.remove('on');ouvrir('#feuilleIOS')}});
-$('#bFermerBanniere').addEventListener('click',()=>{$('#banniere').classList.remove('on');M.ecrire('banniereFermee',true)});
-$('#bFermerIOS').addEventListener('click',fermerTout);
-if(estIOS&&!dejaInst&&!M.lire('banniereFermee',false))setTimeout(()=>$('#banniere').classList.add('on'),2500);
-addEventListener('online',()=>majEtat('Prête'));addEventListener('offline',()=>majEtat('Hors ligne','off'));
-
-/* ══ APPLICATION ANDROID : voix du téléphone ══════════════════════════════ */
-const pont=window.ClipiaAndroid||null;
-if(pont){
-  $('#banniere').style.display='none';
-  window.__clipiaVoix={
-    debut(){etat.ecoute=true;$('#bMicro').classList.add('on');majEtat('Je t\'écoute…','att')},
-    niveau(v){etat.niveau=Math.max(0,Math.min(1,(v+2)/12))},
-    partiel(t){zone.value=t;afficher(t,'')},
-    final(t){etat.ecoute=false;etat.niveau=0;majMode();const x=(t||'').trim();zone.value=x;if(x)demander(x);else if(etat.conversation)relancerEcoute();else majEtat('Prête')},
-    erreur(code){etat.ecoute=false;etat.niveau=0;
-      if(code==='not-allowed'){etat.conversation=false;majMode();afficher('','','Le micro est refusé : autorise le microphone pour Clipia dans les réglages Android de l\'application.');majEtat('Micro refusé','off')}
-      else if(code==='indisponible'){etat.conversation=false;majMode();afficher('','','La reconnaissance vocale n\'est pas installée : installe « Services vocaux Google » depuis le Play Store.');majEtat('Prête')}
-      else if(code==='reseau'){afficher('','','La dictée a besoin d\'Internet.');majEtat('Prête');majMode()}
-      else{majEtat('Prête');majMode();if(etat.conversation)relancerEcoute()}},
-    paroleDebut(){etat.parle=true;majEtat('Clipia parle…','att')},
-    paroleFin(){finParole()}
-  };
-  demarrerEcoute=function(){if(etat.ecoute)return;zone.value='';try{pont.stopParole();pont.ecouter()}catch(e){}};
-  arreterEcoute=function(){try{pont.stopEcoute()}catch(e){}etat.ecoute=false;etat.niveau=0;majMode()};
-  parler=function(texte){if(!etat.voixActive){finParole();return}try{pont.reglerVitesse(etat.vitesse);pont.choisirVoix(etat.voixNom||'');pont.parler(nettoyer(texte))}catch(e){finParole()}};
-  stopParole=function(){try{pont.stopParole()}catch(e){}etat.parle=false};
-  chargerVoix=function(){let l=[];try{l=JSON.parse(pont.listeVoix()||'[]')}catch(e){}const sel=$('#voix');sel.innerHTML=l.map(v=>`<option value="${esc(v.nom)}">${esc(v.nom)} (${esc(v.langue)})</option>`).join('');if(etat.voixNom&&l.some(v=>v.nom===etat.voixNom))sel.value=etat.voixNom;else if(l[0]){etat.voixNom=l[0].nom;sel.value=etat.voixNom}$('#aideVoix').textContent=l.length?l.length+' voix française(s) sur ce téléphone.':'Aucune voix française : Réglages Android → Langues → Synthèse vocale.'};
-  if(synth){synth.onvoiceschanged=null;try{synth.cancel()}catch(e){}}
-  addEventListener('clipia-voix-prete',chargerVoix);chargerVoix();
-}
-
-/* ══ DÉMARRAGE ═════════════════════════════════════════════════════════════ */
-majMoteur();majMuet();majBasculeVoix();majMode();ajusteZone();
-if(etat.messages.length){const d=etat.messages[etat.messages.length-1];const p=etat.messages.slice().reverse().find(m=>m.role==='user');afficher(p?p.contenu:'',d.role==='assistant'?d.contenu:'')}else afficher('','');
-if(!M.lire('vu',false))setTimeout(()=>ouvrir('#feuilleBienvenue'),700);
-const params=new URLSearchParams(location.search);
-if(params.get('action')==='nouveau'){etat.messages=[];M.vider('messages');afficher('','')}
-if(params.get('action')==='voix')setTimeout(basculeConv,800);
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
-</script>
+<script src="js/core.js"></script>
+<script src="js/media.js"></script>
+<script src="js/agent.js"></script>
+<script src="js/ui.js"></script>
 </body>
 </html>

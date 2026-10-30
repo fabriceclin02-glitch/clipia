@@ -2,12 +2,16 @@ package com.clendax.clipia;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,6 +42,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -97,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
         s.setTextZoom(100);
-        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/8.4.0");
+        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/8.4.1");
 
         vue.setBackgroundColor(0xFF080A1C);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -366,13 +373,19 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ignore) {}
     }
 
+    private java.io.OutputStream flux; private Uri fluxUri; private String fluxNom = "", fluxMime = "", fluxChemin = "";
+    private int fluxCompteur = 0;
+    private final HashMap<String, Uri> fichiers = new HashMap<>();
+    private void fermerFlux() { try { if (flux != null) flux.close(); } catch (Exception ignore) {} flux = null; }
+    private String mimeDe(Uri u) { try { String t = getContentResolver().getType(u); return t == null ? "*/*" : t; } catch (Exception e) { return "*/*"; } }
+
     // ------------------------------------------------------------------
     // Pont expose a la page
     // ------------------------------------------------------------------
     private class Pont {
 
         @JavascriptInterface
-        public String version() { return "8.4.0"; }
+        public String version() { return "8.4.1"; }
 
         @JavascriptInterface
         public boolean voixNative() { return true; }
@@ -454,6 +467,112 @@ public class MainActivity extends AppCompatActivity {
                 final boolean fok = ok; final String ft = texte;
                 versJs("window.__clipiaPC&&window.__clipiaPC(" + texteJs(id) + "," + fok + "," + texteJs(ft) + ")");
             }).start();
+        }
+
+        /** Requete HTTP native (sans restriction CORS). Reponse : __clipiaHttp(id, ok, statut, mime, donnees) ; donnees en base64 si mode = "binaire". */
+        @JavascriptInterface
+        public void http(final String id, final String methode, final String url, final String entetes, final String corpsB64, final String mode) {
+            new Thread(() -> {
+                boolean ok = false; int code = 0; String mime = ""; String data = "";
+                HttpURLConnection c = null;
+                try {
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setRequestMethod(methode == null || methode.isEmpty() ? "GET" : methode);
+                    c.setConnectTimeout(15000);
+                    c.setReadTimeout(240000);
+                    c.setInstanceFollowRedirects(true);
+                    if (entetes != null && !entetes.isEmpty()) {
+                        JSONObject h = new JSONObject(entetes);
+                        java.util.Iterator<String> it = h.keys();
+                        while (it.hasNext()) { String k = it.next(); c.setRequestProperty(k, h.getString(k)); }
+                    }
+                    if (corpsB64 != null && !corpsB64.isEmpty()) {
+                        c.setDoOutput(true);
+                        byte[] b = Base64.decode(corpsB64, Base64.DEFAULT);
+                        try (OutputStream o = c.getOutputStream()) { o.write(b); }
+                    }
+                    code = c.getResponseCode();
+                    mime = c.getContentType() == null ? "" : c.getContentType();
+                    java.io.InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+                    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                    if (in != null) {
+                        byte[] buf = new byte[16384]; int n;
+                        while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+                        in.close();
+                    }
+                    byte[] rep = bo.toByteArray();
+                    ok = code < 400;
+                    data = "binaire".equals(mode) ? Base64.encodeToString(rep, Base64.NO_WRAP) : new String(rep, StandardCharsets.UTF_8);
+                } catch (Exception e) {
+                    data = String.valueOf(e.getMessage());
+                } finally {
+                    if (c != null) c.disconnect();
+                }
+                versJs("window.__clipiaHttp&&window.__clipiaHttp(" + texteJs(id) + "," + ok + "," + code + "," + texteJs(mime) + "," + texteJs(data) + ")");
+            }).start();
+        }
+
+        /** Enregistrement d'un fichier dans Telechargements/Clipia, par morceaux base64. */
+        @JavascriptInterface
+        public boolean ecrireDebut(final String nom, final String mime) {
+            try {
+                fermerFlux();
+                fluxNom = nom; fluxMime = mime; fluxUri = null;
+                if (Build.VERSION.SDK_INT >= 29) {
+                    ContentValues cv = new ContentValues();
+                    cv.put(MediaStore.MediaColumns.DISPLAY_NAME, nom);
+                    cv.put(MediaStore.MediaColumns.MIME_TYPE, mime);
+                    cv.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Clipia");
+                    fluxUri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv);
+                    if (fluxUri == null) return false;
+                    flux = getContentResolver().openOutputStream(fluxUri);
+                } else {
+                    File d = new File(getExternalFilesDir(null), "Clipia"); d.mkdirs();
+                    flux = new FileOutputStream(new File(d, nom));
+                    fluxChemin = new File(d, nom).getAbsolutePath();
+                }
+                return flux != null;
+            } catch (Exception e) { return false; }
+        }
+
+        @JavascriptInterface
+        public boolean ecrireMorceau(final String b64) {
+            try { flux.write(Base64.decode(b64, Base64.DEFAULT)); return true; } catch (Exception e) { return false; }
+        }
+
+        @JavascriptInterface
+        public String ecrireFin() {
+            JSONObject o = new JSONObject();
+            try {
+                fermerFlux();
+                String id = "f" + (++fluxCompteur);
+                if (fluxUri != null) fichiers.put(id, fluxUri);
+                o.put("ok", true); o.put("id", id);
+                o.put("chemin", fluxUri != null ? ("Téléchargements/Clipia/" + fluxNom) : fluxChemin);
+            } catch (Exception e) { try { o.put("ok", false); } catch (Exception ignore) {} }
+            return o.toString();
+        }
+
+        @JavascriptInterface
+        public void ouvrirFichier(final String id) {
+            principal.post(() -> {
+                Uri u = fichiers.get(id); if (u == null) return;
+                try {
+                    Intent i = new Intent(Intent.ACTION_VIEW).setDataAndType(u, mimeDe(u)).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                } catch (Exception ignore) {}
+            });
+        }
+
+        @JavascriptInterface
+        public void partagerFichier(final String id) {
+            principal.post(() -> {
+                Uri u = fichiers.get(id); if (u == null) return;
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND).setType(mimeDe(u)).putExtra(Intent.EXTRA_STREAM, u).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(Intent.createChooser(i, "Partager").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (Exception ignore) {}
+            });
         }
 
         @JavascriptInterface
