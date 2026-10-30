@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="repository.clipia" name="Dépôt Clipia" version="1.0.0" provider-name="CLENDAX · Clin Fabrice">
+  <extension point="xbmc.addon.repository" name="Dépôt Clipia">
+    <dir>
+      <info compressed="false">https://fabriceclin02-glitch.github.io/clipia/kodi/addons.xml</info>
+      <checksum>https://fabriceclin02-glitch.github.io/clipia/kodi/addons.xml.md5</checksum>
+      <datadir zip="true">https://fabriceclin02-glitch.github.io/clipia/kodi/zips/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="fr_FR">Dépôt Clipia pour Kodi</summary>
+    <description lang="fr_FR">Fournit « Clipia — Accueil » et ses mises à jour.</description>
+    <platform>all</platform>
+    <assets><icon>icon.png</icon></assets>
+  </extension>
+</addon>

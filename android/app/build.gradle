@@ -26,8 +26,8 @@ android {
         applicationId "com.clendax.clipia"
         minSdk 24
         targetSdk 34
-        versionCode 80902
-        versionName "8.9.2"
+        versionCode 80903
+        versionName "8.9.3"
         resConfigs "fr", "en"
     }
 

@@ -16,6 +16,25 @@ SetCompressor /SOLID lzma
 !define MUI_FINISHPAGE_SHOWREADME_TEXT "Ouvrir la page de téléchargement d'Ollama (modèles IA gratuits hors ligne)"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !insertmacro MUI_PAGE_WELCOME
+
+Section "Kodi + pack Clipia (centre multimédia, recommandé)"
+  DetailPrint "Installation de Kodi (winget, version officielle)…"
+  nsExec::ExecToLog 'winget install -e --id XBMCFoundation.Kodi --silent --accept-package-agreements --accept-source-agreements'
+  Pop $0
+  ${If} $0 != 0
+    DetailPrint "winget n'a pas pu installer Kodi (code $0). Installe-le depuis https://kodi.tv/download/windows : le pack Clipia est déjà prêt."
+  ${EndIf}
+  DetailPrint "Ajout du pack Clipia dans Kodi…"
+  SetOutPath "$APPDATA\Kodi\addons\plugin.video.clipia.home"
+  File /r "${KODIPACK}\plugin.video.clipia.home\*.*"
+  SetOutPath "$APPDATA\Kodi\addons\repository.clipia"
+  File /r "${KODIPACK}\repository.clipia\*.*"
+  SetOutPath "$APPDATA\Kodi\userdata"
+  IfFileExists "$APPDATA\Kodi\userdata\autoexec.py" +2 0
+    File "${KODIPACK}\autoexec.py"
+  SetOutPath "$INSTDIR"
+SectionEnd
+
 !ifdef LOGICIELS
 !define MUI_COMPONENTSPAGE_TEXT_TOP "Clipia est toujours installé. Coche en plus les logiciels libres que tu veux (téléchargés par Windows via winget : Internet requis, aucune clé). Tu pourras en ajouter plus tard dans Clipia > Logithèque."
 !insertmacro MUI_PAGE_COMPONENTS

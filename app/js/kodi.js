@@ -68,10 +68,18 @@ const _mrK=majReglages;majReglages=function(){_mrK();const p=$('#pReglages'),c=K
   d.innerHTML=`<h3>Kodi (commande vocale)</h3><p class="aide">Clipia pilote Kodi : « mets le film Matrix », « pause », « volume 30 »… Dans Kodi : Réglages → Services → Contrôle → active « Autoriser le contrôle à distance via HTTP ». Kodi sur ce téléphone : adresse <b>http://localhost:8080</b> ; sur une TV ou un PC : son adresse IP (ex. http://192.168.1.20:8080).</p>
   <div class="carte-m ${c.on?'on':''}" id="kOn"><span class="r"></span><div><b>Activer le pilotage de Kodi</b><span>Ajoute l'outil « Kodi » à Clipia.</span></div></div>
   <input type="text" id="kU" placeholder="Adresse de Kodi" value="${esc(c.url)}"><input type="text" id="kN" placeholder="Utilisateur (kodi par défaut)" value="${esc(c.user)}" autocapitalize="off"><input type="password" id="kP" placeholder="Mot de passe (si défini dans Kodi)" value="${esc(c.mdp)}">
+  <h3>Installer Kodi et le pack Clipia (étapes)</h3>
+  <div class="carte"><p><b>1.</b> Installe Kodi :</p><button class="btn" id="kI">⬇ Kodi (Google Play)</button>
+  <p><b>2.</b> Télécharge le pack Clipia (fichier zip, dans Téléchargements/Clipia) :</p><button class="btn" id="kZ">⬇ Pack Clipia (zip)</button>
+  <p><b>3.</b> Dans Kodi : Réglages (⚙) → Extensions → Installer depuis un fichier zip → Téléchargements/Clipia → repository.clipia.zip. Puis « Installer depuis un dépôt » → Dépôt Clipia → Extensions vidéo → Clipia — Accueil. (Si Kodi refuse : active « Sources inconnues » dans Extensions.)</p>
+  <p><b>4.</b> Ouvre Clipia — Accueil → Clipia et réglages → Tout installer, puis Activer la commande vocale.</p></div>
   <button class="btn p" id="kT">Enregistrer et tester</button>${NATIF?'<button class="btn" id="kO">Ouvrir Kodi</button>':''}<p class="aide" id="kR"></p>`;
   p.appendChild(d);
   $('#kOn',d).onclick=()=>{$('#kOn',d).classList.toggle('on')};
   $('#kT',d).onclick=async()=>{Kodi.set({on:$('#kOn',d).classList.contains('on'),url:($('#kU',d).value.trim()||'http://localhost:8080'),user:$('#kN',d).value.trim(),mdp:$('#kP',d).value});
     $('#kR',d).textContent='Test…';try{await Kodi.rpc('JSONRPC.Ping');$('#kR',d).textContent='🟢 Kodi répond.'}catch(e){$('#kR',d).textContent='🔴 '+e.message}};
+  $('#kI',d).onclick=()=>{const u='https://play.google.com/store/apps/details?id=org.xbmc.kodi';if(NATIF&&NATIF.ouvrirLien)NATIF.ouvrirLien(u);else window.open(u,'_blank')};
+  $('#kZ',d).onclick=async()=>{try{toast('Téléchargement…',15000);const r=await net(SITE+'kodi/repository.clipia.zip',{binaire:true});if(!r.ok||!r.blob)throw new Error('Téléchargement impossible (erreur '+r.status+').');
+    const b=new Blob([r.blob],{type:'application/zip'});const c={id:'pack',type:'pack',titre:'repository.clipia',date:Date.now(),blob:b,mime:'application/zip',meta:{fichier:'repository.clipia.zip'}};const rr=await enregistrer(c);if(!rr.ok)throw new Error(rr.erreur||'Enregistrement impossible.');toast('✔ Pack enregistré : '+esc(rr.chemin||'Téléchargements'))}catch(e){toast(esc(e.message))}};
   if($('#kO',d))$('#kO',d).onclick=()=>{const r=NATIF.lancerApp('org.xbmc.kodi');if(!r)toast('Kodi n\'est pas installé : il est dans le Clipia Store.')};
 };

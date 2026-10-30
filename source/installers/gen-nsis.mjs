@@ -4,7 +4,7 @@ const q = s => String(s).replace(/"/g, "'").replace(/\$/g, '$$$$');
 let o = '; généré par installers/gen-nsis.mjs — ne pas modifier à la main\n';
 o += '!macro LOGICIEL NOM ID\n  Section /o "${NOM}"\n    DetailPrint "Installation de ${NOM} (winget)…"\n    nsExec::ExecToLog \'winget install -e --id ${ID} --silent --accept-package-agreements --accept-source-agreements\'\n    Pop $0\n    ${If} $0 != 0\n      DetailPrint "${NOM} : winget n\'a pas pu l\'installer (code $0). Tu pourras le refaire depuis Clipia > Logithèque."\n    ${EndIf}\n  SectionEnd\n!macroend\n';
 for (const [cat, titre] of Object.entries(CATEGORIES)) {
-  const l = CATALOGUE.filter(e => e.cat === cat && e.winget && !e.lienSeul && e.id !== 'ffmpeg');
+  const l = CATALOGUE.filter(e => e.cat === cat && e.winget && !e.lienSeul && e.id !== 'ffmpeg' && e.id !== 'kodi');
   if (!l.length) continue;
   o += `SectionGroup /e "${q(titre.replace(/^\S+\s/, ''))}"\n`;
   for (const e of l) o += `  !insertmacro LOGICIEL "${q(e.nom)}" "${e.winget}"\n`;

@@ -1,41 +1,29 @@
 {
-  "version": "8.4.0",
+  "version": "8.5.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-8.4.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-8.4.0-windows-x64.exe",
-      "taille": "76 Mo",
-      "sha256": "ae8c34278f7d3eecd58c55cc10b04a2f60ccc71ccd8a7988e87f31c925ec4cd8"
+      "nom": "Clipia-Setup-8.5.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-8.5.0-windows-x64.exe",
+      "taille": "77 Mo",
+      "sha256": "d0e4f6e0dc9af057c25518001663b3fae5d1d9f5767077b39c445775eb7617d8"
     },
     "portable": {
-      "nom": "Clipia-Portable-8.4.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-8.4.0-windows-x64.zip",
+      "nom": "Clipia-Portable-8.5.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-8.5.0-windows-x64.zip",
       "taille": "41 Mo",
-      "sha256": "aa8fa24f653ad66ecc6d9b1738964da33cf4259649502305d1ba5f88794e7b87"
+      "sha256": "8de3f595f2334d5e4ecbccbe3037d2fa4b170fa61bfb0bdacfa2535bf4a26f6a"
     },
     "linux": {
-      "nom": "clipia_8.4.0_amd64.deb",
-      "url": "telechargements/clipia_8.4.0_amd64.deb",
-      "taille": "33 Mo",
-      "sha256": "467227d64e61c5c0d6855be503fbeceb1793038e59f0fcbf4e6d039f2c473356"
+      "nom": "clipia_8.5.0_amd64.deb",
+      "url": "telechargements/clipia_8.5.0_amd64.deb",
+      "taille": "34 Mo",
+      "sha256": "328deff6b601b8e1b1efbd3af4a17a72f7e0c9ff2abdf0a0fa07a252380826ed"
     },
     "macos": {
-      "nom": "Clipia-8.4.0-macos.zip",
-      "url": "telechargements/Clipia-8.4.0-macos.zip",
-      "taille": "47 Mo",
-      "sha256": "c351cf29960eb6540b75a782017b95e7bbebcc8bce08a0ac003910822e8c4597"
-    },
-    "iso": {
-      "nom": "Clipia-V8.4.0-windows.iso.zip (2 parties)",
-      "parties": [
-        {
-          "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part00"
-        },
-        {
-          "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part01"
-        }
-      ],
-      "taille": "116 Mo en 2 parties"
+      "nom": "Clipia-8.5.0-macos.zip",
+      "url": "telechargements/Clipia-8.5.0-macos.zip",
+      "taille": "49 Mo",
+      "sha256": "092f750182cce920d5199f5fadfbe4a9ca1480918b63a22497d211ed0c09568b"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",
@@ -90,6 +78,48 @@
     }
   },
   "anciennes": [
+    {
+      "version": "8.4.0",
+      "note": "GLM-5.2 (Z.ai) à l'installation, vidéo code et accès à l'ordinateur.",
+      "fichiers": {
+        "windows": {
+          "nom": "Clipia-Setup-8.4.0-windows-x64.exe",
+          "url": "telechargements/Clipia-Setup-8.4.0-windows-x64.exe",
+          "taille": "76 Mo",
+          "sha256": "ae8c34278f7d3eecd58c55cc10b04a2f60ccc71ccd8a7988e87f31c925ec4cd8"
+        },
+        "portable": {
+          "nom": "Clipia-Portable-8.4.0-windows-x64.zip",
+          "url": "telechargements/Clipia-Portable-8.4.0-windows-x64.zip",
+          "taille": "41 Mo",
+          "sha256": "aa8fa24f653ad66ecc6d9b1738964da33cf4259649502305d1ba5f88794e7b87"
+        },
+        "linux": {
+          "nom": "clipia_8.4.0_amd64.deb",
+          "url": "telechargements/clipia_8.4.0_amd64.deb",
+          "taille": "33 Mo",
+          "sha256": "467227d64e61c5c0d6855be503fbeceb1793038e59f0fcbf4e6d039f2c473356"
+        },
+        "macos": {
+          "nom": "Clipia-8.4.0-macos.zip",
+          "url": "telechargements/Clipia-8.4.0-macos.zip",
+          "taille": "47 Mo",
+          "sha256": "c351cf29960eb6540b75a782017b95e7bbebcc8bce08a0ac003910822e8c4597"
+        },
+        "iso": {
+          "nom": "Clipia-V8.4.0-windows.iso.zip (2 parties)",
+          "parties": [
+            {
+              "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part00"
+            },
+            {
+              "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part01"
+            }
+          ],
+          "taille": "116 Mo en 2 parties"
+        }
+      }
+    },
     {
       "version": "8.3.0",
       "note": "Kodi (piloté à la voix), films, séries et TV : Prime Video, Netflix, TF1+, M6+, France.tv, Arte, Pluto TV.",

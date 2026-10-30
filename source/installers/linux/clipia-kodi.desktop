@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Installer Kodi + pack Clipia
+Comment=Installe Kodi et le pack Clipia (accueil, extensions légales)
+Exec=x-terminal-emulator -e clipia-kodi
+Icon=clipia
+Terminal=false
+Categories=AudioVideo;Video;

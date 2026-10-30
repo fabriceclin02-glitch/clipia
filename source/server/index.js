@@ -292,7 +292,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '8.4.0', mode: 'opérationnel',
+        version: '8.5.0', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -1146,7 +1146,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '8.4.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '8.5.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1650,7 +1650,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.4.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.5.0' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)

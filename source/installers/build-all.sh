@@ -27,7 +27,7 @@ makensis -V1 -DOUT="$WORK/Clipia.exe" -DICON="$W/clipia.ico" "$W/lanceur.nsi"
 makensis -V1 -DOUT="$WORK/Quitter-Clipia.exe" -DICON="$W/clipia.ico" "$W/quitter.nsi"
 FFOPT=""; [ -f "${FFMPEG_WIN_DIR:-/home/claude/ffwin}/ffmpeg.exe" ] && FFOPT="-DFFDIR=${FFMPEG_WIN_DIR:-/home/claude/ffwin}"
 node "$SRC/installers/gen-nsis.mjs" > "$WORK/logiciels.nsh"; makensis -V1 -DLOGICIELS="$WORK/logiciels.nsh" $FFOPT -DVERSION="$VER" -DOUT="$DIST/Clipia-Setup-$VER-windows-x64.exe" -DICON="$W/clipia.ico" \
-  -DLAUNCHER="$WORK/Clipia.exe" -DQUITTER="$WORK/Quitter-Clipia.exe" -DNODE="$NODE_WIN" -DAPPDIR="$APP" -DLISEZMOI="$WORK/LISEZ-MOI.txt" -DDIAG="$W/Diagnostic-installe.bat" "$W/clipia.nsi"
+  -DLAUNCHER="$WORK/Clipia.exe" -DQUITTER="$WORK/Quitter-Clipia.exe" -DNODE="$NODE_WIN" -DKODIPACK="$SRC/installers/kodi-pack" -DAPPDIR="$APP" -DLISEZMOI="$WORK/LISEZ-MOI.txt" -DDIAG="$W/Diagnostic-installe.bat" "$W/clipia.nsi"
 
 
 # 2b. Windows portable (zip, sans installation) : dossier Clipia-Portable/ avec node.exe, app, lanceur et données locales
@@ -61,6 +61,8 @@ sed -i 's/$/\r/' "$P/LISEZ-MOI.txt"
 D="$WORK/deb"; rm -rf "$D"; mkdir -p "$D/DEBIAN" "$D/opt/clipia/runtime" "$D/usr/bin" "$D/usr/share/applications" "$D/usr/share/icons/hicolor/512x512/apps"
 cp -a "$APP" "$D/opt/clipia/app"; cp "$NODE_LIN" "$D/opt/clipia/runtime/node"; chmod 755 "$D/opt/clipia/runtime/node"
 install -m755 "$SRC/installers/linux/clipia" "$D/usr/bin/clipia"
+mkdir -p "$D/usr/share/clipia"; cp -a "$SRC/installers/kodi-pack" "$D/usr/share/clipia/kodi-pack"; install -m755 "$SRC/installers/kodi-pack/installer-kodi-linux.sh" "$D/usr/bin/clipia-kodi"
+install -m644 "$SRC/installers/linux/clipia-kodi.desktop" "$D/usr/share/applications/clipia-kodi.desktop"
 install -m644 "$SRC/installers/linux/clipia.desktop" "$D/usr/share/applications/clipia.desktop"
 install -m644 "$SRC/desktop/resources/icone.png" "$D/usr/share/icons/hicolor/512x512/apps/clipia.png"
 cat > "$D/DEBIAN/control" <<CTL
@@ -94,7 +96,7 @@ cat > "$A/Contents/Info.plist" <<PL
 <key>CFBundlePackageType</key><string>APPL</string><key>LSMinimumSystemVersion</key><string>11.0</string>
 <key>NSHighResolutionCapable</key><true/></dict></plist>
 PL
-(cd "$WORK" && rm -f "$DIST/Clipia-$VER-macos.zip" && zip -qry "$DIST/Clipia-$VER-macos.zip" Clipia.app)
+rm -rf "$WORK/macpack"; mkdir -p "$WORK/macpack"; cp -a "$A" "$WORK/macpack/"; cp -a "$SRC/installers/kodi-pack" "$WORK/macpack/Kodi-Clipia"; (cd "$WORK/macpack" && rm -f "$DIST/Clipia-$VER-macos.zip" && zip -qry "$DIST/Clipia-$VER-macos.zip" Clipia.app Kodi-Clipia)
 # .dmg : image hybride ISO9660 + HFS+ (xorriso). Non testée sur un vrai Mac.
 M="$WORK/dmg"; rm -rf "$M"; mkdir -p "$M"; cp -a "$A" "$M/"; ln -s /Applications "$M/Applications"
 cp "$WORK/LISEZ-MOI.txt" "$M/LISEZ-MOI.txt"

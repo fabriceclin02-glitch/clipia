@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<settings version="1"><section id="plugin.video.clipia.home"><category id="general" label="Clipia"><group id="1">
+<setting id="premier_lancement_fait" type="string" label="Premier lancement fait"><level>4</level><default></default><control type="edit" format="string"><heading>Premier lancement fait</heading></control></setting>
+</group></category></section></settings>
