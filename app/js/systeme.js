@@ -52,7 +52,7 @@ window.__clipiaAssist=()=>{changerVue('parler');setTimeout(()=>{if(!E.conversati
 
 /* ═══ ACCUEIL ═══════════════════════════════════════════════════════════════ */
 const VUES={};window.VUES=VUES;
-const TUILES=[['🎙','Parler','parler'],['✨','Créer','creer'],['🛠','Studio','studio'],['🧩','Agents','agents'],['🏬','Store','store'],['💬','Clipbook',null],['🎵','ClipTok',null],['⚙','Réglages','reglages']];
+const TUILES=[['🎙','Parler','parler'],['✨','Créer','creer'],['🛠','Studio','studio'],['🧩','Agents','agents'],['🏬','Store','store'],['💬','Clipbook','clipbook'],['🎵','ClipTok','cliptok'],['⚙','Réglages','reglages']];
 const _ico={};
 VUES.accueil=async function(){
   const d=new Date();$('#accDate').textContent=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'})+' · '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});

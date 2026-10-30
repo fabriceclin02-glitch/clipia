@@ -1,6 +1,6 @@
 'use strict';
 /* Clipia X8 mobile — noyau : stockage, réseau, moteurs de texte, enregistrement de fichiers */
-const VERSION='8.6.0';
+const VERSION='8.7.0';
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -32,8 +32,9 @@ const blobB64=b=>new Promise((ok,ko)=>{const f=new FileReader();f.onload=()=>ok(
 const texteB64=t=>{const u=new TextEncoder().encode(t);let s='';for(let i=0;i<u.length;i+=8192)s+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(s)};
 let _hid=0;const _hw={};
 window.__clipiaHttp=(id,ok,status,mime,data)=>{const f=_hw[id];delete _hw[id];if(f)f({ok,status,mime,data})};
-async function net(url,{method='GET',headers={},body=null,binaire=false,delai=150000}={}){
+async function net(url,{method='GET',headers={},body=null,blob=null,binaire=false,delai=150000}={}){
   if(NATIF&&NATIF.http){
+    const corpsB=blob?await blobB64(blob):(body?texteB64(body):'');
     return new Promise((res,rej)=>{
       const id='h'+(++_hid);const t=setTimeout(()=>{delete _hw[id];rej(new Error('Délai dépassé : le service ne répond pas.'))},delai);
       _hw[id]=r=>{clearTimeout(t);
@@ -41,12 +42,12 @@ async function net(url,{method='GET',headers={},body=null,binaire=false,delai=15
         let texte=null,blob=null;
         if(binaire){if(r.ok)blob=b64Blob(r.data,r.mime);else{try{texte=atob(r.data)}catch(e){texte=''}}}else texte=r.data;
         res({ok:r.ok,status:r.status,mime:r.mime,texte,blob})};
-      try{NATIF.http(id,method,url,JSON.stringify(headers),body?texteB64(body):'',binaire?'binaire':'texte')}catch(e){clearTimeout(t);delete _hw[id];rej(e)}
+      try{NATIF.http(id,method,url,JSON.stringify(headers),corpsB,binaire?'binaire':'texte')}catch(e){clearTimeout(t);delete _hw[id];rej(e)}
     });
   }
   const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),delai);
   try{
-    const r=await fetch(url,{method,headers,body,signal:ctl.signal});
+    const r=await fetch(url,{method,headers,body:blob||body,signal:ctl.signal});
     const mime=r.headers.get('content-type')||'';
     if(binaire&&r.ok)return{ok:true,status:r.status,mime,blob:await r.blob(),texte:null};
     return{ok:r.ok,status:r.status,mime,texte:await r.text(),blob:null};

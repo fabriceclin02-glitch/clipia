@@ -117,6 +117,11 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 #assist .prog{display:flex;gap:5px;margin-bottom:14px}#assist .prog i{flex:1;height:4px;border-radius:9px;background:var(--bord)}#assist .prog i.f{background:var(--grad)}
 #assist .pied{display:flex;gap:10px}#assist .pied .btn{margin:0}
 .banniere{position:fixed;left:12px;right:12px;bottom:calc(var(--tab) + var(--bas) + 130px);z-index:15;background:var(--carte2);border:1px solid var(--violet);border-radius:16px;padding:12px 14px;display:none;align-items:center;gap:12px;font-size:13.5px}.banniere.on{display:flex}.banniere div{flex:1}.banniere button{padding:9px 14px;border-radius:11px;border:none;background:var(--grad);color:#fff;font-weight:700}.banniere .x{background:none;color:var(--doux)}
+.ctflux{scroll-snap-type:y mandatory;overflow-y:auto;height:calc(100dvh - var(--haut) - 230px);min-height:340px;border-radius:14px}
+.ctv{position:relative;scroll-snap-align:start;height:100%;background:#000;border-radius:14px;overflow:hidden;margin-bottom:8px}
+.ctm,.ctm video,.ctm img{width:100%;height:100%;object-fit:cover;display:block}
+.ctl{position:absolute;left:12px;right:70px;bottom:14px;color:#fff;text-shadow:0 1px 4px #000}.ctl p{margin:4px 0 0;font-size:14px}
+.ctr{position:absolute;right:8px;bottom:14px;display:flex;flex-direction:column;gap:12px}.ctr button{background:#0008;border:0;border-radius:50%;width:48px;height:48px;color:#fff;font-size:20px;display:flex;flex-direction:column;align-items:center;justify-content:center}.ctr small{font-size:10px}
 </style>
 </head>
 <body>
@@ -125,6 +130,8 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <!-- PARLER -->
 <section class="vue acc on" id="v-accueil"><div class="haut"><b id="accDate"></b></div><div class="panneau" id="accPanneau"></div></section>
 <section class="vue" id="v-store"><div class="plein" id="pStore"></div></section>
+<section class="vue" id="v-clipbook"><div class="plein" id="pClipbook"></div></section>
+<section class="vue" id="v-cliptok"><div class="plein ctp" id="pClipTok"></div></section>
 <section class="vue" id="v-studio"><div class="plein" id="pStudio"></div></section>
 <section class="vue" id="v-parler">
   <header class="h">
@@ -181,5 +188,6 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <script src="js/agent.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/systeme.js"></script>
+<script src="js/social.js"></script>
 </body>
 </html>
