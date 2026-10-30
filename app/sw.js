@@ -2,7 +2,7 @@
    Role : rendre l'application disponible hors ligne et accelerer son ouverture.
    Les appels aux modeles IA ne sont JAMAIS mis en cache. */
 
-const VERSION = 'clipia-8.7.0-mobile';
+const VERSION = 'clipia-8.8.0-mobile';
 const CACHE = `${VERSION}-coquille`;
 
 const COQUILLE = [
@@ -15,6 +15,8 @@ const COQUILLE = [
   './js/ui.js',
   './js/systeme.js',
   './js/social.js',
+  './js/google.js',
+  './oauth.html',
   './icones/clipia-192.png',
   './icones/clipia-512.png',
   './icones/clipia-180.png',

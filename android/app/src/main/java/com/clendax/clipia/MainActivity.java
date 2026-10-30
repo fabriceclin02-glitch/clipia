@@ -429,6 +429,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        Uri d = intent.getData();
+        if (d != null && "clipia".equals(d.getScheme()) && "oauth".equals(d.getHost()) && vue != null) {
+            String frag = d.getFragment() == null ? "" : d.getFragment();
+            versJs("window.__clipiaOAuth&&window.__clipiaOAuth(" + org.json.JSONObject.quote(frag) + ")");
+            return;
+        }
         if (estAssist(intent)) {
             if (vue != null) versJs("window.__clipiaAssist&&window.__clipiaAssist()");
             else assistEnAttente = true;

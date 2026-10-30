@@ -1,9 +1,9 @@
 'use strict';
 /* Clipia X8 mobile — cerveau : consignes, outils, agents et sous-agents */
 
-const TOUS_OUTILS=['image','musique','video','code','deleguer','agent_creer','memoire','pc','contact','message','app_ouvrir','telephone'];
+const TOUS_OUTILS=['image','musique','video','code','deleguer','agent_creer','memoire','pc','contact','message','app_ouvrir','telephone','google'];
 const OUTILS_ANDROID=['contact','message','app_ouvrir','telephone'];
-const LIBELLE_OUTIL={image:'Images',musique:'Musique',video:'Vidéo',code:'Code et fichiers',deleguer:'Déléguer à des sous-agents',agent_creer:'Créer des agents',memoire:'Mémoire',pc:'Piloter mon PC',contact:'Contacts',message:'Envoyer des messages',app_ouvrir:'Ouvrir des applis',telephone:'Appels, alarme, réglages'};
+const LIBELLE_OUTIL={image:'Images',musique:'Musique',video:'Vidéo',code:'Code et fichiers',deleguer:'Déléguer à des sous-agents',agent_creer:'Créer des agents',memoire:'Mémoire',pc:'Piloter mon PC',contact:'Contacts',message:'Envoyer des messages',app_ouvrir:'Ouvrir des applis',telephone:'Appels, alarme, réglages',google:'Gmail et Agenda Google'};
 const AGENTS_DEFAUT=[
   {id:'codeur',nom:'Codeur',role:'Développeur : crée des sites, jeux, outils et scripts complets.',instructions:'Tu es un développeur senior. Tu écris du code complet, propre et directement utilisable, jamais de squelette. Pour une application ou un site, tu produis un seul fichier HTML (CSS et JS intégrés) adapté au téléphone.',outils:['code','memoire'],sousAgents:[]},
   {id:'illustrateur',nom:'Illustrateur',role:'Crée des images : affiches, personnages, décors, logos.',instructions:'Tu es directeur artistique. Tu transformes chaque demande en une description d\'image très précise en anglais (sujet, style, lumière, cadrage) puis tu génères l\'image.',outils:['image'],sousAgents:[]},
@@ -35,13 +35,14 @@ const DOC_OUTILS={
   message:'<outil nom="message" contact="Nom exact du contact" canal="sms|whatsapp">texte du message</outil> — prépare un message ; la personne le relit et le confirme à l\'écran avant l\'envoi. Si elle n\'a pas encore dit quoi écrire, demande-le-lui d\'abord (« Que veux-tu lui dire ? »), sans appeler l\'outil.',
   app_ouvrir:'<outil nom="app_ouvrir">nom de l\'application (ex : YouTube, Photos)</outil> — ouvre une application installée.',
   telephone:'<outil nom="telephone" action="appeler|alarme|minuteur|camera|lampe|wifi|bluetooth|son|luminosite|reglages|contacts|messages|galerie|calculatrice|agenda|navigateur|musique|carte|accueil_defaut" valeur="numéro, HH:MM, secondes ou on/off selon l\'action">contact éventuel</outil> — fonctions du téléphone (appel via le composeur, alarme, minuteur, lampe, réglages…).',
+  google:'<outil nom="google" action="lire_mail|envoyer_mail|agenda" a="adresse" sujet="objet">recherche Gmail (lire_mail) ou texte du courriel (envoyer_mail)</outil> — lit les derniers courriels, liste les prochains événements de l\'agenda, ou prépare un courriel que la personne relit et confirme avant l\'envoi.',
   pc:'<outil nom="pc">demande envoyée à Clipia sur l\'ordinateur de la personne</outil> — pour agir sur le PC (fichiers, programmes, installation…).'
 };
 const TONS={chaleureux:'chaleureux et bienveillant',pro:'professionnel et précis',direct:'direct, efficace, sans fioritures',decontracte:'décontracté et complice'};
 
 function systeme(agent,prof,voix){
   const P=E.profil,pc=!!(E.pc.url&&E.pc.jeton);
-  const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>!OUTILS_ANDROID.includes(o)||!!NATIF).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
+  const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>o!=='google'||(window.Google&&Google.connecte())).filter(o=>!OUTILS_ANDROID.includes(o)||!!NATIF).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
   const l=[];
   l.push(agent&&prof>0?`Tu es « ${agent.nom} », un sous-agent de Clipia. ${agent.instructions}`:agent?`Tu es Clipia X8 (CLENDAX, créée par Clin Fabrice), en ce moment dans le rôle de l'agent « ${agent.nom} » : ${agent.role} ${agent.instructions}`:`Tu es Clipia X8, l'assistante personnelle de CLENDAX, créée par Clin Fabrice. Tu es une vraie assistante qui agit : tu codes, crées des images, des musiques et des vidéos, et diriges des agents et sous-agents.`);
   l.push(`Langue : français. ${P.tu?'Tu tutoies':'Tu vouvoies'} la personne${P.prenom?' et tu l\'appelles '+P.prenom:''}. Ton : ${TONS[P.ton]||TONS.chaleureux}.`);

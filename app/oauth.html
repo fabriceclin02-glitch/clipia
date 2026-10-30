@@ -1,0 +1,7 @@
+<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Connexion Google</title>
+<body style="background:#0a0d2b;color:#dfe3ff;font-family:system-ui;padding:30px;text-align:center"><p id="m">Retour vers Clipia…</p>
+<script>
+const h=location.hash.slice(1);
+if(window.opener){try{window.opener.postMessage({clipiaOAuth:h},location.origin)}catch(e){}window.close();document.getElementById('m').textContent='Connexion terminée : tu peux fermer cette page.'}
+else{location.href='clipia://oauth#'+h;setTimeout(()=>document.getElementById('m').innerHTML='Si Clipia ne s\'ouvre pas, <a style="color:#9bb4ff" href="clipia://oauth#'+h.replace(/"/g,'')+'">touche ici</a>.',1500)}
+</script></body></html>

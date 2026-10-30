@@ -1,6 +1,6 @@
 'use strict';
 /* Clipia X8 mobile — noyau : stockage, réseau, moteurs de texte, enregistrement de fichiers */
-const VERSION='8.7.0';
+const VERSION='8.8.0';
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
