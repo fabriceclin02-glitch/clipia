@@ -1,38 +1,38 @@
 {
-  "version": "8.3.0",
+  "version": "8.4.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-8.3.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-8.3.0-windows-x64.exe",
+      "nom": "Clipia-Setup-8.4.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-8.4.0-windows-x64.exe",
       "taille": "76 Mo",
-      "sha256": "ff4a1d9626b07f279fffae4a3f4c44e37a00827b2afbe5a8a2176eadfc84139a"
+      "sha256": "ae8c34278f7d3eecd58c55cc10b04a2f60ccc71ccd8a7988e87f31c925ec4cd8"
     },
     "portable": {
-      "nom": "Clipia-Portable-8.3.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-8.3.0-windows-x64.zip",
+      "nom": "Clipia-Portable-8.4.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-8.4.0-windows-x64.zip",
       "taille": "41 Mo",
-      "sha256": "1c6956fae74c6044c92f830720f036c0374eda51c7a91b450ad82a88a1b913d4"
+      "sha256": "aa8fa24f653ad66ecc6d9b1738964da33cf4259649502305d1ba5f88794e7b87"
     },
     "linux": {
-      "nom": "clipia_8.3.0_amd64.deb",
-      "url": "telechargements/clipia_8.3.0_amd64.deb",
+      "nom": "clipia_8.4.0_amd64.deb",
+      "url": "telechargements/clipia_8.4.0_amd64.deb",
       "taille": "33 Mo",
-      "sha256": "7b8937f79d33b1cc3743274915363317803822e570b047d838ad67a6b3cc0b13"
+      "sha256": "467227d64e61c5c0d6855be503fbeceb1793038e59f0fcbf4e6d039f2c473356"
     },
     "macos": {
-      "nom": "Clipia-8.3.0-macos.zip",
-      "url": "telechargements/Clipia-8.3.0-macos.zip",
+      "nom": "Clipia-8.4.0-macos.zip",
+      "url": "telechargements/Clipia-8.4.0-macos.zip",
       "taille": "47 Mo",
-      "sha256": "5ee11ae37a7e49156ffb544aa59f608fef1e8be70b6860875c9ea51092cb7bce"
+      "sha256": "c351cf29960eb6540b75a782017b95e7bbebcc8bce08a0ac003910822e8c4597"
     },
     "iso": {
-      "nom": "Clipia-V8.3.0-windows.iso.zip (2 parties)",
+      "nom": "Clipia-V8.4.0-windows.iso.zip (2 parties)",
       "parties": [
         {
-          "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part00"
+          "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part00"
         },
         {
-          "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part01"
+          "url": "telechargements/Clipia-V8.4.0-windows.iso.zip.part01"
         }
       ],
       "taille": "116 Mo en 2 parties"
@@ -109,6 +109,48 @@
     }
   },
   "anciennes": [
+    {
+      "version": "8.3.0",
+      "note": "Kodi (piloté à la voix), films, séries et TV : Prime Video, Netflix, TF1+, M6+, France.tv, Arte, Pluto TV.",
+      "fichiers": {
+        "windows": {
+          "nom": "Clipia-Setup-8.3.0-windows-x64.exe",
+          "url": "telechargements/Clipia-Setup-8.3.0-windows-x64.exe",
+          "taille": "76 Mo",
+          "sha256": "ff4a1d9626b07f279fffae4a3f4c44e37a00827b2afbe5a8a2176eadfc84139a"
+        },
+        "portable": {
+          "nom": "Clipia-Portable-8.3.0-windows-x64.zip",
+          "url": "telechargements/Clipia-Portable-8.3.0-windows-x64.zip",
+          "taille": "41 Mo",
+          "sha256": "1c6956fae74c6044c92f830720f036c0374eda51c7a91b450ad82a88a1b913d4"
+        },
+        "linux": {
+          "nom": "clipia_8.3.0_amd64.deb",
+          "url": "telechargements/clipia_8.3.0_amd64.deb",
+          "taille": "33 Mo",
+          "sha256": "7b8937f79d33b1cc3743274915363317803822e570b047d838ad67a6b3cc0b13"
+        },
+        "macos": {
+          "nom": "Clipia-8.3.0-macos.zip",
+          "url": "telechargements/Clipia-8.3.0-macos.zip",
+          "taille": "47 Mo",
+          "sha256": "5ee11ae37a7e49156ffb544aa59f608fef1e8be70b6860875c9ea51092cb7bce"
+        },
+        "iso": {
+          "nom": "Clipia-V8.3.0-windows.iso.zip (2 parties)",
+          "parties": [
+            {
+              "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part00"
+            },
+            {
+              "url": "telechargements/Clipia-V8.3.0-windows.iso.zip.part01"
+            }
+          ],
+          "taille": "116 Mo en 2 parties"
+        }
+      }
+    },
     {
       "version": "8.2.0",
       "note": "Sauvegarder mon IA, accueil vitrine, moteurs de clip (Canva…), touche Espace.",

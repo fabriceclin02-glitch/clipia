@@ -27,6 +27,7 @@ export async function etat() {
     { id: 'groq', fait: a('groq'), titre: 'Cerveau rapide : Groq (gratuit)', optionnel: false },
     { id: 'local', fait: modeleQwen, titre: 'Cerveau local : Qwen (hors ligne, sans clé)', optionnel: false, info: { ollama: oll.ok } },
     { id: 'claude', fait: a('anthropic'), titre: 'Claude (Anthropic) — raisonnement avancé', optionnel: true },
+    { id: 'glm', fait: a('zai'), titre: 'GLM-5.2 (Z.ai) — cerveau de code, en cloud', optionnel: true },
     { id: 'claudecode', fait: Boolean(trouve('claude')), titre: 'Claude Code — coder dans ton ordinateur', optionnel: true },
     { id: 'images', fait: PROVIDERS.some(p => (p.modalities || []).includes('image') && (p.sansCle || a(p.id))), titre: 'Images', optionnel: false },
     { id: 'video', fait: outils.present, titre: 'Vidéos (ffmpeg)', optionnel: false },
