@@ -10,6 +10,5 @@ La liste à jour (avec les sommes de contrôle SHA-256) est dans [`liens.json`](
 | 8.3.0 | Kodi (installateur + Logithèque, piloté à la voix), films/séries/TV : Prime Video, Netflix, TF1+, M6+, France.tv, Arte, Pluto TV | `telechargements/` |
 | 8.2.0 | Sauvegarder mon IA (USB / Dropbox / MEGA), accueil vitrine, moteurs de clip (Canva…), touche Espace | `telechargements/` |
 | 8.0.0 | X8 « deux cerveaux », travaux en arrière-plan, OpenClaw, entreprise | `telechargements/` |
-| 7.0.1 | X7 : voix et sphère 3D, Logithèque, accès ordinateur | `telechargements/` |
 
 Pour revenir à une version précédente : télécharge son installeur (ou son zip portable), installe-la, puis restaure ta sauvegarde `.clipiabak` (menu « Sauvegarder mon IA »).
