@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<script>(function(){try{var m=matchMedia('(max-width:900px)').matches||matchMedia('(hover:none)').matches||/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);if(m)document.documentElement.className+=' mob';window.MOB=m}catch(e){window.MOB=false}})()</script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Clipia X8 — agents, entreprise autonome, code avec GLM-5.2 de Z.ai</title>
 <meta name="description" content="Clipia X8 : agent personnel IA gratuit pour Windows, Mac et Linux, avec GLM-5.2 de Z.ai proposé à l'installation pour coder. Crée tes propres agents et lance une entreprise autonome avec des agents (missions en arrière-plan, accord avant tout envoi). Parle-lui (animation 3D plein écran, dictée partout), montage vidéo et musique par prompts, 50 compétences OpenClaw, logithèque open source, téléphone et serveur MCP, cerveaux Google gratuits. Cabinet de psychologie : 2 h offertes.">
@@ -179,6 +180,21 @@ body{overflow-x:clip;max-width:100%;overscroll-behavior-y:none}
 }
 pre,code{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Mode téléphone : page statique, aucune animation, aucun saut ===== */
+html.mob{scroll-behavior:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+html.mob body{overflow-anchor:none;overflow-x:hidden;overscroll-behavior-y:auto;background:radial-gradient(700px 420px at 80% 0,#25207a66,transparent 65%),radial-gradient(600px 400px at 0 35%,#12408a50,transparent 65%),var(--bg);background-repeat:no-repeat;background-color:var(--bg)}
+html.mob *,html.mob *::before,html.mob *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.mob .fond,html.mob #prog,html.mob .ruban2,html.mob .aur,html.mob .pt{display:none!important}
+html.mob header{position:relative;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+html.mob .rv{opacity:1!important;transform:none!important}
+html.mob .tilt,html.mob .k:hover,html.mob .btn:hover{transform:none!important}
+html.mob #hero3d{filter:none;touch-action:auto}
+html.mob #tape{min-height:48px}
+html.mob .bu{opacity:1!important}
+html.mob video{max-width:100%;height:auto}
+html.mob .shots{scroll-snap-type:none;-webkit-overflow-scrolling:touch}
+html.mob #bot-b,html.mob #wa{animation:none!important}
 </style>
 </head>
 <body>
@@ -638,12 +654,13 @@ fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   observer();
 }).catch(()=>{$('#liste').innerHTML='<p class="note">Liste des téléchargements indisponible. Écris à fabriceclin02@gmail.com.</p>'});
 /* animations */
+if(window.MOB)document.querySelectorAll('video').forEach(v=>{v.preload='none'});
 (function(){
-  const pts=$('#pts');for(let i=0;i<34;i++){const p=document.createElement('i');p.className='pt';p.style.cssText=`left:${Math.random()*100}%;top:${60+Math.random()*50}%;animation-duration:${9+Math.random()*14}s;animation-delay:${-Math.random()*20}s;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px`;pts.append(p)}
+  const pts=$('#pts');if(!window.MOB)for(let i=0;i<34;i++){const p=document.createElement('i');p.className='pt';p.style.cssText=`left:${Math.random()*100}%;top:${60+Math.random()*50}%;animation-duration:${9+Math.random()*14}s;animation-delay:${-Math.random()*20}s;width:${2+Math.random()*3}px;height:${2+Math.random()*3}px`;pts.append(p)}
   const o=$('#onde1');for(let i=0;i<14;i++){const b=document.createElement('i');b.style.animationDelay=(-Math.random()).toFixed(2)+'s';b.style.animationDuration=(.6+Math.random()*.7).toFixed(2)+'s';o.append(b)}
   const phrases=['« Clipia ! »  —  « Oui ? »','« Clipia, ouvre Google Chrome. »','« Ferme la fenêtre de gauche. »','« Crée-moi un site web. »','« Compose une musique douce. »'];
   let n=0,j=0,sens=1;const t=$('#tape');
-  (function tic(){const s=phrases[n];j+=sens;t.firstChild?t.firstChild.nodeValue=s.slice(0,j):t.prepend(s.slice(0,j));
+  if(window.MOB){t.textContent=phrases[1]}else(function tic(){const s=phrases[n];j+=sens;t.firstChild?t.firstChild.nodeValue=s.slice(0,j):t.prepend(s.slice(0,j));
     if(sens>0&&j>=s.length){sens=-1;return setTimeout(tic,1700)}if(sens<0&&j<=0){sens=1;n=(n+1)%phrases.length}
     setTimeout(tic,sens>0?55:25)})();
 })();
@@ -674,7 +691,7 @@ $('#bf').onsubmit=e=>{e.preventDefault();const t=$('#bi').value.trim();if(!t)ret
   new IntersectionObserver(es=>vu=es[0].isIntersecting).observe(cv);
   const pr=(x,y,z,ay,ax,R)=>{const cy=Math.cos(ay),sy=Math.sin(ay),cx=Math.cos(ax),sx=Math.sin(ax);let X=x*cy+z*sy,Z=-x*sy+z*cy,Y=y*cx-Z*sx;Z=y*sx+Z*cx;const p=2.6/(2.6-Z*.9);return{x:W/2+X*R*p,y:H/2+Y*R*p,z:Z,p}};
   const reduit=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  (function boucle(){requestAnimationFrame(boucle);if(!vu&&!reduit)return;t+=reduit?0:.006;boost*=.94;ex+=(mx-ex)*.08;ey+=(my-ey)*.08;ctx.clearRect(0,0,W,H);
+  (function boucle(){if(!window.MOB)requestAnimationFrame(boucle);if(!vu&&!reduit)return;t+=reduit?0:.006;boost*=.94;ex+=(mx-ex)*.08;ey+=(my-ey)*.08;ctx.clearRect(0,0,W,H);
    const R=Math.min(W,H)*((W<300?.22:.30)+boost*.04),ay=t*1.1+ex*.9,ax=.35+Math.sin(t*.7)*.25+ey*.5;
    const g=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,R*1.9);g.addColorStop(0,'rgba(124,58,237,.42)');g.addColorStop(.5,'rgba(37,99,235,.13)');g.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
    const pu=1+Math.sin(t*3)*.03+boost*.08;
@@ -683,8 +700,8 @@ $('#bf').onsubmit=e=>{e.preventDefault();const t=$('#bi').value.trim();if(!t)ret
    ctx.font='800 '+Math.round(R*.26)+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(255,255,255,.92)';ctx.shadowColor='#a78bfa';ctx.shadowBlur=24;ctx.fillText('CLIPIA',W/2,H/2);ctx.shadowBlur=0})();
 })();
 (function(){
-  const pg=document.getElementById('prog');addEventListener('scroll',()=>{const h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
-  const cmp=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;cmp.unobserve(e.target);const el=e.target,n=+el.dataset.n;let i=0;const st=()=>{i+=Math.max(1,Math.round(n/40));if(i>=n){el.textContent=n;return}el.textContent=i;requestAnimationFrame(st)};st()}),{threshold:.5});
+  const pg=document.getElementById('prog');if(!window.MOB)addEventListener('scroll',()=>{const h=document.documentElement;pg.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+  const cmp=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;cmp.unobserve(e.target);const el=e.target,n=+el.dataset.n;if(window.MOB){el.textContent=n;return}let i=0;const st=()=>{i+=Math.max(1,Math.round(n/40));if(i>=n){el.textContent=n;return}el.textContent=i;requestAnimationFrame(st)};st()}),{threshold:.5});
   document.querySelectorAll('[data-n]').forEach(e=>cmp.observe(e));
   document.addEventListener('pointermove',e=>{if(e.pointerType==='touch')return;const k=e.target.closest&&e.target.closest('.tilt');if(!k)return;const r=k.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;k.style.transform=`perspective(700px) rotateY(${x*9}deg) rotateX(${-y*9}deg) translateY(-4px)`});
   document.addEventListener('pointerout',e=>{const k=e.target.closest&&e.target.closest('.tilt');if(k&&!k.contains(e.relatedTarget))k.style.transform=''});
