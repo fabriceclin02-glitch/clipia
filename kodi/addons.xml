@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addons>
+<addon id="repository.clipia" name="Dépôt Clipia" version="1.0.0" provider-name="CLENDAX · Clin Fabrice">
+  <extension point="xbmc.addon.repository" name="Dépôt Clipia">
+    <dir>
+      <info compressed="false">https://fabriceclin02-glitch.github.io/clipia/kodi/addons.xml</info>
+      <checksum>https://fabriceclin02-glitch.github.io/clipia/kodi/addons.xml.md5</checksum>
+      <datadir zip="true">https://fabriceclin02-glitch.github.io/clipia/kodi/zips/</datadir>
+    </dir>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="fr_FR">Dépôt Clipia pour Kodi</summary>
+    <description lang="fr_FR">Fournit « Clipia — Accueil » et ses mises à jour.</description>
+    <platform>all</platform>
+    <assets><icon>icon.png</icon></assets>
+  </extension>
+</addon>
+
+<addon id="plugin.video.clipia.home" name="Clipia — Accueil" version="1.0.0" provider-name="CLENDAX · Clin Fabrice">
+  <requires>
+    <import addon="xbmc.python" version="3.0.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="default.py">
+    <provides>video audio</provides>
+  </extension>
+  <extension point="xbmc.service" library="service.py"/>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="fr_FR">Accueil Clipia : TV, films, séries, musique, radio, replay, YouTube, en un seul endroit</summary>
+    <description lang="fr_FR">Un accueil clair par catégories, un installateur d'extensions légales (YouTube, Arte, replay TV, radios, podcasts, Jellyfin…), la TV en direct (PVR IPTV Simple) et le pilotage vocal par Clipia. N'inclut aucune extension de streaming pirate.</description>
+    <disclaimer lang="fr_FR">Ne fournit aucun contenu. Tu es responsable des sources que tu ajoutes dans Kodi.</disclaimer>
+    <platform>all</platform>
+    <license>GPL-2.0-or-later</license>
+    <assets><icon>resources/media/icon.png</icon><fanart>resources/media/fanart.jpg</fanart></assets>
+  </extension>
+</addon>
+
+</addons>
