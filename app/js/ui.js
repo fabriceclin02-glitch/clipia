@@ -94,20 +94,22 @@ async function afficher({moi='',elle='',sys='',etape='',creations=[]}={}){
 const majMoteur=()=>{const p=moteursPrets()[0];const m=MOTEURS[p];$('#moteurAff').textContent=(E.agentActif?'🧩 '+((E.agents.find(a=>a.id===E.agentActif)||{}).nom||'')+' · ':'')+m.court+(p==='libre'?' (limité)':'')};
 const nettoyerParole=t=>t.replace(/```[\s\S]*?```/g,' ').replace(/https?:\/\/\S+/g,' ').replace(/[*_#`>]/g,'').replace(/\s+/g,' ').trim();
 
-async function demander(texte){
-  texte=(texte||'').trim();if(!texte||E.occupe)return;
+const agentActif=()=>E.agentActif?E.agents.find(a=>a.id===E.agentActif):null;
+function voixEff(opts){const a=agentActif(),va=voixAgent(a),vo=(opts&&opts.voix)||{};return{nom:vo.nom||va.nom||'',vitesse:vo.vitesse||va.vitesse||E.vitesse,hauteur:vo.hauteur||va.hauteur||1,style:vo.style||va.style||'',narration:!!vo.narration}}
+async function demander(texte,opts){
+  texte=(texte||'').trim();if(!texte||E.occupe)return;const vx=voixEff(opts);
   stopParole();arreterEcoute();E.occupe=true;zone.value='';ajuste();
   afficher({moi:texte,etape:'Clipia réfléchit…'});majEtat('Clipia réfléchit…','att');
   definirInfo(m=>afficher({moi:texte,etape:m||'Clipia réfléchit…'}));
   try{
-    const r=await traiter(texte,m=>{E.creation=true;afficher({moi:texte,etape:m});majEtat(m.slice(0,40),'att')});
+    const r=await traiter(texte,m=>{E.creation=true;afficher({moi:texte,etape:m});majEtat(m.slice(0,40),'att')},vx);
     E.creation=false;
     const rep=r.texte||(r.creations.length?'C\'est fait.':'Je n\'ai rien à répondre.');
     E.messages.push({role:'user',contenu:texte},{role:'assistant',contenu:rep,cr:r.creations});sauver();
     await afficher({moi:texte,elle:rep,creations:r.creations,sys:r.moteur==='libre'&&moteursPrets()[0]!=='libre'?'':''});
     majEtat('Prête');E.occupe=false;majMoteur();
     if(r.creations.length&&M.lire('autoSave',!!NATIF)){for(const id of r.creations){const c=await BD.lire(id);if(c)await enregistrerSiBesoin(c)}toast('✓ Enregistré dans <b>Téléchargements/Clipia</b>')}
-    if(E.voixActive&&rep)parler(rep);else if(E.conversation)relancerEcoute();
+    if(rep&&(E.voixActive||(opts&&opts.voix)))parler(rep,vx);else if(E.conversation)relancerEcoute();
   }catch(e){
     E.occupe=false;E.creation=false;afficher({moi:texte,sys:e.message||'Erreur inconnue.'});majEtat('Erreur','off');
     if(moteursPrets()[0]==='libre'&&!M.lire('conseilCle',false)){M.ecrire('conseilCle',true);setTimeout(()=>changerVue('reglages'),900)}
@@ -120,7 +122,7 @@ function remplirVoix(l,auto){const sel=$('#voix');if(!sel)return;sel.innerHTML=l
 let chargerVoix=()=>{if(!synth)return;let l=synth.getVoices().filter(v=>/^fr/i.test(v.lang));if(!l.length)l=synth.getVoices();voixDispo=l;remplirVoix(l.map(v=>({nom:v.name,langue:v.lang})))};
 if(synth){synth.onvoiceschanged=()=>chargerVoix()}
 const finParole=()=>{E.parle=false;majEtat('Prête');if(E.conversation)relancerEcoute()};
-let parler=t=>{if(!synth){finParole();return}synth.cancel();arreterEcoute();const u=new SpeechSynthesisUtterance(nettoyerParole(t));const v=voixDispo.find(x=>x.name===E.voixNom);if(v){u.voice=v;u.lang=v.lang}else u.lang='fr-FR';u.rate=E.vitesse;u.onstart=()=>{E.parle=true;majEtat('Clipia parle…','att')};u.onend=finParole;u.onerror=finParole;synth.speak(u)};
+let parler=(t,vx)=>{if(!synth){finParole();return}vx=vx||{};synth.cancel();arreterEcoute();const u=new SpeechSynthesisUtterance(nettoyerParole(t));const v=voixDispo.find(x=>x.name===(vx.nom||E.voixNom));if(v){u.voice=v;u.lang=v.lang}else u.lang='fr-FR';u.rate=vx.vitesse||E.vitesse;u.pitch=vx.hauteur||1;u.onstart=()=>{E.parle=true;majEtat('Clipia parle…','att')};u.onend=finParole;u.onerror=finParole;synth.speak(u)};
 let stopParole=()=>{if(synth)synth.cancel();E.parle=false};
 const Reco=window.SpeechRecognition||window.webkitSpeechRecognition;let reco=null,recoOn=false,arretVoulu=false;
 function creerReco(){if(!Reco)return null;const r=new Reco();r.lang='fr-FR';r.continuous=false;r.interimResults=true;
@@ -159,7 +161,7 @@ if(NATIF){
   };
   demarrerEcoute=()=>{if(E.ecoute)return;zone.value='';try{NATIF.stopParole();NATIF.ecouter()}catch(e){}};
   arreterEcoute=()=>{try{NATIF.stopEcoute()}catch(e){}E.ecoute=false;E.niveau=0;majMode()};
-  parler=t=>{if(!E.voixActive){finParole();return}try{NATIF.reglerVitesse(E.vitesse);NATIF.choisirVoix(E.voixNom||'');NATIF.parler(nettoyerParole(t))}catch(e){finParole()}};
+  parler=(t,vx)=>{vx=vx||{};if(!E.voixActive&&!vx.force){finParole();return}try{NATIF.reglerVitesse(vx.vitesse||E.vitesse);NATIF.reglerHauteur(vx.hauteur||1);NATIF.choisirVoix(vx.nom||E.voixNom||'');NATIF.parler(nettoyerParole(t))}catch(e){finParole()}};
   stopParole=()=>{try{NATIF.stopParole()}catch(e){}E.parle=false};
   chargerVoix=()=>{let l=[];try{l=JSON.parse(NATIF.listeVoix()||'[]')}catch(e){}remplirVoix(l)};
   if(synth){synth.onvoiceschanged=null;try{synth.cancel()}catch(e){}}
@@ -174,18 +176,67 @@ function changerVue(v){
 }
 $$('nav.tabs button').forEach(b=>b.onclick=()=>changerVue(b.dataset.v));
 
+
+/* ═══ OPTIONS DE VOIX (ateliers et agents) ══════════════════════════════════ */
+function listeVoixNoms(){try{if(NATIF)return JSON.parse(NATIF.listeVoix()||'[]')}catch(e){}return voixDispo.map(v=>({nom:v.name,langue:v.lang}))}
+function blocVoix(v={},{narration=false}={}){
+  const l=listeVoixNoms(),vit=v.vitesse||E.vitesse||1,hau=v.hauteur||1;
+  return `<div data-bv="bloc"><h3>🎙 Voix et façon de parler</h3>
+  ${narration?`<div class="carte-m ${v.narration===false?'':'on'}" data-bv="narr"><span class="r"></span><div><b>Narration parlée dans la vidéo</b><span>La voix lit le texte de chaque scène (application Android).</span></div></div>`:''}
+  <div class="champ"><label>Voix</label><select data-bv="nom"><option value="">Voix par défaut</option>${l.map(x=>`<option value="${esc(x.nom)}" ${x.nom===v.nom?'selected':''}>${esc(x.nom)}</option>`).join('')}</select></div>
+  <div class="champ"><label>Vitesse <span data-bv="vv">${Number(vit).toFixed(2)}</span>×</label><input type="range" data-bv="vitesse" min="0.6" max="1.5" step="0.05" value="${vit}" style="width:100%;accent-color:#7c5cff"></div>
+  <div class="champ"><label>Hauteur, grave ↔ aiguë <span data-bv="hv">${Number(hau).toFixed(2)}</span></label><input type="range" data-bv="hauteur" min="0.6" max="1.5" step="0.05" value="${hau}" style="width:100%;accent-color:#7c5cff"></div>
+  <label>Façon de parler</label><div class="rang champ" data-bv="styles">${STYLES_VOIX.map(x=>`<span class="choix ${v.style===x?'on':''}" data-st="${esc(x)}">${esc(x)}</span>`).join('')}</div>
+  <div class="champ"><input type="text" data-bv="style" placeholder="ou décris : « comme un présentateur radio »" value="${esc(v.style||'')}"></div>
+  <button class="btn" data-bv="test" type="button">🔊 Écouter cette voix</button></div>`;
+}
+function lireBlocVoix(r){const q=k=>r.querySelector('[data-bv="'+k+'"]');const n=q('narr');return{nom:q('nom').value,vitesse:parseFloat(q('vitesse').value)||1,hauteur:parseFloat(q('hauteur').value)||1,style:q('style').value.trim(),narration:n?n.classList.contains('on'):false}}
+function bindBlocVoix(r){
+  const q=k=>r.querySelector('[data-bv="'+k+'"]');
+  q('vitesse').oninput=e=>q('vv').textContent=Number(e.target.value).toFixed(2);q('hauteur').oninput=e=>q('hv').textContent=Number(e.target.value).toFixed(2);
+  $$('[data-st]',r).forEach(c=>c.onclick=()=>{const on=!c.classList.contains('on');$$('[data-st]',r).forEach(x=>x.classList.remove('on'));if(on){c.classList.add('on');q('style').value=c.dataset.st}else q('style').value=''});
+  const n=q('narr');if(n)n.onclick=()=>n.classList.toggle('on');
+  q('test').onclick=()=>{const v=lireBlocVoix(r);v.force=true;parler('Bonjour ! Voici ma voix, ma vitesse et ma façon de parler.',v)};
+}
+
 /* ── Créer ── */
 const POUVOIRS=[
   {i:'🖼',t:'Image',d:'Affiche, personnage, décor…',ph:'Un dragon en néon au-dessus d\'une ville la nuit',pre:'Crée une image : '},
   {i:'🎵',t:'Musique',d:'Compose un morceau original',ph:'Une musique lofi pour réviser, calme et douce',pre:'Compose une musique : '},
-  {i:'🎬',t:'Clip vidéo',d:'Images + texte + musique',ph:'Un clip de 5 scènes sur la conquête de l\'espace',pre:'Fais un clip vidéo : '},
+  {i:'🎬',t:'Clip vidéo',d:'Images + texte + musique + voix',ph:'Un clip de 5 scènes sur la conquête de l\'espace',pre:'Fais un clip vidéo : ',narr:true},
+  {i:'📷',t:'Diaporama',d:'Tes photos + musique + voix',dia:true,narr:true},
   {i:'💻',t:'Code',d:'Appli, jeu, site, script',ph:'Un jeu de serpent avec score, adapté au téléphone',pre:'Écris le code de : '},
   {i:'🧩',t:'Agents',d:'Crée une équipe',ph:'Une équipe pour lancer ma boutique en ligne',pre:'Crée une équipe d\'agents et de sous-agents pour : '},
-  {i:'🖥',t:'Mon PC',d:'Agir sur ton ordinateur',ph:'Range mon dossier Téléchargements',pre:'Sur mon PC : ',pc:true}
+  {i:'🖥',t:'Mon PC',d:'Agir sur ton ordinateur',ph:'Range mon dossier Téléchargements',pre:'Sur mon PC : ',pc:true,sansVoix:true}
 ];
 $('#pouvoirs').innerHTML=POUVOIRS.map((p,i)=>`<div class="pv" data-i="${i}"><i>${p.i}</i><b>${p.t}</b><span>${p.d}</span></div>`).join('');
+const cleV=p=>'voixAtelier.'+p.t;
 $('#pouvoirs').onclick=e=>{const el=e.target.closest('.pv');if(!el)return;const p=POUVOIRS[+el.dataset.i];
-  libre(`<h2>${p.i} ${p.t}</h2><p class="doux">Décris ce que tu veux.</p><textarea id="lt" rows="4" placeholder="${esc(p.ph)}" style="min-height:100px;max-height:200px"></textarea><div style="height:12px"></div><button class="btn p" id="lgo">Lancer</button>${p.pc&&!E.pc.url?'<p class="aide">Relie d\'abord ton PC dans Réglages → Mon PC.</p>':''}`,r=>{$('#lgo',r).onclick=()=>{const t=$('#lt',r).value.trim();if(!t)return;fermerTout();changerVue('parler');demander(p.pre+t)}})};
+  const vs=Object.assign({narration:true},M.lire(cleV(p),{}));
+  const dia=p.dia?`<div class="champ"><label>Titre</label><input type="text" id="dt" placeholder="Mes vacances"></div><button class="btn" id="dp" type="button">📷 Choisir mes photos</button><input type="file" id="df" accept="image/*" multiple hidden><div class="aide" id="dn">Aucune photo choisie.</div>
+  <div class="champ"><label>Légendes (une par ligne, dans l'ordre — facultatif)</label><textarea id="dl" rows="3" style="min-height:80px" placeholder="Arrivée à la plage&#10;Le coucher de soleil"></textarea></div>
+  <label>Format</label><div class="rang champ" id="dfm"><span class="choix on" data-f="vertical">Vertical</span><span class="choix" data-f="horizontal">Horizontal</span></div>
+  <label>Musique</label><div class="rang champ" id="dms">${['calme','lofi','pop','epique','dance','triste','jazz','aucune'].map((x,k)=>`<span class="choix ${k===0?'on':''}" data-m="${x}">${x}</span>`).join('')}</div>`:`<textarea id="lt" rows="4" placeholder="${esc(p.ph)}" style="min-height:100px;max-height:200px"></textarea>`;
+  libre(`<h2>${p.i} ${p.t}</h2><p class="doux">${p.dia?'Choisis tes photos : Clipia en fait un diaporama.':'Décris ce que tu veux.'}</p>${dia}${p.sansVoix?'':blocVoix(vs,{narration:!!p.narr})}<div style="height:12px"></div><button class="btn p" id="lgo">Lancer</button>${p.pc&&!E.pc.url?'<p class="aide">Relie d\'abord ton PC dans Réglages → Mon PC.</p>':''}`,r=>{
+    if(!p.sansVoix)bindBlocVoix(r);let photos=[];
+    if(p.dia){$('#dp',r).onclick=()=>$('#df',r).click();$('#df',r).onchange=ev=>{photos=[...ev.target.files].slice(0,20);$('#dn',r).textContent=photos.length?photos.length+' photo(s) choisie(s)':'Aucune photo choisie.'};
+      $$('#dfm .choix',r).forEach(c=>c.onclick=()=>{$$('#dfm .choix',r).forEach(x=>x.classList.toggle('on',x===c))});$$('#dms .choix',r).forEach(c=>c.onclick=()=>{$$('#dms .choix',r).forEach(x=>x.classList.toggle('on',x===c))})}
+    $('#lgo',r).onclick=()=>{const v=p.sansVoix?null:lireBlocVoix(r);if(v)M.ecrire(cleV(p),v);
+      if(p.dia){if(!photos.length){$('#dn',r).innerHTML='<span class="ko">Choisis au moins une photo.</span>';return}
+        const o={titre:$('#dt',r).value.trim()||'Diaporama',photos,legendes:$('#dl',r).value.split('\n').map(x=>x.trim()),format:$('#dfm .on',r).dataset.f,style:$('#dms .on',r).dataset.m,voix:Object.assign(v,{narration:v.narration})};fermerTout();changerVue('parler');faireDiaporama(o);return}
+      const t=$('#lt',r).value.trim();if(!t)return;fermerTout();changerVue('parler');demander(p.pre+t+(p.narr&&v&&v.narration?' (avec narration parlée)':''),v?{voix:v}:undefined)}})};
+async function faireDiaporama({titre,photos,legendes,format,style,voix}){
+  if(E.occupe)return;stopParole();E.occupe=true;E.creation=true;const etape=m=>{afficher({etape:m});majEtat(m.slice(0,40),'att')};
+  try{
+    etape('Préparation du diaporama…');const scenes=photos.map((b,i)=>({blob:b,texte:legendes[i]||''}));
+    let musique=null;if(style!=='aucune'){etape('Je compose la musique…');const S=STYLES[style]||STYLES.calme;musique=(await composerMusique({titre,style,mesures:Math.min(32,Math.max(8,Math.ceil(scenes.length*4.2/(240/S.tempo))))})).blob}
+    let narr=null;if(voix&&voix.narration&&scenes.some(s=>s.texte)){narr=[];for(let i=0;i<scenes.length;i++){etape('Narration '+(i+1)+' / '+scenes.length+'…');narr.push(scenes[i].texte?await synthese(scenes[i].texte,voix):null)}if(!narr.some(Boolean)){narr=null;toast('Narration indisponible sur ce téléphone : diaporama sans voix.')}}
+    const b=await fabriquerVideo({titre,scenes,format,musique,narrations:narr,info:etape});
+    const c=await nouvelleCreation('video',titre,b,{scenes:scenes.length});await afficher({elle:'Ton diaporama est prêt.',creations:[c.id]});majEtat('Prête');
+    if(M.lire('autoSave',!!NATIF)){await enregistrerSiBesoin(c);toast('✓ Enregistré dans <b>Téléchargements/Clipia</b>')}
+  }catch(e){afficher({sys:e.message||'Échec du diaporama.'});majEtat('Erreur','off')}
+  finally{E.occupe=false;E.creation=false}
+}
 async function majCreer(){const l=await BD.tous(),g=$('#galerie');g.innerHTML='';$('#galVide').style.display=l.length?'none':'block';
   for(const c of l.slice(0,60)){const d=document.createElement('div');d.className='cr';const ap=c.type==='image'?`<img src="${urlDe(c.blob)}" alt="">`:c.type==='video'?`<video src="${urlDe(c.blob)}#t=0.5" muted preload="metadata"></video>`:ICO[c.type]||'📄';d.innerHTML=`<div class="ap">${ap}</div><div class="tt">${esc(c.titre)}</div>`;d.onclick=()=>visualiser(c);
     d.oncontextmenu=e=>e.preventDefault();let lp;d.ontouchstart=()=>{lp=setTimeout(()=>{if(confirm('Supprimer « '+c.titre+' » ?'))BD.suppr(c.id).then(majCreer)},700)};d.ontouchend=d.ontouchmove=()=>clearTimeout(lp);g.appendChild(d)}}
@@ -212,10 +263,11 @@ function formAgent(a){
   <div class="champ"><label>Instructions</label><textarea id="ai" rows="5" style="min-height:110px;max-height:240px">${esc(n.instructions)}</textarea></div>
   <label>Pouvoirs de cet agent</label><div class="rang champ" id="ao">${TOUS_OUTILS.filter(o=>o!=='pc').map(o=>`<span class="choix ${n.outils.includes(o)?'on':''}" data-o="${o}">${esc(LIBELLE_OUTIL[o])}</span>`).join('')}</div>
   <label>Sous-agents qu'il peut mobiliser</label><div class="rang champ" id="as">${E.agents.filter(x=>x.id!==n.id).map(x=>`<span class="choix ${n.sousAgents.some(s=>norm(s)===norm(x.nom))?'on':''}" data-s="${esc(x.nom)}">${esc(x.nom)}</span>`).join('')||'<span class="aide">Aucun autre agent.</span>'}</div>
+  ${blocVoix(voixAgent(a))}
   <button class="btn p" id="asv">Enregistrer</button>${a?'<button class="btn danger" id="asu">Supprimer</button>':''}`,r=>{
-    $$('.choix',r).forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+    bindBlocVoix(r);$$('#ao .choix,#as .choix',r).forEach(c=>c.onclick=()=>c.classList.toggle('on'));
     $('#asv',r).onclick=()=>{const nom=$('#an',r).value.trim();if(!nom)return;const outils=$$('#ao .choix.on',r).map(c=>c.dataset.o),sa=$$('#as .choix.on',r).map(c=>c.dataset.s);if(sa.length&&!outils.includes('deleguer'))outils.push('deleguer');
-      const ag={id:a?a.id:norm(nom).replace(/[^a-z0-9]+/g,'-')||('a'+Date.now()),nom,role:$('#ar',r).value.trim()||'Agent personnalisé',instructions:$('#ai',r).value.trim(),outils:outils.length?outils:['memoire'],sousAgents:sa};
+      const ag={id:a?a.id:norm(nom).replace(/[^a-z0-9]+/g,'-')||('a'+Date.now()),nom,role:$('#ar',r).value.trim()||'Agent personnalisé',instructions:$('#ai',r).value.trim(),outils:outils.length?outils:['memoire'],sousAgents:sa,voix:(()=>{const v=lireBlocVoix(r);return{nom:v.nom,vitesse:v.vitesse,hauteur:v.hauteur,style:v.style}})()};
       const k=E.agents.findIndex(x=>x.id===ag.id);if(k>=0)E.agents[k]=ag;else E.agents.push(ag);sauver();fermerTout();majAgents()};
     const su=$('#asu',r);if(su)su.onclick=()=>{E.agents=E.agents.filter(x=>x.id!==a.id);if(E.agentActif===a.id)E.agentActif='';sauver();fermerTout();majAgents();majMoteur()}});
 }
@@ -233,6 +285,7 @@ function majReglages(){
   <h3>Images</h3>
   <p class="aide" style="margin-top:0">Ordre : clé Pollinations ➜ Hugging Face ➜ service gratuit sans clé (lent, limité). ${aCle('pollinations')?'<span class="ok">Pollinations actif ✓</span>':''} ${aCle('hf')?'<span class="ok">Hugging Face actif ✓</span>':''}</p>
   <button class="btn" id="rHf">🤗 Jeton Hugging Face (images gratuites)</button>
+  <button class="btn" id="rDiag">🩺 Tester mes connexions</button>
   <h3>Voix</h3>
   <div class="carte-m ${E.voixActive?'on':''}" id="rVoixOn"><span class="r"></span><div><b>Clipia répond à voix haute</b><span>Désactive pour lire seulement.</span></div></div>
   <div class="champ"><label>Voix</label><select id="voix"></select></div>
@@ -245,7 +298,7 @@ function majReglages(){
   chargerVoix();
   $('#rAssist').onclick=()=>assistant(0);
   $$('.carte-m[data-m]',p).forEach(c=>c.onclick=()=>configMoteur(c.dataset.m));
-  $('#rHf').onclick=configHF;$('#rPc').onclick=configPC;
+  $('#rDiag').onclick=lancerDiagnostic;$('#rHf').onclick=configHF;$('#rPc').onclick=configPC;
   $('#rVoixOn').onclick=()=>{E.voixActive=!E.voixActive;sauver();majMuet();majReglages()};
   $('#voix').onchange=e=>{E.voixNom=e.target.value;sauver();parler('Voici ma voix.')};
   $('#vit').oninput=e=>{E.vitesse=parseFloat(e.target.value);$('#vv').textContent=E.vitesse.toFixed(1);sauver()};
@@ -266,7 +319,7 @@ function formMoteur(id,r,apres){
   <div class="champ"><label>Colle ta clé ici</label><input type="password" id="mCle" placeholder="${esc(m.ph||'')}" value="${esc(E.cles[id]||'')}" autocomplete="off" spellcheck="false"></div>
   <button class="btn p" id="mOk">Tester et activer</button><div class="aide" id="mMsg">Ta clé reste sur ce téléphone.</div>`;
   $('#mLien',r).onclick=()=>ouvrirLien(m.lien);
-  $('#mOk',r).onclick=async()=>{const v=$('#mCle',r).value.trim(),msg=$('#mMsg',r);if(v.length<12||/\s/.test(v)){msg.innerHTML='<span class="ko">Ça ne ressemble pas à une clé.</span>';return}msg.textContent='Je teste…';
+  $('#mOk',r).onclick=async()=>{const v=nettoyerCle($('#mCle',r).value),msg=$('#mMsg',r);if(v.length<12){msg.innerHTML='<span class="ko">Ça ne ressemble pas à une clé.</span>';return}msg.textContent='Je teste…';
     const t=await testerMoteur(id,v);if(!t.ok){msg.innerHTML='<span class="ko">'+esc(t.erreur)+'</span>';return}
     E.moteur=id;sauver();majMoteur();msg.innerHTML='<span class="ok">✓ '+esc(m.nom)+' est activé.</span>';if(apres)apres()}
 }
@@ -275,10 +328,16 @@ function configMoteur(id){
   if(id==='libre'){E.moteur='libre';sauver();majMoteur();majReglages();toast('Moteur « Libre » activé : lent et limité. Une clé gratuite est bien plus fiable.');return}
   libre(`<h2>${esc(MOTEURS[id].nom)}</h2><div id="fm"></div>`,r=>formMoteur(id,$('#fm',r),()=>setTimeout(()=>{fermerTout();majReglages()},900)));
 }
+async function lancerDiagnostic(){
+  libre('<h2>🩺 Test des connexions</h2><p class="doux">Chaque service est contacté pour montrer l\'erreur exacte, s\'il y en a une.</p><div id="dg"></div><button class="btn" id="dgc" style="margin-top:10px">📋 Copier le rapport</button>',async r=>{
+    const aff=L=>{$('#dg',r).innerHTML=L.map(x=>`<div class="carte-m ${x.ok?'on':''}" style="cursor:default"><span class="r"></span><div><span style="color:${x.ok?'var(--ok)':'var(--alerte)'}">${x.ok?'✓':'✗'} ${esc(x.t)}</span></div></div>`).join('')+'<div class="aide">Test en cours…</div>'};
+    aff([]);const L=await diagnostic(aff);aff(L);$('#dg',r).lastChild.remove();
+    $('#dgc',r).onclick=()=>{const t=L.map(x=>(x.ok?'OK  ':'ERR ')+x.t).join('\n');try{navigator.clipboard.writeText(t);toast('Rapport copié.')}catch(e){toast('Copie impossible.')}}});
+}
 function configHF(){
   libre(`<h2>🤗 Hugging Face</h2><p class="doux">Un jeton gratuit pour générer des images (FLUX).</p><ol class="aide" style="padding-left:18px;margin-top:0"><li>Ouvre la page et connecte-toi.</li><li>Crée un jeton de type « Read » (ou « Fine-grained » avec accès aux Inference Providers).</li><li>Colle-le ici.</li></ol><button class="btn" id="hl">🌐 Ouvrir la page</button><div class="champ"><input type="password" id="hk" placeholder="hf_…" value="${esc(E.cles.hf||'')}" autocomplete="off"></div><button class="btn p" id="hok">Tester et activer</button><div class="aide" id="hm"></div>`,r=>{
     $('#hl',r).onclick=()=>ouvrirLien('https://huggingface.co/settings/tokens');
-    $('#hok',r).onclick=async()=>{const v=$('#hk',r).value.trim(),m=$('#hm',r);if(v.length<10){m.innerHTML='<span class="ko">Jeton trop court.</span>';return}m.textContent='Je teste…';
+    $('#hok',r).onclick=async()=>{const v=nettoyerCle($('#hk',r).value),m=$('#hm',r);if(v.length<10){m.innerHTML='<span class="ko">Jeton trop court.</span>';return}m.textContent='Je teste…';
       try{const x=await net('https://huggingface.co/api/whoami-v2',{headers:{Authorization:'Bearer '+v},delai:20000});if(!x.ok)throw new Error(messageHttp(x,'Hugging Face'));E.cles.hf=v;sauver();m.innerHTML='<span class="ok">✓ Jeton valide : les images passeront par Hugging Face.</span>'}catch(e){m.innerHTML='<span class="ko">'+esc(e.message)+'</span>'}}})
 }
 function formPC(r,apres){

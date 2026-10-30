@@ -9,24 +9,32 @@ const AGENTS_DEFAUT=[
   {id:'compositeur',nom:'Compositeur',role:'Compose des musiques originales.',instructions:'Tu es compositeur. Tu choisis le style, le tempo, la tonalité et la durée qui correspondent à l\'ambiance demandée puis tu composes.',outils:['musique'],sousAgents:[]},
   {id:'realisateur',nom:'Réalisateur',role:'Fait des clips vidéo complets avec images, texte et musique.',instructions:'Tu es réalisateur de clips courts. Tu écris un scénario de 4 à 6 scènes (texte court affiché + description d\'image en anglais) et tu lances le montage vidéo avec une musique adaptée.',outils:['video','image','musique','deleguer'],sousAgents:['Illustrateur','Compositeur']},
   {id:'chef',nom:'Chef de projet',role:'Coordonne une équipe d\'agents pour mener un projet complet.',instructions:'Tu es chef de projet. Tu découpes le projet en tâches, tu les confies aux bons sous-agents avec des consignes précises, puis tu fais la synthèse pour la personne.',outils:['deleguer','agent_creer','memoire'],sousAgents:['Codeur','Illustrateur','Compositeur','Réalisateur']}
+  ,{id:'psychologue',nom:'Psychologue',role:'Écoute bienveillante, aide à y voir clair (ne remplace pas un professionnel).',instructions:'Tu es une présence d\'écoute bienveillante inspirée de l\'approche psychologique : tu accueilles ce que la personne ressent, tu reformules, tu poses UNE question ouverte à la fois, tu proposes de petits exercices simples (respiration, journal, recadrage). Tu ne poses jamais de diagnostic, tu ne remplaces pas un professionnel de santé et tu le rappelles avec délicatesse si la situation est sérieuse. Si la personne parle de se faire du mal ou d\'idées suicidaires, tu restes calme, tu l\'encourages à contacter tout de suite quelqu\'un de confiance et, en France, le 3114 (numéro national de prévention du suicide, gratuit, 24 h/24) ou le 15 / 112 en urgence.',outils:['memoire'],sousAgents:[],voix:{nom:'',vitesse:.92,hauteur:.95,style:'douce, lente, apaisante, avec des silences'}},
+  {id:'coach',nom:'Coach',role:'Motivation, organisation et objectifs.',instructions:'Tu es un coach bienveillant et exigeant : tu clarifies l\'objectif, découpes en petites étapes concrètes, fixes des échéances et relances la personne.',outils:['memoire'],sousAgents:[],voix:{nom:'',vitesse:1.05,hauteur:1,style:'énergique et encourageante'}},
+  {id:'conteur',nom:'Conteur',role:'Raconte des histoires, avec images et musique.',instructions:'Tu es un conteur : tu inventes des histoires captivantes et, si on te le demande, tu en fais un clip narré avec images et musique.',outils:['video','image','musique','deleguer'],sousAgents:['Illustrateur','Compositeur'],voix:{nom:'',vitesse:.95,hauteur:.9,style:'posée, expressive, façon conteur'}},
+  {id:'professeur',nom:'Professeur',role:'Explique n\'importe quel sujet pas à pas.',instructions:'Tu es un professeur patient : tu expliques simplement, avec des exemples et des analogies, puis tu vérifies la compréhension avec une petite question.',outils:['memoire','code'],sousAgents:[],voix:{nom:'',vitesse:1,hauteur:1,style:'claire, pédagogue et patiente'}}
 ];
-if(!E.agents){E.agents=JSON.parse(JSON.stringify(AGENTS_DEFAUT));sauver()}
+if(!E.agents)E.agents=[];
+{let m=false;AGENTS_DEFAUT.forEach(d=>{const x=E.agents.find(a=>a.id===d.id);if(!x){E.agents.push(JSON.parse(JSON.stringify(d)));m=true}else if(!x.voix&&d.voix){x.voix=d.voix;m=true}});if(m)sauver()}
+const VOIX_DEF={nom:'',vitesse:1,hauteur:1,style:''};
+const voixAgent=a=>Object.assign({},VOIX_DEF,(a&&a.voix)||{});
+const STYLES_VOIX=['douce et apaisante','énergique et motivante','posée et rassurante','dramatique et expressive','joyeuse et souriante','sérieuse et professionnelle','chuchotée et intime'];
 const norm=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 const trouverAgent=n=>E.agents.find(a=>norm(a.nom)===norm(n)||a.id===norm(n));
 
 const DOC_OUTILS={
   image:'<outil nom="image" format="carre|portrait|paysage">description détaillée de l\'image, en anglais</outil> — crée une image.',
   musique:'<outil nom="musique" titre="…" style="calme|lofi|pop|epique|dance|triste|jazz" tempo="60-160" tonalite="C|D|E|F|G|A|B" mode="majeur|mineur" mesures="8-32"></outil> — compose une musique originale.',
-  video:'<outil nom="video" titre="…" format="vertical|horizontal" style="calme|lofi|pop|epique|dance|triste|jazz|aucune">une scène par ligne, 3 à 6 lignes, sous la forme : texte court affiché | description de l\'image en anglais</outil> — monte un clip vidéo avec images, textes et musique.',
+  video:'<outil nom="video" titre="…" format="vertical|horizontal" narration="oui|non" style="calme|lofi|pop|epique|dance|triste|jazz|aucune">une scène par ligne, 3 à 6 lignes, sous la forme : texte court affiché | description de l\'image en anglais</outil> — monte un clip vidéo avec images, textes, musique et narration parlée (le texte de chaque scène est lu à voix haute si narration="oui").',
   code:'<outil nom="code" fichier="nom.ext">contenu COMPLET du fichier</outil> — crée un fichier (une application, un jeu ou un site = un seul fichier .html avec CSS et JS intégrés, adapté au téléphone, entièrement fonctionnel).',
   deleguer:'<outil nom="deleguer" agent="Nom">tâche précise à confier</outil> — confie une tâche à un sous-agent et récupère son résultat.',
-  agent_creer:'<outil nom="agent_creer" agent="Nom" role="description courte" outils="image,musique,video,code,deleguer,memoire" sous_agents="Nom1,Nom2">instructions détaillées du nouvel agent</outil> — crée un agent durable (et ses sous-agents) dans l\'application.',
+  agent_creer:'<outil nom="agent_creer" agent="Nom" role="description courte" outils="image,musique,video,code,deleguer,memoire" sous_agents="Nom1,Nom2" voix="façon de parler, ex : douce et lente">instructions détaillées du nouvel agent</outil> — crée un agent durable (et ses sous-agents) dans l\'application.',
   memoire:'<outil nom="memoire">fait à retenir sur la personne ou le projet</outil> — mémorise pour les prochaines conversations.',
   pc:'<outil nom="pc">demande envoyée à Clipia sur l\'ordinateur de la personne</outil> — pour agir sur le PC (fichiers, programmes, installation…).'
 };
 const TONS={chaleureux:'chaleureux et bienveillant',pro:'professionnel et précis',direct:'direct, efficace, sans fioritures',decontracte:'décontracté et complice'};
 
-function systeme(agent,prof){
+function systeme(agent,prof,voix){
   const P=E.profil,pc=!!(E.pc.url&&E.pc.jeton);
   const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
   const l=[];
@@ -38,6 +46,7 @@ function systeme(agent,prof){
     permis.forEach(o=>l.push('• '+DOC_OUTILS[o]));
     if(permis.includes('deleguer')){const sa=(agent?agent.sousAgents:E.agents.map(a=>a.nom)).filter(Boolean);if(sa.length)l.push('Sous-agents disponibles : '+sa.join(', ')+'.')}
   }else l.push('Tu n\'as pas d\'outil : réponds par du texte.');
+  {const st=(voix&&voix.style)||(agent&&agent.voix&&agent.voix.style);if(st&&!prof)l.push('Manière de parler (tes réponses seront lues à voix haute) : '+st+'. Adapte le rythme, les phrases et le vocabulaire à cette façon de parler.')}
   if(!prof&&E.memoire.length)l.push('À retenir sur la personne : '+E.memoire.slice(-15).join(' ; ')+'.');
   return l.join('\n');
 }
@@ -84,7 +93,9 @@ async function executer(a,ctx){
       if(!scenes.length)return 'Aucune scène fournie (format : texte | description de l\'image).';
       const vert=norm(at.format)!=='horizontal';let musique=null;const st=norm(at.style||'calme');
       if(st!=='aucune'){etape('Je compose la musique du clip…');const mes=Math.min(32,Math.max(8,Math.ceil(scenes.length*4.2/(240/((STYLES[st]||STYLES.calme).tempo)))));musique=(await composerMusique({titre:at.titre||'clip',style:STYLES[st]?st:'calme',mesures:mes})).blob}
-      const b=await fabriquerVideo({titre:at.titre||'',scenes,format:vert?'vertical':'horizontal',musique,info:etape});
+      let narr=null;
+      if(norm(at.narration)==='oui'||(ctx.voix&&ctx.voix.narration)){const vv=Object.assign({},voixAgent(ctx.agent),ctx.voix||{});narr=[];for(let i=0;i<scenes.length;i++){etape('Narration '+(i+1)+' / '+scenes.length+'…');narr.push(scenes[i].texte?await synthese(scenes[i].texte,vv):null)}if(!narr.some(Boolean)){narr=null;etape('Narration indisponible ici : clip sans voix.')}}
+      const b=await fabriquerVideo({titre:at.titre||'',scenes,format:vert?'vertical':'horizontal',musique,narrations:narr,info:etape});
       const c=await nouvelleCreation('video',at.titre||'Clip',b,{scenes:scenes.length});ctx.creations.push(c.id);return `Vidéo créée : « ${c.titre} » (${scenes.length} scènes).`;
     }
     if(nom==='code'){
@@ -96,7 +107,7 @@ async function executer(a,ctx){
     if(nom==='agent_creer'){
       const n=(at.agent||'').trim();if(!n)return 'Nom d\'agent manquant.';
       const outils=(at.outils||'').split(',').map(x=>norm(x)).filter(o=>TOUS_OUTILS.includes(o)&&o!=='pc');
-      const ag={id:norm(n).replace(/[^a-z0-9]+/g,'-'),nom:n,role:at.role||'Agent personnalisé',instructions:corps||at.role||'',outils:outils.length?outils:['memoire'],sousAgents:(at.sous_agents||'').split(',').map(x=>x.trim()).filter(Boolean)};
+      const ag={id:norm(n).replace(/[^a-z0-9]+/g,'-'),nom:n,role:at.role||'Agent personnalisé',instructions:corps||at.role||'',outils:outils.length?outils:['memoire'],sousAgents:(at.sous_agents||'').split(',').map(x=>x.trim()).filter(Boolean),voix:Object.assign({},VOIX_DEF,{style:at.voix||''})};
       const k=E.agents.findIndex(x=>x.id===ag.id);if(k>=0)E.agents[k]=ag;else E.agents.push(ag);sauver();if(window.UI)UI.majAgents();
       return `Agent « ${n} » ${k>=0?'mis à jour':'créé'} (outils : ${ag.outils.join(', ')}${ag.sousAgents.length?' ; sous-agents : '+ag.sousAgents.join(', '):''}). Il apparaît dans l'onglet Agents.`;
     }
@@ -104,7 +115,7 @@ async function executer(a,ctx){
       const ag=trouverAgent(at.agent);if(!ag)return `Agent « ${at.agent} » introuvable. Disponibles : ${E.agents.map(x=>x.nom).join(', ')}.`;
       if(ctx.profondeur>=2)return 'Profondeur maximale de délégation atteinte.';
       etape('Sous-agent « '+ag.nom+' » au travail…');
-      const r=await boucle({agent:ag,entree:corps,profondeur:ctx.profondeur+1,creations:ctx.creations,compteur:ctx.compteur,etape});
+      const r=await boucle({agent:ag,entree:corps,profondeur:ctx.profondeur+1,creations:ctx.creations,compteur:ctx.compteur,etape,voix:ctx.voix});
       return `Résultat de « ${ag.nom} » : ${r.texte||'(terminé)'}`;
     }
     if(nom==='memoire'){if(corps){E.memoire.push(corps.slice(0,200));sauver()}return 'Mémorisé.'}
@@ -114,8 +125,8 @@ async function executer(a,ctx){
 }
 
 /* boucle réflexion → outils → réponse */
-async function boucle({agent,entree,historique=[],profondeur=0,creations=[],compteur={n:0},etape=()=>{}}){
-  const msgs=[{role:'system',content:systeme(agent,profondeur)},...historique,{role:'user',content:entree}];
+async function boucle({agent,entree,historique=[],profondeur=0,creations=[],compteur={n:0},etape=()=>{},voix=null}){
+  const msgs=[{role:'system',content:systeme(agent,profondeur,voix)},...historique,{role:'user',content:entree}];
   let dernier='',moteur=null;
   for(let tour=0;tour<5;tour++){
     const r=await llm(msgs);moteur=r.moteur;
@@ -123,7 +134,7 @@ async function boucle({agent,entree,historique=[],profondeur=0,creations=[],comp
     if(!appels.length)break;
     msgs.push({role:'assistant',content:r.texte});
     const res=[];
-    for(const a of appels){res.push(`[${a.nom}] ${await executer(a,{agent,profondeur,creations,compteur,etape})}`)}
+    for(const a of appels){res.push(`[${a.nom}] ${await executer(a,{agent,profondeur,creations,compteur,etape,voix})}`)}
     msgs.push({role:'user',content:'RÉSULTATS DES OUTILS :\n'+res.join('\n')+'\n\nMaintenant, '+(profondeur>0?'donne ton résultat final, concis.':'réponds à la personne en 1 à 3 phrases, à voix haute, sans balise (sauf si une autre action est vraiment nécessaire). Si un outil a échoué, dis-le simplement et propose une solution.')});
     if(tour===4)dernier=dernier||'';
   }
@@ -131,9 +142,9 @@ async function boucle({agent,entree,historique=[],profondeur=0,creations=[],comp
 }
 
 /* point d'entrée depuis l'interface */
-async function traiter(texte,etape){
+async function traiter(texte,etape,voix){
   const agent=E.agentActif?E.agents.find(a=>a.id===E.agentActif):null;
   const hist=E.messages.slice(-10).map(m=>({role:m.role,content:m.contenu}));
-  const r=await boucle({agent,entree:texte,historique:hist,profondeur:0,etape});
+  const r=await boucle({agent,entree:texte,historique:hist,profondeur:0,etape,voix});
   return r;
 }

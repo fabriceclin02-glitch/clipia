@@ -25,6 +25,7 @@ import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -33,6 +34,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -77,7 +80,28 @@ public class MainActivity extends AppCompatActivity {
     private boolean voixPrete = false;
     private boolean ecouteEnCours = false;
     private boolean microDemandeApresPermission = false;
+    private ValueCallback<Uri[]> choixCb;
+    private final ActivityResultLauncher<Intent> choixFichier = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), r -> {
+            if (choixCb == null) return;
+            Uri[] res = null;
+            Intent d = r.getData();
+            if (r.getResultCode() == RESULT_OK && d != null) {
+                if (d.getClipData() != null) {
+                    int n = d.getClipData().getItemCount();
+                    res = new Uri[n];
+                    for (int i = 0; i < n; i++) res[i] = d.getClipData().getItemAt(i).getUri();
+                } else if (d.getData() != null) {
+                    res = new Uri[]{ d.getData() };
+                }
+            }
+            choixCb.onReceiveValue(res);
+            choixCb = null;
+        });
     private float vitesseVoix = 1.0f;
+    private float hauteurVoix = 1.0f;
+    private String uaWeb = "";
+    private final HashMap<String, File> synthFichiers = new HashMap<>();
     private String voixChoisie = null;
 
     // ------------------------------------------------------------------
@@ -104,7 +128,8 @@ public class MainActivity extends AppCompatActivity {
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
         s.setTextZoom(100);
-        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/8.4.1");
+        uaWeb = s.getUserAgentString();
+        s.setUserAgentString(uaWeb + " ClipiaAndroid/8.5.0");
 
         vue.setBackgroundColor(0xFF080A1C);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -130,6 +155,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         vue.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView w, ValueCallback<Uri[]> cb, FileChooserParams p) {
+                if (choixCb != null) choixCb.onReceiveValue(null);
+                choixCb = cb;
+                try {
+                    Intent i = p.createIntent();
+                    i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                    choixFichier.launch(i);
+                } catch (Exception e) { choixCb = null; return false; }
+                return true;
+            }
+
             @Override
             public void onPermissionRequest(final PermissionRequest demande) {
                 principal.post(() -> {
@@ -337,12 +374,15 @@ public class MainActivity extends AppCompatActivity {
             try { voix.setLanguage(Locale.FRENCH); } catch (Exception ignore) {}
             voix.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                 @Override public void onStart(String id) {
+                    if (id != null && id.startsWith("synth:")) return;
                     versJs("window.__clipiaVoix&&window.__clipiaVoix.paroleDebut()");
                 }
                 @Override public void onDone(String id) {
+                    if (id != null && id.startsWith("synth:")) { synthTermine(id, true); return; }
                     versJs("window.__clipiaVoix&&window.__clipiaVoix.paroleFin()");
                 }
                 @Override public void onError(String id) {
+                    if (id != null && id.startsWith("synth:")) { synthTermine(id, false); return; }
                     versJs("window.__clipiaVoix&&window.__clipiaVoix.paroleFin()");
                 }
             });
@@ -357,10 +397,29 @@ public class MainActivity extends AppCompatActivity {
         }
         arreterEcouteInterne();
         voix.setSpeechRate(vitesseVoix);
+        voix.setPitch(hauteurVoix);
         if (voixChoisie != null) appliquerVoix(voixChoisie);
         HashMap<String, String> p = new HashMap<>();
         p.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "clipia");
         voix.speak(texte, TextToSpeech.QUEUE_FLUSH, p);
+    }
+
+    /** Fin de la synthese vers un fichier : renvoie le WAV en base64 a la page. */
+    private void synthTermine(String id, boolean ok) {
+        File f = synthFichiers.remove(id);
+        String b64 = "";
+        try {
+            if (ok && f != null && f.exists()) {
+                java.io.FileInputStream in = new java.io.FileInputStream(f);
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                byte[] buf = new byte[16384]; int n;
+                while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+                in.close();
+                b64 = Base64.encodeToString(bo.toByteArray(), Base64.NO_WRAP);
+            }
+        } catch (Exception e) { ok = false; }
+        if (f != null) f.delete();
+        versJs("window.__clipiaSynth&&window.__clipiaSynth(" + texteJs(id.substring(6)) + "," + (ok && !b64.isEmpty()) + "," + texteJs(b64) + ")");
     }
 
     private void appliquerVoix(String nom) {
@@ -385,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
     private class Pont {
 
         @JavascriptInterface
-        public String version() { return "8.4.1"; }
+        public String version() { return "8.5.0"; }
 
         @JavascriptInterface
         public boolean voixNative() { return true; }
@@ -407,6 +466,32 @@ public class MainActivity extends AppCompatActivity {
         @JavascriptInterface
         public void reglerVitesse(final float v) {
             vitesseVoix = (v < 0.5f) ? 0.5f : (v > 2.0f ? 2.0f : v);
+        }
+
+        @JavascriptInterface
+        public void reglerHauteur(final float v) {
+            hauteurVoix = (v < 0.5f) ? 0.5f : (v > 2.0f ? 2.0f : v);
+        }
+
+        /** Fabrique un fichier WAV de narration. Reponse : __clipiaSynth(id, ok, base64). */
+        @JavascriptInterface
+        public void synthetiser(final String id, final String texte, final String nomVoix, final float vitesse, final float hauteur) {
+            principal.post(() -> {
+                if (!voixPrete || voix == null || texte == null || texte.trim().isEmpty()) {
+                    versJs("window.__clipiaSynth&&window.__clipiaSynth(" + texteJs(id) + ",false,\"\")");
+                    return;
+                }
+                try {
+                    voix.setSpeechRate(vitesse < 0.5f ? 0.5f : (vitesse > 2f ? 2f : vitesse));
+                    voix.setPitch(hauteur < 0.5f ? 0.5f : (hauteur > 2f ? 2f : hauteur));
+                    if (nomVoix != null && !nomVoix.isEmpty()) appliquerVoix(nomVoix);
+                    File f = new File(getCacheDir(), "synth-" + id + ".wav");
+                    synthFichiers.put("synth:" + id, f);
+                    Bundle b = new Bundle();
+                    int r = voix.synthesizeToFile(texte, b, f, "synth:" + id);
+                    if (r != TextToSpeech.SUCCESS) synthTermine("synth:" + id, false);
+                } catch (Exception e) { synthTermine("synth:" + id, false); }
+            });
         }
 
         @JavascriptInterface
@@ -481,6 +566,8 @@ public class MainActivity extends AppCompatActivity {
                     c.setConnectTimeout(15000);
                     c.setReadTimeout(240000);
                     c.setInstanceFollowRedirects(true);
+                    c.setRequestProperty("User-Agent", uaWeb.isEmpty() ? "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36" : uaWeb);
+                    c.setRequestProperty("Accept", "*/*");
                     if (entetes != null && !entetes.isEmpty()) {
                         JSONObject h = new JSONObject(entetes);
                         java.util.Iterator<String> it = h.keys();

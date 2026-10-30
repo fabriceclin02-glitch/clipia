@@ -114,18 +114,27 @@ function encoderWav(buf){
 
 /* ═══ VIDÉO : montage image + texte + musique ═══════════════════════════════ */
 function decouper(ctx,texte,largeur){const mots=String(texte).split(/\s+/),l=[];let c='';for(const m of mots){const t=c?c+' '+m:m;if(ctx.measureText(t).width>largeur&&c){l.push(c);c=m}else c=t}if(c)l.push(c);return l}
-async function fabriquerVideo({titre,scenes,format='vertical',musique,info}){
+async function fabriquerVideo({titre,scenes,format='vertical',musique,narrations,info}){
   if(!window.MediaRecorder)throw new Error('Cette version du navigateur ne sait pas enregistrer de vidéo.');
   const vert=format!=='horizontal',W=vert?540:960,H=vert?960:540,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
-  const DUREE=4.2,tot=scenes.length*DUREE;
   const imgs=[];
   for(let i=0;i<scenes.length;i++){
     if(info)info('Image '+(i+1)+' / '+scenes.length+'…');
-    if(!scenes[i].img){imgs.push(null);continue}
-    try{const b=await genererImage(scenes[i].img,{format:vert?'portrait':'paysage',info});imgs.push(await createImageBitmap(b))}catch(e){imgs.push(null)}
+    try{
+      if(scenes[i].blob){let bm;try{bm=await createImageBitmap(scenes[i].blob,{resizeWidth:1280,resizeQuality:'medium'})}catch(e){bm=await createImageBitmap(scenes[i].blob)}imgs.push(bm)}
+      else if(scenes[i].img){const b=await genererImage(scenes[i].img,{format:vert?'portrait':'paysage',info});imgs.push(await createImageBitmap(b))}
+      else imgs.push(null);
+    }catch(e){imgs.push(null)}
   }
-  const AC=window.AudioContext||window.webkitAudioContext;let ac=null,dest=null,src=null;
-  if(AC&&musique){try{ac=new AC();await ac.resume();const buf=await ac.decodeAudioData(await musique.arrayBuffer());dest=ac.createMediaStreamDestination();src=ac.createBufferSource();src.buffer=buf;src.loop=true;const gn=ac.createGain();gn.gain.value=.8;src.connect(gn);gn.connect(dest)}catch(e){ac=null;dest=null}}
+  const AC=window.AudioContext||window.webkitAudioContext;let ac=null,dest=null,musSrc=null;const bufsN=[];
+  const durs=scenes.map(()=>4.2);
+  if(AC&&(musique||(narrations&&narrations.some(Boolean)))){
+    try{ac=new AC();await ac.resume();dest=ac.createMediaStreamDestination();
+      if(narrations)for(let i=0;i<scenes.length;i++){const nb=narrations[i];if(nb){try{const b=await ac.decodeAudioData(await nb.arrayBuffer());bufsN[i]=b;durs[i]=Math.max(3.2,b.duration+.9)}catch(e){}}}
+      if(musique){const buf=await ac.decodeAudioData(await musique.arrayBuffer());musSrc=ac.createBufferSource();musSrc.buffer=buf;musSrc.loop=true;const gm=ac.createGain();gm.gain.value=bufsN.some(Boolean)?.28:.8;musSrc.connect(gm);gm.connect(dest)}
+    }catch(e){ac=null;dest=null;musSrc=null}
+  }
+  const starts=[];let tot=0;for(const d of durs){starts.push(tot);tot+=d}
   const flux=cv.captureStream(30);if(dest)dest.stream.getAudioTracks().forEach(t=>flux.addTrack(t));
   const types=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
   const type=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
@@ -134,22 +143,23 @@ async function fabriquerVideo({titre,scenes,format='vertical',musique,info}){
   const fini=new Promise(ok=>rec.onstop=ok);
   const hues=[255,215,285,190,320,160];
   const dessin=t=>{
-    const i=Math.min(scenes.length-1,Math.floor(t/DUREE)),p=(t-i*DUREE)/DUREE,sc=scenes[i],im=imgs[i];
+    let i=0;while(i<scenes.length-1&&t>=starts[i+1])i++;const p=Math.min(1,(t-starts[i])/durs[i]),sc=scenes[i],im=imgs[i];
     g.fillStyle='#080a1c';g.fillRect(0,0,W,H);
     if(im){const z=1.04+.09*p,r=Math.max(W/im.width,H/im.height)*z,dw=im.width*r,dh=im.height*r;g.drawImage(im,(W-dw)/2+(i%2?-1:1)*p*18,(H-dh)/2,dw,dh)}
     else{const gr=g.createLinearGradient(0,0,W,H);const h=hues[i%hues.length];gr.addColorStop(0,`hsl(${h},70%,28%)`);gr.addColorStop(1,`hsl(${h+50},70%,14%)`);g.fillStyle=gr;g.fillRect(0,0,W,H)}
     const vg=g.createLinearGradient(0,H*.55,0,H);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.78)');g.fillStyle=vg;g.fillRect(0,H*.5,W,H*.5);
     const fs=Math.round(W*.058);g.font=`800 ${fs}px system-ui,sans-serif`;g.textAlign='center';g.textBaseline='alphabetic';
-    const lignes=decouper(g,sc.texte||'',W*.84).slice(0,5);let y=H-H*.09-(lignes.length-1)*fs*1.25;
-    const a=Math.min(1,p*5,(1-p)*8+.0);g.globalAlpha=Math.max(.0,Math.min(1,a+.2));g.fillStyle='#fff';g.shadowColor='#000';g.shadowBlur=14;
+    const lignes=decouper(g,sc.texte||'',W*.84).slice(0,6);let y=H-H*.09-(lignes.length-1)*fs*1.25;
+    g.globalAlpha=Math.max(0,Math.min(1,Math.min(p*6,(1-p)*8)+.2));g.fillStyle='#fff';g.shadowColor='#000';g.shadowBlur=14;
     lignes.forEach((l,k)=>g.fillText(l,W/2,y+k*fs*1.25));g.shadowBlur=0;g.globalAlpha=1;
     if(i===0&&p<.6){g.globalAlpha=1-p/.6;g.font=`700 ${Math.round(W*.045)}px system-ui,sans-serif`;g.fillStyle='#cdbfff';g.fillText(titre||'',W/2,H*.09);g.globalAlpha=1}
     g.fillStyle='rgba(255,255,255,.22)';g.fillRect(0,H-5,W,5);g.fillStyle='#7c5cff';g.fillRect(0,H-5,W*(t/tot),5);
   };
-  rec.start(250);if(src)src.start();
+  rec.start(250);
+  if(ac){const t0=ac.currentTime+.15;if(musSrc)musSrc.start(t0);bufsN.forEach((b,i)=>{if(!b)return;const s=ac.createBufferSource();s.buffer=b;s.connect(dest);s.start(t0+starts[i]+.2)})}
   const t0=performance.now();
   await new Promise(ok=>{const tick=()=>{const t=(performance.now()-t0)/1000;if(t>=tot){ok();return}dessin(t);if(info)info('Montage de la vidéo : '+Math.round(t/tot*100)+' % — garde l\'application ouverte');setTimeout(tick,33)};tick()});
-  dessin(tot-.01);await attends(250);rec.stop();await fini;try{if(src)src.stop();if(ac)ac.close()}catch(e){}
+  dessin(tot-.01);await attends(250);rec.stop();await fini;try{if(musSrc)musSrc.stop();if(ac)ac.close()}catch(e){}
   const blob=new Blob(morceaux,{type:(type||'video/webm').split(';')[0]});
   if(!blob.size)throw new Error('La vidéo est vide : ce téléphone n\'a pas pu l\'enregistrer.');
   return blob;

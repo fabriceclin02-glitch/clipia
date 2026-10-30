@@ -1,6 +1,6 @@
 'use strict';
 /* Clipia X8 mobile — noyau : stockage, réseau, moteurs de texte, enregistrement de fichiers */
-const VERSION='8.4.1';
+const VERSION='8.5.0';
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -54,13 +54,15 @@ async function net(url,{method='GET',headers={},body=null,binaire=false,delai=15
   finally{clearTimeout(t)}
 }
 function messageHttp(r,nom){
-  const c=r.status;let d='';try{const j=JSON.parse(r.texte);d=(j.error&&(j.error.message||j.error))||j.message||''}catch(e){d=String(r.texte||'').slice(0,160)}
-  if(typeof d!=='string')d=JSON.stringify(d).slice(0,160);
-  if(c===401||c===403)return nom+' : clé refusée ou accès non autorisé. Vérifie-la dans Réglages.';
-  if(c===402)return nom+' : limite atteinte ou crédit épuisé. Ajoute une clé gratuite, ou patiente un peu.';
-  if(c===429)return nom+' : trop de demandes. Patiente quelques secondes.';
-  if(c===404)return nom+' : modèle introuvable. Change-le dans Réglages.';
-  return nom+' : erreur '+c+(d?' — '+d:'');
+  const c=r.status;let d='';try{const j=JSON.parse(r.texte);d=(j.error&&(j.error.message||j.error))||j.message||''}catch(e){d=String(r.texte||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').slice(0,200)}
+  if(typeof d!=='string')d=JSON.stringify(d);d=d.slice(0,220);
+  const det=d?' — « '+d+' »':'';
+  if(c===401)return nom+' : clé refusée (401)'+det+'. Vérifie qu\'elle est copiée en entier, sans espace.';
+  if(c===403)return nom+' : accès refusé (403)'+det+'.';
+  if(c===402)return nom+' : limite atteinte ou crédit épuisé (402)'+det+'.';
+  if(c===429)return nom+' : trop de demandes (429)'+det+'. Patiente un peu.';
+  if(c===404)return nom+' : modèle ou adresse introuvable (404)'+det+'. Change le modèle dans Réglages.';
+  return nom+' : erreur '+c+det;
 }
 
 /* ── création = stockage local (IndexedDB) ───────────────────────────────── */
@@ -120,6 +122,7 @@ const MOTEURS={
 };
 const ORDRE_SECOURS=['groq','gemini','openrouter','pollinations'];
 const aCle=id=>!!(E.cles[id]&&E.cles[id].trim());
+const nettoyerCle=t=>String(t||'').replace(/[\s\u200b\u00a0"']+/g,'').replace(/^Bearer/i,'');
 function moteursPrets(){const l=[];if(E.moteur==='pc'&&E.pc.url)l.push('pc');else if(E.moteur!=='libre'&&E.moteur!=='pc'&&aCle(E.moteur))l.push(E.moteur);
   ORDRE_SECOURS.forEach(i=>{if(aCle(i)&&!l.includes(i))l.push(i)});if(!l.includes('libre'))l.push('libre');return l}
 const modeleDe=id=>E.modeles[id]||MOTEURS[id].defaut;
@@ -180,3 +183,30 @@ async function llm(msgs){
   throw derniere||new Error('Aucun moteur disponible.');
 }
 function definirInfo(f){_info=f}
+
+/* ── narration : voix du téléphone enregistrée en fichier (Android) ───────── */
+let _sid=0;const _sw={};
+window.__clipiaSynth=(id,ok,b64)=>{const f=_sw[id];if(!f)return;delete _sw[id];f(ok?b64Blob(b64,'audio/wav'):null)};
+function synthese(texte,v={}){
+  if(!NATIF||!NATIF.synthetiser)return Promise.resolve(null);
+  return new Promise(res=>{const id='s'+(++_sid);const t=setTimeout(()=>{delete _sw[id];res(null)},60000);_sw[id]=b=>{clearTimeout(t);res(b)};
+    try{NATIF.synthetiser(id,String(texte).slice(0,3500),v.nom||E.voixNom||'',v.vitesse||E.vitesse||1,v.hauteur||1)}catch(e){clearTimeout(t);delete _sw[id];res(null)}});
+}
+
+/* ── diagnostic : teste chaque service et montre l'erreur exacte ─────────── */
+async function diagnostic(info){
+  const L=[];const add=(ok,t)=>{L.push({ok,t});if(info)info(L)};
+  add(true,'Application : '+(NATIF?'Android natif '+(NATIF.version?NATIF.version():''):'navigateur')+' · version '+VERSION+' · réseau '+(navigator.onLine?'en ligne':'HORS LIGNE'));
+  for(const id of ['groq','gemini','pollinations','openrouter']){
+    if(!aCle(id))continue;
+    try{const t0=Date.now();const l=await modelesDe(id);add(true,MOTEURS[id].nom+' : clé acceptée, '+l.length+' modèles ('+(Date.now()-t0)+' ms)')}
+    catch(e){add(false,e.message)}
+    try{const t=await appelChat(id,[{role:'user',content:'Réponds uniquement : ok'}]);add(true,MOTEURS[id].nom+' : réponse reçue « '+t.slice(0,40)+' »')}catch(e){add(false,e.message)}
+  }
+  if(aCle('hf')){try{const x=await net('https://huggingface.co/api/whoami-v2',{headers:{Authorization:'Bearer '+E.cles.hf},delai:20000});add(x.ok,x.ok?'Hugging Face : jeton accepté':messageHttp(x,'Hugging Face'))}catch(e){add(false,e.message)}}
+  if(E.pc.url){try{const t=await appelPC('Réponds : ok');add(true,'Mon PC : '+t.slice(0,60))}catch(e){add(false,e.message)}}
+  try{const x=await net('https://image.pollinations.ai/prompt/test?width=64&height=64&nologo=true',{binaire:true,delai:60000});add(x.ok,x.ok?'Images gratuites sans clé : disponibles':messageHttp(x,'Images gratuites sans clé'))}catch(e){add(false,'Images gratuites sans clé : '+e.message)}
+  try{const x=await net('https://text.pollinations.ai/models',{delai:20000});add(x.ok,x.ok?'Texte gratuit sans clé : joignable':messageHttp(x,'Texte gratuit sans clé'))}catch(e){add(false,'Texte gratuit sans clé : '+e.message)}
+  if(!['groq','gemini','pollinations','openrouter','hf'].some(aCle))add(false,'Aucune clé enregistrée : seul le mode limité « Libre » est possible.');
+  return L;
+}
