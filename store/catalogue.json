@@ -1,0 +1,147 @@
+{
+ "version": 1,
+ "categories": [
+  "IA",
+  "Vidéo",
+  "Audio",
+  "Navigation",
+  "Communication",
+  "Sécurité",
+  "Développement",
+  "Éducation",
+  "Mini-apps"
+ ],
+ "apps": [
+  {
+   "id": "clipia-x8",
+   "nom": "Clipia X8",
+   "desc": "L'assistante : code, images, musique, vidéo, agents. (Cette application.)",
+   "cat": "IA",
+   "type": "clipia",
+   "pkg": "com.clendax.clipia",
+   "icone": "🤖",
+   "dev": "CLENDAX · Clin Fabrice"
+  },
+  {
+   "id": "org.schabi.newpipe",
+   "nom": "NewPipe",
+   "desc": "Regarder et écouter YouTube sans pub ni compte.",
+   "cat": "Vidéo",
+   "type": "fdroid",
+   "pkg": "org.schabi.newpipe",
+   "url": "https://f-droid.org/packages/org.schabi.newpipe/",
+   "icone": "▶️",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "org.videolan.vlc",
+   "nom": "VLC",
+   "desc": "Lecteur multimédia qui lit presque tout.",
+   "cat": "Vidéo",
+   "type": "fdroid",
+   "pkg": "org.videolan.vlc",
+   "url": "https://f-droid.org/packages/org.videolan.vlc/",
+   "icone": "🔶",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "de.danoeh.antennapod",
+   "nom": "AntennaPod",
+   "desc": "Podcasts, abonnements et téléchargements.",
+   "cat": "Audio",
+   "type": "fdroid",
+   "pkg": "de.danoeh.antennapod",
+   "url": "https://f-droid.org/packages/de.danoeh.antennapod/",
+   "icone": "🎧",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "app.organicmaps",
+   "nom": "Organic Maps",
+   "desc": "Cartes et navigation hors ligne.",
+   "cat": "Navigation",
+   "type": "fdroid",
+   "pkg": "app.organicmaps",
+   "url": "https://f-droid.org/packages/app.organicmaps/",
+   "icone": "🗺️",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "net.osmand.plus",
+   "nom": "OsmAnd",
+   "desc": "Cartes hors ligne détaillées et itinéraires.",
+   "cat": "Navigation",
+   "type": "fdroid",
+   "pkg": "net.osmand.plus",
+   "url": "https://f-droid.org/packages/net.osmand.plus/",
+   "icone": "🧭",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "com.fsck.k9",
+   "nom": "K-9 Mail",
+   "desc": "Client e-mail libre.",
+   "cat": "Communication",
+   "type": "fdroid",
+   "pkg": "com.fsck.k9",
+   "url": "https://f-droid.org/packages/com.fsck.k9/",
+   "icone": "✉️",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "im.vector.app",
+   "nom": "Element",
+   "desc": "Messagerie chiffrée (Matrix).",
+   "cat": "Communication",
+   "type": "fdroid",
+   "pkg": "im.vector.app",
+   "url": "https://f-droid.org/packages/im.vector.app/",
+   "icone": "💬",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "org.telegram.messenger",
+   "nom": "Telegram FOSS",
+   "desc": "Messagerie Telegram, version libre.",
+   "cat": "Communication",
+   "type": "fdroid",
+   "pkg": "org.telegram.messenger",
+   "url": "https://f-droid.org/packages/org.telegram.messenger/",
+   "icone": "✈️",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "com.beemdevelopment.aegis",
+   "nom": "Aegis Authenticator",
+   "desc": "Codes de double authentification, chiffrés.",
+   "cat": "Sécurité",
+   "type": "fdroid",
+   "pkg": "com.beemdevelopment.aegis",
+   "url": "https://f-droid.org/packages/com.beemdevelopment.aegis/",
+   "icone": "🔐",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "com.termux",
+   "nom": "Termux",
+   "desc": "Terminal Linux sur le téléphone.",
+   "cat": "Développement",
+   "type": "fdroid",
+   "pkg": "com.termux",
+   "url": "https://f-droid.org/packages/com.termux/",
+   "icone": "⌨️",
+   "dev": "Projet open source (fiche F-Droid)"
+  },
+  {
+   "id": "org.kiwix.kiwixmobile",
+   "nom": "Kiwix",
+   "desc": "Wikipédia et livres hors ligne.",
+   "cat": "Éducation",
+   "type": "fdroid",
+   "pkg": "org.kiwix.kiwixmobile",
+   "url": "https://f-droid.org/packages/org.kiwix.kiwixmobile/",
+   "icone": "📚",
+   "dev": "Projet open source (fiche F-Droid)"
+  }
+ ]
+}

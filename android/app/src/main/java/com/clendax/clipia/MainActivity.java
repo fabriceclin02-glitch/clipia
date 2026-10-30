@@ -5,6 +5,17 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.hardware.camera2.CameraManager;
+import android.provider.AlarmClock;
+import android.provider.ContactsContract;
+import android.provider.Settings;
+import android.telephony.SmsManager;
+import androidx.core.content.FileProvider;
 import android.net.ConnectivityManager;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
@@ -70,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String HOTE = "fabriceclin02-glitch.github.io";
     private static final String ACCUEIL = "https://" + HOTE + "/clipia/app/?source=android";
     private static final int DEMANDE_MICRO = 4201;
+    private static final int DEMANDE_PERM = 4202;
+    private boolean assistEnAttente = false;
 
     private WebView vue;
     private View horsLigne;
@@ -129,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
         s.setBuiltInZoomControls(false);
         s.setTextZoom(100);
         uaWeb = s.getUserAgentString();
-        s.setUserAgentString(uaWeb + " ClipiaAndroid/8.5.0");
+        s.setUserAgentString(uaWeb + " ClipiaAndroid/8.6.0");
 
         vue.setBackgroundColor(0xFF080A1C);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -146,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView w, String url) {
                 injecterPont();
+                if (assistEnAttente) { assistEnAttente = false; versJs("setTimeout(function(){window.__clipiaAssist&&window.__clipiaAssist()},600)"); }
             }
 
             @Override
@@ -219,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
     private void recharger() {
         if (!reseauPresent()) { montrerHorsLigne(true); return; }
         montrerHorsLigne(false);
+        if (estAssist(getIntent())) assistEnAttente = true;
         vue.loadUrl(ACCUEIL);
     }
 
@@ -264,6 +279,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int code, @NonNull String[] perms, @NonNull int[] res) {
         super.onRequestPermissionsResult(code, perms, res);
+        if (code == DEMANDE_PERM) {
+            boolean tous = res.length > 0;
+            for (int r : res) if (r != PackageManager.PERMISSION_GRANTED) tous = false;
+            versJs("window.__clipiaPerm&&window.__clipiaPerm(" + tous + ")");
+            return;
+        }
         if (code != DEMANDE_MICRO) return;
         boolean ok = res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED;
         if (ok && microDemandeApresPermission) demarrerEcouteInterne();
@@ -390,6 +411,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private String permDe(String nom) {
+        return "sms".equals(nom) ? Manifest.permission.SEND_SMS : Manifest.permission.READ_CONTACTS;
+    }
+
+    private void retourInstall(String id, String etat, String msg) {
+        versJs("window.__clipiaInstall&&window.__clipiaInstall(" + texteJs(id) + "," + texteJs(etat) + "," + texteJs(msg) + ")");
+    }
+
+    private boolean estAssist(Intent i) {
+        if (i == null || i.getAction() == null) return false;
+        String a = i.getAction();
+        return a.equals("com.clendax.clipia.ASSIST") || a.equals(Intent.ACTION_ASSIST);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (estAssist(intent)) {
+            if (vue != null) versJs("window.__clipiaAssist&&window.__clipiaAssist()");
+            else assistEnAttente = true;
+        }
+    }
+
     private void parlerInterne(String texte) {
         if (!voixPrete || voix == null || texte == null || texte.trim().isEmpty()) {
             versJs("window.__clipiaVoix&&window.__clipiaVoix.paroleFin()");
@@ -444,7 +489,7 @@ public class MainActivity extends AppCompatActivity {
     private class Pont {
 
         @JavascriptInterface
-        public String version() { return "8.5.0"; }
+        public String version() { return "8.6.0"; }
 
         @JavascriptInterface
         public boolean voixNative() { return true; }
@@ -660,6 +705,214 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(Intent.createChooser(i, "Partager").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (Exception ignore) {}
             });
+        }
+
+        // ---------------- Systeme : contacts, SMS, applications, installation ----------------
+        @JavascriptInterface
+        public boolean aPermission(final String nom) {
+            return ContextCompat.checkSelfPermission(MainActivity.this, permDe(nom)) == PackageManager.PERMISSION_GRANTED;
+        }
+
+        /** Demande une permission (contacts, sms). Reponse : __clipiaPerm(ok). */
+        @JavascriptInterface
+        public void demanderPermission(final String nom) {
+            principal.post(() -> ActivityCompat.requestPermissions(MainActivity.this, new String[]{permDe(nom)}, DEMANDE_PERM));
+        }
+
+        /** Cherche dans les contacts : [{nom, numero}] (5 resultats maximum). */
+        @JavascriptInterface
+        public String contacts(final String requete) {
+            JSONArray out = new JSONArray();
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) return "{\"permission\":false}";
+            Cursor c = null;
+            try {
+                String q = requete == null ? "" : requete.trim();
+                c = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER},
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " LIKE ?", new String[]{"%" + q + "%"},
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
+                java.util.HashSet<String> vus = new java.util.HashSet<>();
+                while (c != null && c.moveToNext() && out.length() < 5) {
+                    String nom = c.getString(0), num = c.getString(1);
+                    if (num == null) continue;
+                    String cle = nom + "|" + num.replaceAll("[^0-9+]", "");
+                    if (!vus.add(cle)) continue;
+                    JSONObject o = new JSONObject();
+                    o.put("nom", nom); o.put("numero", num);
+                    out.put(o);
+                }
+            } catch (Exception ignore) {
+            } finally { if (c != null) c.close(); }
+            return out.toString();
+        }
+
+        /** Envoie un SMS (apres confirmation dans la page). Retourne "ok" ou un message d'erreur. */
+        @JavascriptInterface
+        public String envoyerSMS(final String numero, final String texte) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) return "permission";
+            try {
+                SmsManager sm = Build.VERSION.SDK_INT >= 31 ? getSystemService(SmsManager.class) : SmsManager.getDefault();
+                ArrayList<String> parts = sm.divideMessage(texte);
+                sm.sendMultipartTextMessage(numero, null, parts, null, null);
+                return "ok";
+            } catch (Exception e) { return String.valueOf(e.getMessage()); }
+        }
+
+        /** Ouvre WhatsApp avec le message pre-rempli (la personne appuie sur Envoyer). */
+        @JavascriptInterface
+        public void ouvrirWhatsApp(final String numero, final String texte) {
+            principal.post(() -> {
+                try {
+                    String n = numero.replaceAll("[^0-9]", "");
+                    if (n.startsWith("0")) n = "33" + n.substring(1);
+                    ouvrirDehors(Uri.parse("https://wa.me/" + n + "?text=" + Uri.encode(texte)));
+                } catch (Exception ignore) {}
+            });
+        }
+
+        @JavascriptInterface
+        public String listeApps() {
+            JSONArray out = new JSONArray();
+            try {
+                PackageManager pm = getPackageManager();
+                Intent i = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER);
+                ArrayList<JSONObject> l = new ArrayList<>();
+                for (ResolveInfo r : pm.queryIntentActivities(i, 0)) {
+                    JSONObject o = new JSONObject();
+                    o.put("nom", String.valueOf(r.loadLabel(pm)));
+                    o.put("pkg", r.activityInfo.packageName);
+                    l.add(o);
+                }
+                java.util.Collections.sort(l, (a, b) -> a.optString("nom").compareToIgnoreCase(b.optString("nom")));
+                for (JSONObject o : l) out.put(o);
+            } catch (Exception ignore) {}
+            return out.toString();
+        }
+
+        @JavascriptInterface
+        public String iconeApp(final String pkg) {
+            try {
+                Drawable d = getPackageManager().getApplicationIcon(pkg);
+                int t = 96;
+                Bitmap b = Bitmap.createBitmap(t, t, Bitmap.Config.ARGB_8888);
+                Canvas c = new Canvas(b);
+                d.setBounds(0, 0, t, t);
+                d.draw(c);
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                b.compress(Bitmap.CompressFormat.PNG, 90, bo);
+                return Base64.encodeToString(bo.toByteArray(), Base64.NO_WRAP);
+            } catch (Exception e) { return ""; }
+        }
+
+        @JavascriptInterface
+        public boolean lancerApp(final String pkg) {
+            try {
+                Intent i = getPackageManager().getLaunchIntentForPackage(pkg);
+                if (i == null) return false;
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                final Intent f = i;
+                principal.post(() -> startActivity(f));
+                return true;
+            } catch (Exception e) { return false; }
+        }
+
+        @JavascriptInterface
+        public boolean appInstallee(final String pkg) {
+            try { getPackageManager().getPackageInfo(pkg, 0); return true; } catch (Exception e) { return false; }
+        }
+
+        /** Telecharge un APK, verifie son SHA-256, puis ouvre l'installateur Android. Etat : __clipiaInstall(id, etat, message). */
+        @JavascriptInterface
+        public void installerApk(final String id, final String url, final String sha256) {
+            new Thread(() -> {
+                HttpURLConnection c = null;
+                try {
+                    if (url == null || !url.startsWith("https://")) { retourInstall(id, "erreur", "Adresse non sécurisée (https obligatoire)."); return; }
+                    retourInstall(id, "telechargement", "Téléchargement…");
+                    File d = new File(getCacheDir(), "apks"); d.mkdirs();
+                    File f = new File(d, "app-" + System.currentTimeMillis() + ".apk");
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setConnectTimeout(15000); c.setReadTimeout(120000); c.setInstanceFollowRedirects(true);
+                    java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                    try (java.io.InputStream in = c.getInputStream(); FileOutputStream o = new FileOutputStream(f)) {
+                        byte[] buf = new byte[32768]; int n;
+                        while ((n = in.read(buf)) > 0) { o.write(buf, 0, n); md.update(buf, 0, n); }
+                    }
+                    StringBuilder h = new StringBuilder();
+                    for (byte b : md.digest()) h.append(String.format("%02x", b));
+                    if (sha256 == null || !h.toString().equalsIgnoreCase(sha256.trim())) { f.delete(); retourInstall(id, "erreur", "Empreinte SHA-256 différente : installation refusée par sécurité."); return; }
+                    final File fin = f;
+                    principal.post(() -> {
+                        try {
+                            if (Build.VERSION.SDK_INT >= 26 && !getPackageManager().canRequestPackageInstalls()) {
+                                startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())));
+                                retourInstall(id, "autorisation", "Autorise Clipia à installer des applications, puis réessaie.");
+                                return;
+                            }
+                            Uri u = FileProvider.getUriForFile(MainActivity.this, getPackageName() + ".fichiers", fin);
+                            Intent i = new Intent(Intent.ACTION_VIEW).setDataAndType(u, "application/vnd.android.package-archive").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(i);
+                            retourInstall(id, "ok", "Installateur Android ouvert.");
+                        } catch (Exception e) { retourInstall(id, "erreur", String.valueOf(e.getMessage())); }
+                    });
+                } catch (Exception e) {
+                    retourInstall(id, "erreur", String.valueOf(e.getMessage()));
+                } finally { if (c != null) c.disconnect(); }
+            }).start();
+        }
+
+        // ---------------- Fonctions du telephone ----------------
+        @JavascriptInterface
+        public void appeler(final String numero) {
+            principal.post(() -> {
+                try { startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + Uri.encode(numero))).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (Exception ignore) {}
+            });
+        }
+
+        /** Actions systeme : camera, reglages, wifi, bluetooth, son, luminosite, alarme (HH:MM), minuteur (secondes), telephone, contacts, messages, galerie, calculatrice, agenda, navigateur, musique, carte. */
+        @JavascriptInterface
+        public String action(final String nom, final String valeur) {
+            try {
+                Intent i = null;
+                switch (nom) {
+                    case "camera": i = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE); break;
+                    case "reglages": i = new Intent(Settings.ACTION_SETTINGS); break;
+                    case "wifi": i = new Intent(Settings.ACTION_WIFI_SETTINGS); break;
+                    case "bluetooth": i = new Intent(Settings.ACTION_BLUETOOTH_SETTINGS); break;
+                    case "son": i = new Intent(Settings.ACTION_SOUND_SETTINGS); break;
+                    case "luminosite": i = new Intent(Settings.ACTION_DISPLAY_SETTINGS); break;
+                    case "telephone": i = new Intent(Intent.ACTION_DIAL); break;
+                    case "accueil_defaut": i = new Intent(Settings.ACTION_HOME_SETTINGS); break;
+                    case "assistant_defaut": i = new Intent(Settings.ACTION_VOICE_INPUT_SETTINGS); break;
+                    case "alarme": {
+                        String[] hm = valeur.split(":");
+                        i = new Intent(AlarmClock.ACTION_SET_ALARM).putExtra(AlarmClock.EXTRA_HOUR, Integer.parseInt(hm[0].trim())).putExtra(AlarmClock.EXTRA_MINUTES, Integer.parseInt(hm[1].trim())).putExtra(AlarmClock.EXTRA_SKIP_UI, false);
+                        break; }
+                    case "minuteur":
+                        i = new Intent(AlarmClock.ACTION_SET_TIMER).putExtra(AlarmClock.EXTRA_LENGTH, Integer.parseInt(valeur.trim())).putExtra(AlarmClock.EXTRA_SKIP_UI, false); break;
+                    case "contacts": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_CONTACTS); break;
+                    case "messages": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MESSAGING); break;
+                    case "galerie": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_GALLERY); break;
+                    case "calculatrice": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_CALCULATOR); break;
+                    case "agenda": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_CALENDAR); break;
+                    case "navigateur": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_BROWSER); break;
+                    case "musique": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MUSIC); break;
+                    case "carte": i = Intent.makeMainSelectorActivity(Intent.ACTION_MAIN, Intent.CATEGORY_APP_MAPS); break;
+                    default: return "inconnu";
+                }
+                final Intent f = i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                principal.post(() -> { try { startActivity(f); } catch (Exception ignore) {} });
+                return "ok";
+            } catch (Exception e) { return String.valueOf(e.getMessage()); }
+        }
+
+        @JavascriptInterface
+        public String lampe(final boolean on) {
+            try {
+                CameraManager cm = (CameraManager) getSystemService(CAMERA_SERVICE);
+                cm.setTorchMode(cm.getCameraIdList()[0], on);
+                return "ok";
+            } catch (Exception e) { return String.valueOf(e.getMessage()); }
         }
 
         @JavascriptInterface

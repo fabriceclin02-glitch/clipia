@@ -52,9 +52,24 @@ label{display:block;font-size:13px;color:var(--doux);margin:0 0 6px}
 .micro.on{background:linear-gradient(135deg,#ff6ba8,#ff9a5c);animation:respire 1.2s ease-in-out infinite;box-shadow:0 10px 40px #ff6ba877}
 @keyframes respire{50%{transform:scale(1.08)}}
 .mode{text-align:center;font-size:12px;color:var(--doux);margin-top:6px}
+/* accueil, studio, store */
+.acc{pointer-events:none}.acc .haut{flex:0 0 30dvh;display:flex;align-items:flex-end;justify-content:center;padding:calc(var(--haut) + 8px) 16px 6px;pointer-events:none;text-align:center}
+.acc .haut b{font-size:13px;color:var(--doux);background:#0b0e2acc;border:1px solid var(--bord);padding:5px 12px;border-radius:99px;pointer-events:auto}
+.acc .panneau{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#0b0e2aee,#080a1cf7);border-top:1px solid var(--bord);border-radius:26px 26px 0 0;padding:16px 14px 20px;pointer-events:auto;-webkit-overflow-scrolling:touch}
+.gi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 6px}
+.ic{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-width:0}
+.ic .pic{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:28px;background:linear-gradient(145deg,#232a6e,#12163f);border:1px solid #3a42a0;box-shadow:0 8px 18px #0008,inset 0 1px 0 #ffffff22;overflow:hidden}
+.ic .pic img{width:100%;height:100%;object-fit:cover}.ic:active .pic{transform:scale(.92) perspective(200px) rotateX(10deg)}
+.ic span{font-size:11.5px;color:var(--texte);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ic.bientot .pic{opacity:.55}
+.titre-s{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--doux);margin:18px 4px 10px}
+.st{display:flex;gap:12px;align-items:center;padding:12px;border-radius:16px;border:1px solid var(--bord);background:var(--carte);margin-bottom:10px}
+.st .e{font-size:30px;width:48px;height:48px;display:grid;place-items:center;border-radius:14px;background:#1a1f4d;flex:0 0 auto}
+.st .t{flex:1;min-width:0}.st .t b{display:block;font-size:15px}.st .t span{font-size:12.5px;color:var(--doux);display:block}.st .t i{font-style:normal;font-size:11px;color:#8a91bd}
+.st button{flex:0 0 auto}
 /* barre d'onglets */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:12;height:calc(var(--tab) + var(--bas));padding-bottom:var(--bas);display:flex;background:#0b0e2af2;border-top:1px solid var(--bord)}
-nav.tabs button{flex:1;background:none;border:0;color:var(--doux);font:inherit;font-size:11.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+nav.tabs button{flex:1;min-width:0;background:none;border:0;color:var(--doux);font:inherit;font-size:10.5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
 nav.tabs button span{font-size:21px;line-height:1}
 nav.tabs button.on{color:#fff}nav.tabs button.on span{filter:drop-shadow(0 0 8px #7c5cff)}
 /* contenus */
@@ -108,7 +123,10 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <canvas id="scene" aria-label="Sphère 3D de Clipia"></canvas>
 
 <!-- PARLER -->
-<section class="vue on" id="v-parler">
+<section class="vue acc on" id="v-accueil"><div class="haut"><b id="accDate"></b></div><div class="panneau" id="accPanneau"></div></section>
+<section class="vue" id="v-store"><div class="plein" id="pStore"></div></section>
+<section class="vue" id="v-studio"><div class="plein" id="pStudio"></div></section>
+<section class="vue" id="v-parler">
   <header class="h">
     <div><div class="logo">CLIPIA<small>X8</small></div><div class="etat"><span class="point" id="point"></span><span id="etatTexte">Prête</span></div></div>
     <span class="moteur" id="moteurAff" role="button">⚡ …</span>
@@ -142,9 +160,11 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <section class="vue" id="v-reglages"><div class="plein" id="pReglages"></div></section>
 
 <nav class="tabs">
-  <button data-v="parler" class="on"><span>🎙</span>Parler</button>
+  <button data-v="accueil" class="on"><span>🏠</span>Accueil</button>
+  <button data-v="parler"><span>🎙</span>Parler</button>
   <button data-v="creer"><span>✨</span>Créer</button>
   <button data-v="agents"><span>🧩</span>Agents</button>
+  <button data-v="store"><span>🏬</span>Store</button>
   <button data-v="reglages"><span>⚙</span>Réglages</button>
 </nav>
 
@@ -160,5 +180,6 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <script src="js/media.js"></script>
 <script src="js/agent.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/systeme.js"></script>
 </body>
 </html>

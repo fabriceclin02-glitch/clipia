@@ -1,8 +1,9 @@
 'use strict';
 /* Clipia X8 mobile — cerveau : consignes, outils, agents et sous-agents */
 
-const TOUS_OUTILS=['image','musique','video','code','deleguer','agent_creer','memoire','pc'];
-const LIBELLE_OUTIL={image:'Images',musique:'Musique',video:'Vidéo',code:'Code et fichiers',deleguer:'Déléguer à des sous-agents',agent_creer:'Créer des agents',memoire:'Mémoire',pc:'Piloter mon PC'};
+const TOUS_OUTILS=['image','musique','video','code','deleguer','agent_creer','memoire','pc','contact','message','app_ouvrir','telephone'];
+const OUTILS_ANDROID=['contact','message','app_ouvrir','telephone'];
+const LIBELLE_OUTIL={image:'Images',musique:'Musique',video:'Vidéo',code:'Code et fichiers',deleguer:'Déléguer à des sous-agents',agent_creer:'Créer des agents',memoire:'Mémoire',pc:'Piloter mon PC',contact:'Contacts',message:'Envoyer des messages',app_ouvrir:'Ouvrir des applis',telephone:'Appels, alarme, réglages'};
 const AGENTS_DEFAUT=[
   {id:'codeur',nom:'Codeur',role:'Développeur : crée des sites, jeux, outils et scripts complets.',instructions:'Tu es un développeur senior. Tu écris du code complet, propre et directement utilisable, jamais de squelette. Pour une application ou un site, tu produis un seul fichier HTML (CSS et JS intégrés) adapté au téléphone.',outils:['code','memoire'],sousAgents:[]},
   {id:'illustrateur',nom:'Illustrateur',role:'Crée des images : affiches, personnages, décors, logos.',instructions:'Tu es directeur artistique. Tu transformes chaque demande en une description d\'image très précise en anglais (sujet, style, lumière, cadrage) puis tu génères l\'image.',outils:['image'],sousAgents:[]},
@@ -26,17 +27,21 @@ const DOC_OUTILS={
   image:'<outil nom="image" format="carre|portrait|paysage">description détaillée de l\'image, en anglais</outil> — crée une image.',
   musique:'<outil nom="musique" titre="…" style="calme|lofi|pop|epique|dance|triste|jazz" tempo="60-160" tonalite="C|D|E|F|G|A|B" mode="majeur|mineur" mesures="8-32"></outil> — compose une musique originale.',
   video:'<outil nom="video" titre="…" format="vertical|horizontal" narration="oui|non" style="calme|lofi|pop|epique|dance|triste|jazz|aucune">une scène par ligne, 3 à 6 lignes, sous la forme : texte court affiché | description de l\'image en anglais</outil> — monte un clip vidéo avec images, textes, musique et narration parlée (le texte de chaque scène est lu à voix haute si narration="oui").',
-  code:'<outil nom="code" fichier="nom.ext">contenu COMPLET du fichier</outil> — crée un fichier (une application, un jeu ou un site = un seul fichier .html avec CSS et JS intégrés, adapté au téléphone, entièrement fonctionnel).',
+  code:'<outil nom="code" fichier="nom.ext" app="oui|non" titre="Nom" icone="emoji">contenu COMPLET du fichier</outil> — crée un fichier (une application, un jeu ou un site = un seul fichier .html (mets app="oui" avec titre et icone pour qu\'elle apparaisse comme application sur l\'écran d\'accueil), avec CSS et JS intégrés, adapté au téléphone, entièrement fonctionnel).',
   deleguer:'<outil nom="deleguer" agent="Nom">tâche précise à confier</outil> — confie une tâche à un sous-agent et récupère son résultat.',
   agent_creer:'<outil nom="agent_creer" agent="Nom" role="description courte" outils="image,musique,video,code,deleguer,memoire" sous_agents="Nom1,Nom2" voix="façon de parler, ex : douce et lente">instructions détaillées du nouvel agent</outil> — crée un agent durable (et ses sous-agents) dans l\'application.',
   memoire:'<outil nom="memoire">fait à retenir sur la personne ou le projet</outil> — mémorise pour les prochaines conversations.',
+  contact:'<outil nom="contact">nom à chercher</outil> — cherche dans les contacts du téléphone (nom + numéro).',
+  message:'<outil nom="message" contact="Nom exact du contact" canal="sms|whatsapp">texte du message</outil> — prépare un message ; la personne le relit et le confirme à l\'écran avant l\'envoi. Si elle n\'a pas encore dit quoi écrire, demande-le-lui d\'abord (« Que veux-tu lui dire ? »), sans appeler l\'outil.',
+  app_ouvrir:'<outil nom="app_ouvrir">nom de l\'application (ex : YouTube, Photos)</outil> — ouvre une application installée.',
+  telephone:'<outil nom="telephone" action="appeler|alarme|minuteur|camera|lampe|wifi|bluetooth|son|luminosite|reglages|contacts|messages|galerie|calculatrice|agenda|navigateur|musique|carte|accueil_defaut" valeur="numéro, HH:MM, secondes ou on/off selon l\'action">contact éventuel</outil> — fonctions du téléphone (appel via le composeur, alarme, minuteur, lampe, réglages…).',
   pc:'<outil nom="pc">demande envoyée à Clipia sur l\'ordinateur de la personne</outil> — pour agir sur le PC (fichiers, programmes, installation…).'
 };
 const TONS={chaleureux:'chaleureux et bienveillant',pro:'professionnel et précis',direct:'direct, efficace, sans fioritures',decontracte:'décontracté et complice'};
 
 function systeme(agent,prof,voix){
   const P=E.profil,pc=!!(E.pc.url&&E.pc.jeton);
-  const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
+  const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>!OUTILS_ANDROID.includes(o)||!!NATIF).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
   const l=[];
   l.push(agent&&prof>0?`Tu es « ${agent.nom} », un sous-agent de Clipia. ${agent.instructions}`:agent?`Tu es Clipia X8 (CLENDAX, créée par Clin Fabrice), en ce moment dans le rôle de l'agent « ${agent.nom} » : ${agent.role} ${agent.instructions}`:`Tu es Clipia X8, l'assistante personnelle de CLENDAX, créée par Clin Fabrice. Tu es une vraie assistante qui agit : tu codes, crées des images, des musiques et des vidéos, et diriges des agents et sous-agents.`);
   l.push(`Langue : français. ${P.tu?'Tu tutoies':'Tu vouvoies'} la personne${P.prenom?' et tu l\'appelles '+P.prenom:''}. Ton : ${TONS[P.ton]||TONS.chaleureux}.`);
@@ -78,6 +83,7 @@ async function executer(a,ctx){
   if(!permis.includes(nom))return `Outil « ${nom} » non autorisé pour ce rôle.`;
   if(++ctx.compteur.n>14)return 'Limite d\'actions atteinte pour cette demande.';
   try{
+    if(window.OUTILS_SYS&&OUTILS_SYS[nom])return await OUTILS_SYS[nom](a,ctx);
     if(nom==='image'){
       if(!corps)return 'Description manquante.';etape('Je crée l\'image…');
       const b=await genererImage(corps,{format:norm(at.format),info:etape});
@@ -102,7 +108,8 @@ async function executer(a,ctx){
       const f=(at.fichier||'projet.html').replace(/[^\w.\-]+/g,'_');if(!corps)return 'Fichier vide.';etape('J\'écris le code…');
       const ext=(f.split('.').pop()||'txt').toLowerCase();const mime={html:'text/html',htm:'text/html',css:'text/css',js:'text/javascript',json:'application/json',py:'text/x-python',md:'text/markdown',svg:'image/svg+xml'}[ext]||'text/plain';
       const b=new Blob([corps],{type:mime+';charset=utf-8'});
-      const c=await nouvelleCreation('code',f,b,{fichier:f,ext});ctx.creations.push(c.id);return `Fichier « ${f} » créé (${corps.length} caractères). L'aperçu est disponible dans la conversation.`;
+      const estApp=norm(at.app)==='oui'&&ext==='html';if(estApp){for(const o of await BD.tous())if(o.type==='app'&&norm(o.titre)===norm(at.titre||f))await BD.suppr(o.id)}
+      const c=await nouvelleCreation(estApp?'app':'code',at.titre||f,b,{fichier:f,ext,icone:at.icone||'🧩'});ctx.creations.push(c.id);if(estApp)return `Application « ${c.titre} » créée et ajoutée à l'accueil (onglet Accueil / Studio).`;return `Fichier « ${f} » créé (${corps.length} caractères). L'aperçu est disponible dans la conversation.`;
     }
     if(nom==='agent_creer'){
       const n=(at.agent||'').trim();if(!n)return 'Nom d\'agent manquant.';

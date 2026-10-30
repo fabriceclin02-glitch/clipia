@@ -14,7 +14,7 @@ function dessiner(t){
   const vit=m==='travail'?2.8:m==='ecoute'?1.5:m==='parle'?1.2:.55;S3.vit+=(vit-S3.vit)*.05;
   let amp=m==='ecoute'?.05+E.niveau*.12:m==='parle'?.06+.05*Math.abs(Math.sin(t/140))*Math.abs(Math.sin(t/330+1)):m==='travail'?.04*Math.sin(t/180):.015*Math.sin(t/1200);
   S3.amp+=(amp-S3.amp)*.18;S3.rot+=.004*S3.vit;S3.tx+=S3.vy;S3.ty+=S3.vx;S3.vx*=.94;S3.vy*=.94;S3.tx+=(.25-S3.tx)*.01;
-  const base=Math.min(W,H*.6)*.29*(1+S3.amp),X=W/2,Y=H*.34;cx.clearRect(0,0,W,H);
+  const accOn=document.getElementById('v-accueil').classList.contains('on');S3.ty2=(S3.ty2===undefined?.34:S3.ty2)+((accOn?.145:.34)-(S3.ty2===undefined?.34:S3.ty2))*.12;S3.sc=(S3.sc||1)+((accOn?.62:1)-(S3.sc||1))*.12;const base=Math.min(W,H*.6)*.29*S3.sc*(1+S3.amp),X=W/2,Y=H*S3.ty2;cx.clearRect(0,0,W,H);
   const [r,g,b]=coul.map(Math.round);const gr=cx.createRadialGradient(X,Y,base*.2,X,Y,base*2.3);gr.addColorStop(0,`rgba(${r},${g},${b},.30)`);gr.addColorStop(.5,`rgba(${r},${g},${b},.08)`);gr.addColorStop(1,'rgba(8,10,28,0)');cx.fillStyle=gr;cx.fillRect(0,0,W,H);
   const ca=Math.cos(S3.rot+S3.ty),sa=Math.sin(S3.rot+S3.ty),cb=Math.cos(S3.tx),sb=Math.sin(S3.tx),out=[];
   for(let i=0;i<NP;i++){const p=PTS[i],w=1+S3.amp*1.4*Math.sin(t/260+p[0]*5+p[1]*4+(m==='parle'?p[2]*6:0)),x0=p[0]*w,y0=p[1]*w,z0=p[2]*w,x=x0*ca+z0*sa,z=-x0*sa+z0*ca;out.push([x,y0*cb-z*sb,y0*sb+z*cb,p[3]])}
@@ -38,7 +38,7 @@ function ouvrir(s){$('#voile').classList.add('on');$(s).classList.add('on')}
 function fermerTout(){$('#voile').classList.remove('on');$$('.feuille').forEach(f=>f.classList.remove('on'))}
 $('#voile').addEventListener('click',fermerTout);
 function libre(html,binder){$('#libreContenu').innerHTML=html;if(binder)binder($('#libreContenu'));ouvrir('#feuilleLibre')}
-const ICO={image:'🖼',musique:'🎵',video:'🎬',code:'💻'};
+const ICO={image:'🖼',musique:'🎵',video:'🎬',code:'💻',app:'🧩'};
 
 /* ═══ CARTES DE CRÉATION ════════════════════════════════════════════════════ */
 async function carte(id){
@@ -47,8 +47,8 @@ async function carte(id){
   if(c.type==='image')tete=`<img src="${u}" alt="${esc(c.titre)}">`;
   else if(c.type==='musique')tete=`<audio controls src="${u}"></audio>`;
   else if(c.type==='video')tete=`<video controls playsinline src="${u}"></video>`;
-  else tete=`<div style="padding:14px;font-size:30px;text-align:center">💻</div>`;
-  d.innerHTML=tete+`<div class="pied"><b>${esc(c.titre)}</b>${c.type==='code'?'<button data-a="ouvrir">▶ Ouvrir</button>':c.type==='image'?'<button data-a="ouvrir">⛶</button>':''}<button data-a="sauver">⬇ Enregistrer</button><button data-a="partager">↗</button></div>`;
+  else tete=`<div style="padding:14px;font-size:30px;text-align:center">${c.type==='app'?esc((c.meta&&c.meta.icone)||'🧩'):'💻'}</div>`;
+  d.innerHTML=tete+`<div class="pied"><b>${esc(c.titre)}</b>${c.type==='code'||c.type==='app'?'<button data-a="ouvrir">▶ Ouvrir</button>':c.type==='image'?'<button data-a="ouvrir">⛶</button>':''}<button data-a="sauver">⬇ Enregistrer</button><button data-a="partager">↗</button></div>`;
   d.addEventListener('click',async e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
     if(a==='ouvrir')visualiser(c);
     if(a==='sauver')sauverCreation(c);
@@ -66,7 +66,7 @@ async function sauverCreation(c){
 let _visu=null;
 async function visualiser(c){
   _visu=c;$('#visuTitre').textContent=c.titre;const corps=$('#visuCorps');corps.innerHTML='';
-  if(c.type==='code'){
+  if(c.type==='code'||c.type==='app'){
     const t=await c.blob.text();
     if(/html?$/.test((c.meta&&c.meta.ext)||'')||/^\s*<(!doctype|html)/i.test(t)){const f=document.createElement('iframe');f.setAttribute('sandbox','allow-scripts allow-forms allow-modals allow-pointer-lock');f.srcdoc=t;corps.appendChild(f)}
     else{const p=document.createElement('pre');p.textContent=t;corps.appendChild(p)}
@@ -172,7 +172,7 @@ chargerVoix();
 /* ═══ ONGLETS ═══════════════════════════════════════════════════════════════ */
 function changerVue(v){
   $$('.vue').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));fermerTout();
-  if(v==='creer')majCreer();if(v==='agents')majAgents();if(v==='reglages')majReglages();
+  if(v==='creer')majCreer();if(v==='agents')majAgents();if(v==='reglages')majReglages();if(window.VUES&&VUES[v])VUES[v]();
 }
 $$('nav.tabs button').forEach(b=>b.onclick=()=>changerVue(b.dataset.v));
 
@@ -405,6 +405,7 @@ majMoteur();majMuet();majMode();ajuste();
   const dern=E.messages.slice().reverse();const a=dern.find(m=>m.role==='assistant'),u=dern.find(m=>m.role==='user');
   if(a)await afficher({moi:u?u.contenu:'',elle:a.contenu,creations:a.cr||[]});else afficher();
   if(!E.profil.fait)assistant(0);
+  changerVue('accueil');
   const p=new URLSearchParams(location.search);
   if(p.get('action')==='nouveau'){E.messages=[];sauver();afficher()}
   if(p.get('action')==='voix')setTimeout(basculeConv,800);

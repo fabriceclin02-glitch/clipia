@@ -1,0 +1,13 @@
+name: Verifier le Clipia Store
+on:
+  pull_request:
+    paths: ['store/**', 'depot-ia/**']
+  push:
+    paths: ['store/**', 'depot-ia/**']
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Controler les catalogues
+        run: python3 store/verifier.py

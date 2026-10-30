@@ -1,0 +1,23 @@
+name: Store — nouvelle application
+description: Proposer une application pour le Clipia Store (gratuit)
+title: "[Store] "
+labels: ["store"]
+body:
+  - type: input
+    id: nom
+    attributes: {label: Nom de l'application}
+    validations: {required: true}
+  - type: input
+    id: lien
+    attributes: {label: Lien https direct vers l'APK (ou fiche / site)}
+    validations: {required: true}
+  - type: input
+    id: sha
+    attributes: {label: Empreinte SHA-256 de l'APK (si APK)}
+  - type: textarea
+    id: desc
+    attributes: {label: Description en une ou deux phrases}
+    validations: {required: true}
+  - type: input
+    id: code
+    attributes: {label: Lien vers le code source (recommandé)}
