@@ -165,7 +165,7 @@ input[type=range]{width:100%;accent-color:var(--violet)}
 
 <script>
 'use strict';
-const VERSION='4.0.0';
+const VERSION='8.4.0';
 const $=(s)=>document.querySelector(s);
 const M={lire(c,d){try{const v=localStorage.getItem('clipia.'+c);return v===null?d:JSON.parse(v)}catch(e){return d}},ecrire(c,v){try{localStorage.setItem('clipia.'+c,JSON.stringify(v))}catch(e){}},vider(c){try{localStorage.removeItem('clipia.'+c)}catch(e){}}};
 

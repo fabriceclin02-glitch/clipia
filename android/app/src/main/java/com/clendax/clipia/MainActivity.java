@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         s.setSupportZoom(false);
         s.setBuiltInZoomControls(false);
         s.setTextZoom(100);
-        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/4.0.0");
+        s.setUserAgentString(s.getUserAgentString() + " ClipiaAndroid/8.4.0");
 
         vue.setBackgroundColor(0xFF080A1C);
         WebView.setWebContentsDebuggingEnabled(false);
@@ -372,7 +372,7 @@ public class MainActivity extends AppCompatActivity {
     private class Pont {
 
         @JavascriptInterface
-        public String version() { return "4.0.0"; }
+        public String version() { return "8.4.0"; }
 
         @JavascriptInterface
         public boolean voixNative() { return true; }
