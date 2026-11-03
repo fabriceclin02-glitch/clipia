@@ -38,7 +38,7 @@ import { enqueue, subscribe, getJob } from '../jobs/queue.js';
 import { store } from '../lib/store.js';
 import * as graphe from '../cerveau/graphe.js';
 import * as archive from './archive.js';
-import { pour } from './demarrage.js';
+import { pour, chaine } from './demarrage.js';
 import { OUTILS as OUTILS_CODE, PROJETS_DIR, creerProjet, AgentError } from '../agent/tools.js';
 import { OUTILS_MACHINE } from './machine.js';
 import { OUTILS_NAVIGATEUR } from './navigateur.js';
@@ -86,7 +86,7 @@ function attendreTache(type, payload, { plafondMs = 420000 } = {}) {
     }, plafondMs);
 
     const stop = subscribe(job.id, (j) => {
-      if (fini || (j.status !== 'terminé' && j.status !== 'échoué' && j.status !== 'annulé')) return;
+      if (fini || (j.status !== 'terminé' && j.status !== 'échec' && j.status !== 'échoué' && j.status !== 'annulé')) return;
       fini = true; clearTimeout(minuteur); stop?.();
       resolve(j.status === 'terminé'
         ? { ok: true, resultat: j.result, job: j }
@@ -126,11 +126,18 @@ export const OUTILS = {
     description: 'Génère une image. Paramètres : description (en anglais de préférence, c\'est ce que comprennent le mieux les moteurs), largeur, hauteur.',
     async run({ description, largeur = 1024, hauteur = 1024 }) {
       if (!description) throw new AgentError('Il faut une description.');
-      const m = pour('image');
-      if (!m) throw new AgentError('Aucun moteur d\'image ne répond en ce moment.');
-      const r = await attendreTache('image', { provider: m.provider, model: m.model,
-        prompt: String(description).slice(0, 1200), width: +largeur, height: +hauteur });
-      if (!r.ok) throw new AgentError(`Génération échouée : ${r.pourquoi}`);
+      /* Correctif 8.5.1 — on essaie TOUS les moteurs d'image disponibles l'un après l'autre (avant : un seul, puis abandon). */
+      const essais = chaine('image');
+      if (!essais.length) { const m = pour('image'); if (m) essais.push(m); }
+      if (!essais.length) throw new AgentError('Aucun moteur d\'image n\'est configuré. Le gratuit (Pollinations) a besoin d\'Internet ; sinon ajoute une clé dans Réglages → Clés (OpenAI, Stability, fal.ai…).');
+      let r = null; const raisons = [];
+      for (const m of essais.slice(0, 4)) {
+        r = await attendreTache('image', { provider: m.provider, model: m.model,
+          prompt: String(description).slice(0, 1200), width: +largeur, height: +hauteur }, { plafondMs: 200000 });
+        if (r.ok) break;
+        raisons.push(`${m.provider} : ${r.pourquoi}`);
+      }
+      if (!r.ok) throw new AgentError(`Génération échouée — ${raisons.join(' | ')}`);
       const f = fichiersDe(r.resultat);
       return { resume: `Image générée${f.length ? ` : ${path.basename(f[0])}` : ''}`,
                preuve: f.length ? preuveFichier(f[0]) : preuveTache(r.job),
@@ -141,11 +148,11 @@ export const OUTILS = {
   clip_monter: {
     groupe: 'créer',
     besoin: 'montage',
-    description: 'Monte une vidéo à partir d\'un fichier audio, calée sur le tempo. Paramètres : audio (chemin du fichier), ambiance (nuit, aurore, braise, abysse, or), titre, artiste.',
+    description: 'Monte une vidéo à partir d\'un fichier audio, calée sur le tempo. Paramètres : audio (chemin du fichier), ambiance (double, spectre, onde, bandes, lissajous ; ou nuit, aurore, braise, abysse, or), titre, artiste.',
     async run({ audio, ambiance = 'nuit', titre = '', artiste = '' }) {
       if (!audio) throw new AgentError('Il faut le chemin d\'un fichier audio.');
       if (!fs.existsSync(audio)) throw new AgentError(`Fichier introuvable : ${audio}`);
-      const r = await attendreTache('clip', { mode: 'local', audio, ambiance, titre, artiste }, { plafondMs: 900000 });
+      const r = await attendreTache('clip', { mode: 'local', audio, ambiance: ambiance === 'nuit' ? 'double' : ambiance, titre, artiste }, { plafondMs: 900000 });
       if (!r.ok) throw new AgentError(`Montage échoué : ${r.pourquoi}`);
       const f = fichiersDe(r.resultat);
       return { resume: `Clip monté${f.length ? ` : ${path.basename(f[0])}` : ''}`,

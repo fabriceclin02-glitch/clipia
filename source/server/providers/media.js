@@ -12,7 +12,7 @@ import { store, uid } from '../lib/store.js';
 export const MEDIA_DIR = path.join(DATA_DIR, 'media');
 fs.mkdirSync(MEDIA_DIR, { recursive: true });
 
-function saveBinary(buf, ext, meta = {}) {
+export function saveBinary(buf, ext, meta = {}) {
   const id = uid('ast');
   const file = path.join(MEDIA_DIR, `${id}.${ext}`);
   fs.writeFileSync(file, buf);

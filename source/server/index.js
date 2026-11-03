@@ -231,12 +231,19 @@ function executerTache(type, payload) {
 }
 
 /** Réponse à un message reçu : le pilote autonome s'en charge. */
-async function repondreMessage(texte, opts) {
-  const prov = opts.provider || PROVIDERS.find(x => credential(x) && ['openai','anthropic','gemini','ollama'].includes(x.kind))?.id;
-  if (!prov) return "Aucun moteur IA n'est configuré sur le studio.";
-  const r = await piloter({ objectif: texte, provider: prov, model: opts.model,
-    maxEtapes: 10, etatStudio: await resumeStudio() }, executerTache);
-  return r.question ? `❓ ${r.question}` : r.resume;
+/* Correctif 8.5.1 — les messages reçus (WhatsApp, Telegram, Slack) passent désormais par le MÊME cerveau que le chat :
+   outils (images, clips, ordinateur, navigateur, agents), mémoire, bascule automatique de moteur. Avant : ancien pilote du
+   studio, avec le premier moteur à clé trouvé et aucune de ces capacités. */
+const histMessagerie = new Map();
+async function repondreMessage(texte, opts = {}, ctx = {}) {
+  const cle = (ctx.canal || 'x') + ':' + (ctx.de || 'x');
+  const historique = histMessagerie.get(cle) || [];
+  const r = await noyauBoucle.converser({ message: String(texte).slice(0, 4000), historique: historique.slice(-8), vocal: false }, () => {});
+  let t = String(r.texte || '').trim() || 'Fait.';
+  if (r.attente) t += `\n\n⏸ Cette action demande ton accord : ouvre Clipia sur ton ordinateur et clique « Autoriser » (${r.attente.resume || r.attente.outil}).`;
+  histMessagerie.set(cle, [...historique, { role: 'user', content: String(texte).slice(0, 1500) }, { role: 'assistant', content: t.slice(0, 1500) }].slice(-12));
+  const fichier = (r.preuves || []).map(x => x?.preuve?.chemin).filter(f => f && /\.(png|jpe?g|webp|mp4|mp3|wav)$/i.test(f) && fs.existsSync(f)).pop();
+  return fichier ? { texte: t, fichier } : t;
 }
 
 const server = http.createServer(async (req, res) => {
@@ -292,7 +299,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '8.5.0', mode: 'opérationnel',
+        version: '8.5.1', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -1146,7 +1153,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '8.5.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '8.5.1', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1555,7 +1562,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/messagerie' && req.method === 'GET') return json(res, etatMessagerie());
     if (p === '/api/messagerie/demarrer' && req.method === 'POST') {
       const b = await jbody(req);
-      return json(res, demarrerMessagerie(texte => repondreMessage(texte, b)));
+      return json(res, demarrerMessagerie((texte, ctx) => repondreMessage(texte, b, ctx)));
     }
     if (p === '/api/messagerie/arreter' && req.method === 'POST') return json(res, arreterMessagerie());
     if (p === '/api/messagerie/autoriser' && req.method === 'POST') {
@@ -1570,11 +1577,11 @@ const server = http.createServer(async (req, res) => {
         if (verifierAbonnementMeta(url.searchParams)) { res.writeHead(200, { 'content-type': 'text/plain' }); return res.end(url.searchParams.get('hub.challenge') || ''); }
         res.writeHead(403); return res.end('jeton invalide');
       }
-      const r = webhookWhatsApp(await body(req, 1_000_000), req.headers, texte => repondreMessage(texte, {}));
+      const r = webhookWhatsApp(await body(req, 1_000_000), req.headers, (texte, ctx) => repondreMessage(texte, {}, ctx));
       return json(res, r.corps, r.code);
     }
     if (p === '/api/webhooks/slack' && req.method === 'POST') {
-      const r = webhookSlack(await body(req, 1_000_000), req.headers, texte => repondreMessage(texte, {}));
+      const r = webhookSlack(await body(req, 1_000_000), req.headers, (texte, ctx) => repondreMessage(texte, {}, ctx));
       return json(res, r.corps, r.code);
     }
 
@@ -1650,7 +1657,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.5.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.5.1' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)
@@ -1666,6 +1673,8 @@ function ecouteTelephone() {
 }
 if (distant.actif()) setTimeout(ecouteTelephone, 400);
 server.listen(PORT, HOST, () => {
+  /* Correctif 8.5.1 — Telegram / Slack repartent tout seuls au lancement si un jeton est enregistré (avant : muets jusqu'à un clic manuel). */
+  setTimeout(() => { try { const e = etatMessagerie(); if (e.configure && e.autorises.length) { const r = demarrerMessagerie((t, c) => repondreMessage(t, {}, c)); console.log('  Messagerie : écoute de ' + r.canaux.join(', ')); } } catch (err) { console.error('messagerie :', err.message); } }, 1500);
   try { travaux.reprisePostDemarrage(); planning.demarrer();
 sauvegarde.demarrer(); } catch {}
   try { extChrome.preparer(PORT); } catch (e) { console.error('extension Chrome :', e.message); }

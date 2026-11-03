@@ -62,6 +62,10 @@ const DEPART = [
     role: "Tu montes les clips et vidéos à partir des sons et visuels du projet, calés sur le tempo. Tu vérifies que le fichier final existe et se lit." },
   { id: 'agt_red', nom: 'Rédacteur', groupes: ['savoir', 'code', 'méta', 'atelier'],
     role: "Tu rédiges : textes, scripts, fiches, descriptions. Tu écris pour la cible indiquée, sans remplissage, et tu enregistres le résultat dans un fichier du projet." },
+  /* Ajouté en 8.5.1 : un agent qui AGIT sur l'ordinateur (souris, clavier, applications, captures, navigateur, commandes).
+     Les accords restent demandés dans l'interface ; un sous-agent profite d'une session de contrôle déjà autorisée. */
+  { id: 'agt_pc', nom: 'Assistant PC', groupes: ['ordinateur', 'machine', 'navigateur', 'savoir', 'créer', 'code', 'méta', 'atelier'],
+    role: "Tu agis sur l'ordinateur de la personne : ouvrir des applications, taper, cliquer, lire une page, lancer des commandes, créer des fichiers. Tu avances étape par étape : tu fais UNE action, tu vérifies son résultat (fenêtres, capture, sortie de commande), puis la suivante. Si une autorisation est demandée, tu t'arrêtes et tu expliques précisément ce que tu veux faire. Tu ne tapes jamais de mot de passe ni de numéro de carte." },
   { id: 'agt_rec', nom: 'Chercheur', groupes: ['savoir', 'méta', 'atelier'],
     role: "Tu cherches et tu recoupes. Tu cites tes sources, tu distingues ce qui est établi de ce qui est probable, et tu notes l'essentiel dans le projet." }
 ];
@@ -72,9 +76,8 @@ function groupesVersOutils(groupes) {
 }
 
 export function agents() {
-  if (!store.all(COLL.a).length) {
-    for (const a of DEPART) store.insert(COLL.a, { ...a, modele: null, parentId: null, integre: true, instructions: a.role });
-  }
+  const existants = new Set(store.all(COLL.a).map(a => a.id)); const noms = new Set(store.all(COLL.a).map(a => a.nom.toLowerCase()));
+  for (const a of DEPART) if (!existants.has(a.id) && !noms.has(a.nom.toLowerCase()) && (existants.size === 0 || a.id === 'agt_pc')) store.insert(COLL.a, { ...a, modele: null, parentId: null, integre: true, instructions: a.role });
   return store.all(COLL.a);
 }
 const agentParRef = (ref) => {

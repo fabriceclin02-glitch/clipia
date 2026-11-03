@@ -22,7 +22,7 @@
  * Le classement est ensuite rangé sur le disque : le deuxième démarrage est
  * instantané, et on ne re-mesure que sur demande ou quand la mesure est vieille.
  */
-import { PROVIDERS, byId, byTier } from '../providers/registry.js';
+import { PROVIDERS, byId, byTier, baseUrl } from '../providers/registry.js';
 import { credential, ping, chat, modelesConversation, taillePrevue } from '../providers/gateway.js';
 import { store } from '../lib/store.js';
 import { ffmpegBin, ffprobeBin, etatOutils } from '../lib/env.js';
@@ -73,9 +73,19 @@ export function scoreQualite(providerId, modele = '') {
 }
 
 /* ══ TEMPS 1 — qui répond ? ═══════════════════════════════════════════════ */
-async function sonderVivants(liste) {
+async function sonderVivants(liste, generation = false) {
   const res = await Promise.all(liste.map(async p => {
     const t0 = Date.now();
+    /* Correctif 8.5.1 — les moteurs de GÉNÉRATION (image, voix, musique) n'ont pas de route /models : les sonder
+       les faisait écarter à tort (lenteur, 404…) et l'outil répondait « aucun moteur » sans même essayer.
+       Ceux qui n'ont pas besoin de clé, ou dont la clé est là, sont donc retenus d'office ; on ne sonde que les moteurs locaux. */
+    if (generation && p.tier !== 'local-gratuit') {
+      return { id: p.id, label: p.label, tier: p.tier, vivant: true, modeles: [], pingMs: 0, pourquoi: 'non sondé (génération)' };
+    }
+    if (generation && p.tier === 'local-gratuit') {
+      try { await fetch(baseUrl(p), { signal: AbortSignal.timeout(2500) }); return { id: p.id, label: p.label, tier: p.tier, vivant: true, modeles: [], pingMs: Date.now() - t0, pourquoi: '' }; }
+      catch (e) { return { id: p.id, label: p.label, tier: p.tier, vivant: false, modeles: [], pingMs: Date.now() - t0, pourquoi: 'injoignable' }; }
+    }
     try {
       const r = await ping(p.id);
       return { id: p.id, label: p.label, tier: p.tier, vivant: r.ok !== false,
@@ -139,7 +149,7 @@ export async function evaluer({ mesurer = true } = {}) {
   /* Besoin par besoin. */
   for (const besoin of Object.keys(BESOINS)) {
     const liste = candidats(besoin);
-    const vivants = (await sonderVivants(liste)).filter(v => v.vivant);
+    const vivants = (await sonderVivants(liste, besoin !== 'conversation')).filter(v => v.vivant);
 
     let classement = vivants;
 
@@ -261,7 +271,7 @@ export function chaine(besoin) {
   const out = [];
   const pref = prefere();
   const ajouter = (provider, model) => { if (provider && !out.some(x => x.provider === provider)) out.push({ provider, model: model || byId(provider)?.models?.[0] || undefined }); };
-  if (pref && byId(pref.provider)) ajouter(pref.provider, pref.model);
+  if (besoin === 'conversation' && pref && byId(pref.provider)) ajouter(pref.provider, pref.model);
   if (l.choisi) ajouter(l.choisi.provider, l.choisi.modele);
   for (const c of l.candidats || []) if (c.ok) ajouter(c.provider, c.modele);
   const bons = out.filter(x => actif(x.provider));

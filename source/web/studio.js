@@ -45,7 +45,7 @@ export function installerStudio({ $, el, esc, api, API, VUES, toast }) {
           <label class="petit">Filtre</label><select id="s-f">${(etat.filtres || ['aucun']).map(x => `<option ${x === (s.filtre || 'aucun') ? 'selected' : ''}>${x}</option>`).join('')}</select>
           <label class="petit">Image (description)</label><textarea id="s-v">${esc(s.visuel || '')}</textarea>
           <div class="ligne"><button class="btn" id="s-g">🖼 Générer</button><label class="btn">Importer<input type="file" id="s-i" accept="image/*" hidden></label></div>
-          ${s.secours ? '<div class="petit">⚠ Aucun service d\'images n\'a répondu : une carte colorée est utilisée. Branche une clé dans « Skills &amp; extensions » ou importe ta photo.</div>' : ''}
+          ${s.secours ? '<div class="petit">⚠ Aucun service d\'images n\'a répondu' + (s.raison ? ' (' + esc(String(s.raison).slice(0, 160)) + ')' : '') + ' : une carte colorée est utilisée. Branche une clé dans « Skills &amp; extensions » ou importe ta photo.</div>' : ''}
           <div class="ligne"><button class="btn" id="s-l">←</button><button class="btn" id="s-r">→</button><button class="btn" id="s-dup">Dupliquer</button><button class="btn" id="s-x">Supprimer</button></div>` : '<div class="petit">Sélectionne une scène dans la timeline.</div>'}</div></div>`}`;
       lier();
     }
@@ -79,7 +79,7 @@ export function installerStudio({ $, el, esc, api, API, VUES, toast }) {
       q('#st-mi').onchange = e => imp(e.target.files[0], r => { P.musique = { ...r, nom: e.target.files[0].name }; });
       q('#st-mx')?.addEventListener('click', () => { P.musique = null; maj(); });
       q('#st-vol')?.addEventListener('input', e => { P.volume = +e.target.value; garde(P); });
-      q('#st-imgs').onclick = () => occuper('Images en cours (une par scène)', async () => { for (let i = 0; i < P.scenes.length; i++) { const x = P.scenes[i]; $('#st-m', v).textContent = `Image ${i + 1}/${P.scenes.length}…`; const r = await post('/api/studio/image', { description: x.visuel || P.titre, couleur: x.couleur, format: P.format }); Object.assign(x, { fichier: r.fichier, url: r.url, secours: r.secours }); garde(P); } dessiner(); });
+      q('#st-imgs').onclick = () => occuper('Images en cours (une par scène)', async () => { for (let i = 0; i < P.scenes.length; i++) { const x = P.scenes[i]; $('#st-m', v).textContent = `Image ${i + 1}/${P.scenes.length}…`; const r = await post('/api/studio/image', { description: x.visuel || P.titre, couleur: x.couleur, format: P.format }); Object.assign(x, { fichier: r.fichier, url: r.url, secours: r.secours, raison: r.raison }); garde(P); } dessiner(); });
       q('#st-exp').onclick = () => occuper('Export en cours — quelques instants', async () => {
         const r = await post('/api/studio/exporter', { scenes: P.scenes, musique: P.musique ? { fichier: P.musique.fichier, volume: P.volume } : null, format: P.format });
         $('#st-res', v).innerHTML = `<video controls src="${API}${esc(r.url)}"></video><div class="ligne"><a class="btn or" download href="${API}${esc(r.url)}">⬇ Télécharger la vidéo</a></div>${(r.avertissements || []).map(a => `<div class="petit">⚠ ${esc(a)}</div>`).join('')}`; });
@@ -88,7 +88,7 @@ export function installerStudio({ $, el, esc, api, API, VUES, toast }) {
       q('#s-t').oninput = e => { sc.texte = e.target.value; garde(P); const t = v.querySelector('.ap .tx'); if (t) t.textContent = sc.texte; else dessiner(); };
       for (const [id, k, f] of [['#s-d', 'duree', x => Math.max(1, Math.min(20, +x || 4))], ['#s-z', 'taille', x => +x || 54], ['#s-p', 'position'], ['#s-c', 'couleurTexte'], ['#s-f', 'filtre']]) { const n = q(id); n.onchange = () => { sc[k] = f ? f(n.value) : n.value; maj(); }; }
       q('#s-v').oninput = e => { sc.visuel = e.target.value; garde(P); };
-      q('#s-g').onclick = () => occuper('Image en cours', async () => { const r = await post('/api/studio/image', { description: sc.visuel || sc.texte || P.titre, couleur: sc.couleur, format: P.format }); Object.assign(sc, { fichier: r.fichier, url: r.url, secours: r.secours }); maj(); });
+      q('#s-g').onclick = () => occuper('Image en cours', async () => { const r = await post('/api/studio/image', { description: sc.visuel || sc.texte || P.titre, couleur: sc.couleur, format: P.format }); Object.assign(sc, { fichier: r.fichier, url: r.url, secours: r.secours, raison: r.raison }); maj(); });
       q('#s-i').onchange = e => imp(e.target.files[0], r => Object.assign(sc, { fichier: r.fichier, url: r.url, secours: false }));
       q('#s-l').onclick = () => { if (sel > 0) { [P.scenes[sel - 1], P.scenes[sel]] = [P.scenes[sel], P.scenes[sel - 1]]; sel--; maj(); } };
       q('#s-r').onclick = () => { if (sel < P.scenes.length - 1) { [P.scenes[sel + 1], P.scenes[sel]] = [P.scenes[sel], P.scenes[sel + 1]]; sel++; maj(); } };

@@ -22,19 +22,20 @@ getnode() { # $1 = plateforme npm, $2 = binaire dans l'archive
 NODE_WIN="$(getnode win-x64 bin/node.exe)"; NODE_LIN="$(getnode linux-x64 bin/node)"; NODE_MAC="$(getnode darwin-x64 bin/node)"
 
 # 2. Windows
+sed 's/$/\r/' "$SRC/installers/windows/AUDIT-CLIPIA.bat" | sed 's/\r\r$/\r/' > "$WORK/Audit-Clipia.bat"
 W="$SRC/installers/windows"
 makensis -V1 -DOUT="$WORK/Clipia.exe" -DICON="$W/clipia.ico" "$W/lanceur.nsi"
 makensis -V1 -DOUT="$WORK/Quitter-Clipia.exe" -DICON="$W/clipia.ico" "$W/quitter.nsi"
 FFOPT=""; [ -f "${FFMPEG_WIN_DIR:-/home/claude/ffwin}/ffmpeg.exe" ] && FFOPT="-DFFDIR=${FFMPEG_WIN_DIR:-/home/claude/ffwin}"
 node "$SRC/installers/gen-nsis.mjs" > "$WORK/logiciels.nsh"; makensis -V1 -DLOGICIELS="$WORK/logiciels.nsh" $FFOPT -DVERSION="$VER" -DOUT="$DIST/Clipia-Setup-$VER-windows-x64.exe" -DICON="$W/clipia.ico" \
-  -DLAUNCHER="$WORK/Clipia.exe" -DQUITTER="$WORK/Quitter-Clipia.exe" -DNODE="$NODE_WIN" -DKODIPACK="$SRC/installers/kodi-pack" -DAPPDIR="$APP" -DLISEZMOI="$WORK/LISEZ-MOI.txt" -DDIAG="$W/Diagnostic-installe.bat" "$W/clipia.nsi"
+  -DLAUNCHER="$WORK/Clipia.exe" -DQUITTER="$WORK/Quitter-Clipia.exe" -DNODE="$NODE_WIN" -DKODIPACK="$SRC/installers/kodi-pack" -DAPPDIR="$APP" -DLISEZMOI="$WORK/LISEZ-MOI.txt" -DAUDITBAT="$WORK/Audit-Clipia.bat" -DDIAG="$W/Diagnostic-installe.bat" "$W/clipia.nsi"
 
 
 # 2b. Windows portable (zip, sans installation) : dossier Clipia-Portable/ avec node.exe, app, lanceur et données locales
 makensis -V1 -DOUT="$WORK/Clipia-portable.exe" -DICON="$W/clipia.ico" "$W/lanceur-portable.nsi"
 P="$WORK/Clipia-Portable"; rm -rf "$P"; mkdir -p "$P/runtime" "$P/donnees"
 cp -a "$APP" "$P/app"; cp "$NODE_WIN" "$P/runtime/node.exe"
-cp "$WORK/Clipia-portable.exe" "$P/Clipia.exe"; cp "$WORK/Quitter-Clipia.exe" "$P/Quitter-Clipia.exe"; sed 's/$/\r/' "$W/Diagnostic-portable.bat" > "$P/Diagnostic-Clipia.bat"
+cp "$WORK/Clipia-portable.exe" "$P/Clipia.exe"; cp "$WORK/Quitter-Clipia.exe" "$P/Quitter-Clipia.exe"; sed 's/$/\r/' "$W/Diagnostic-portable.bat" > "$P/Diagnostic-Clipia.bat"; cp "$WORK/Audit-Clipia.bat" "$P/Audit-Clipia.bat"
 cat > "$P/LISEZ-MOI.txt" <<'LM'
 CLIPIA — version portable (sans installation)
 

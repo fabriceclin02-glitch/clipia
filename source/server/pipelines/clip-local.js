@@ -29,7 +29,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawnSync, spawn } from 'node:child_process';
 import { MEDIA_DIR } from '../providers/media.js';
 import { store, uid } from '../lib/store.js';
 import { ffmpegBin, ffprobeBin } from '../lib/env.js';
@@ -281,7 +281,14 @@ export async function clipLocal({
     '-c:a', 'aac', '-b:a', '256k', '-movflags', '+faststart',
     '-r', '30', sortie];
 
-  const r = spawnSync(ffmpegBin(), args, { encoding: 'utf8', timeout: 1800000, maxBuffer: 1 << 26 });
+  /* Correctif 8.5.1 — rendu ASYNCHRONE : spawnSync gelait tout le serveur (interface, Telegram, agents) pendant le montage. */
+  const r = await new Promise((fin) => {
+    const pr = spawn(ffmpegBin(), args, { windowsHide: true }); let err = '';
+    const t = setTimeout(() => { try { pr.kill(); } catch {} }, 1800000);
+    pr.stderr.on('data', d => { err = (err + d).slice(-20000); });
+    pr.on('error', e => { clearTimeout(t); fin({ status: 1, stderr: e.code === 'ENOENT' ? 'FFmpeg introuvable : réinstalle Clipia ou installe FFmpeg.' : e.message }); });
+    pr.on('close', c => { clearTimeout(t); fin({ status: c, stderr: err }); });
+  });
   if (r.status !== 0) {
     const lignes = String(r.stderr || '').trim().split('\n');
     const utile = lignes.filter(l => /rror|nvalid|o such|nknown|ailed/i.test(l));
