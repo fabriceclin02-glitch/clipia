@@ -578,6 +578,7 @@ html.mob #bot-b,html.mob #wa{animation:none!important}
 <section id="tout-installer"><div class="c">
   <h2 class="rv">⚡ Tout installer, prêt à l'emploi</h2>
   <p class="sous rv">Clipia <b>et</b> Kodi, avec l'accueil 3D et les extensions légales. Choisis ta plateforme : on t'indique l'installeur adapté.</p>
+  <a href="#code-glm" class="rv" style="display:flex;align-items:center;gap:14px;margin:0 auto 18px;padding:12px 16px;border-radius:16px;border:1px solid #7ee2d066;background:linear-gradient(90deg,#0f2a3a,#1a1240);text-decoration:none;color:#fff;max-width:640px"><span style="display:grid;place-items:center;width:46px;height:46px;border-radius:12px;background:#000;border:1px solid #7ee2d0;font:800 26px/1 Inter,sans-serif;color:#7ee2d0">Z</span><span><b style="font-size:16px">GLM-5.2 de Z.ai proposé à l'installation</b><br><span style="font-size:13.5px;color:#cfd6ff">Étape facultative sur PC (assistant de démarrage et installeur Windows) et sur téléphone (Réglages → moteur). Ta propre clé Z.ai, payant à l'usage.</span></span></a>
   <div class="vid2 rv" style="margin-bottom:22px"><video controls preload="none" poster="img/poster-tout-installer.jpg" playsinline><source src="Clipia-Tout-installer.mp4" type="video/mp4"></video></div>
   <p class="sous rv" style="margin:-8px auto 18px;text-align:center"><a href="Clipia-Tout-installer.mp4" download style="color:#9bb4ff">⬇ Télécharger la vidéo</a></p>
   <div id="ti" class="g"></div>
@@ -706,7 +707,7 @@ fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
   fetch('liens.json',{cache:'no-store'}).then(r=>r.json()).then(L=>{
     const F=L.fichiers||{},ap=(F.android&&F.android.url)||'telechargements/Clipia-8.9.3.apk';
     const C=[
-     ['windows','🪟','Windows 10 / 11',F.windows,'Installeur unique : Clipia + case « Kodi + pack Clipia » (cochée par défaut).',['Télécharge et double-clique l\'installeur.','Clique « Exécuter quand même » si Windows prévient.','Laisse coché « Kodi + pack Clipia », puis Installer.','Ouvre Kodi → Extensions → Extensions vidéo → Clipia — Accueil.']],
+     ['windows','🪟','Windows 10 / 11',F.windows,'Installeur unique : Clipia + case « Kodi + pack Clipia » (cochée par défaut).',['Télécharge et double-clique l\'installeur.','Clique « Exécuter quand même » si Windows prévient.','Laisse coché « Kodi + pack Clipia » ; option GLM-5.2 (Z.ai) pour coder, si tu as une clé.','Ouvre Kodi → Extensions → Extensions vidéo → Clipia — Accueil.']],
      ['mac','🍎','macOS',F.macos,'Clipia.app + dossier Kodi-Clipia.',['Télécharge et ouvre le zip.','Glisse Clipia.app dans Applications (clic droit → Ouvrir).','Double-clique Kodi-Clipia/installer-kodi-mac.command.','Ouvre Kodi → Clipia — Accueil.']],
      ['linux','🐧','Linux (Debian, Ubuntu, Mint)',F.linux,'Paquet .deb avec la commande clipia-kodi.',['sudo apt install ./clipia_*.deb','Lance « clipia-kodi » (ou l\'icône « Installer Kodi + pack Clipia »).','Ouvre Kodi → Clipia — Accueil.']],
      ['android','🤖','Android',{url:ap,taille:'APK'},'Appli Clipia X8 (écran d\'accueil, assistante, Store, Studio…) + guide Kodi intégré.',['Télécharge l\'APK et autorise l\'installation.','Dans Clipia : Réglages → Kodi → « Kodi (Google Play) » puis « Pack Clipia (zip) ».','Suis les 4 étapes affichées.']],

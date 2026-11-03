@@ -1,6 +1,6 @@
 'use strict';
 /* Clipia X8 mobile — noyau : stockage, réseau, moteurs de texte, enregistrement de fichiers */
-const VERSION='8.9.3';
+const VERSION='8.9.4';
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -118,6 +118,8 @@ const MOTEURS={
     desc:'Une seule clé pour texte, images, voix et vidéo IA.',etapes:['Ouvre le lien et crée un compte.','Crée une clé d\'application (pk_…).','Colle-la ici : Clipia choisit le modèle toute seule.']},
   openrouter:{nom:'OpenRouter (modèles gratuits)',court:'🌐 OpenRouter',base:'https://openrouter.ai/api/v1',lien:'https://openrouter.ai/keys',ph:'sk-or-v1-…',defaut:'meta-llama/llama-3.3-70b-instruct:free',
     desc:'Plein de modèles gratuits avec une clé gratuite.',etapes:['Ouvre le lien et connecte-toi.','Crée une clé (Create Key).','Colle-la ici.']},
+  zai:{nom:'GLM-5.2 de Z.ai (code)',court:'🧠 GLM-5.2',base:'https://api.z.ai/api/paas/v4',lien:'https://z.ai/manage-apikey/apikey-list',ph:'clé Z.ai',defaut:'glm-5.2',
+    desc:'Très bon en code et en tâches longues. Facultatif, payant à l\'usage (ta propre clé Z.ai).',etapes:['Ouvre le lien et connecte-toi à Z.ai.','Crée une clé API (API Keys).','Colle-la ici : Clipia utilisera GLM-5.2 pour coder.']},
   pc:{nom:'Mon PC (Clipia X8 sur ordinateur)',court:'🖥 Mon PC',desc:'Toute la puissance de Clipia sur ton ordinateur, pilotée d\'ici.'},
   libre:{nom:'Libre (sans clé)',court:'⚡ Libre',base:'https://text.pollinations.ai/openai',defaut:'',desc:'Sans compte ni clé, mais très limité (1 demande toutes les 30 s environ, modèle modeste). Dépannage seulement.'}
 };

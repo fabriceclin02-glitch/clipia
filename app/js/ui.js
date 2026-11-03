@@ -273,7 +273,7 @@ function formAgent(a){
 }
 
 /* ── Réglages ── */
-function statutMoteur(id){if(id==='pc')return E.pc.url?'configuré':'à configurer';if(id==='libre')return 'toujours disponible';return aCle(id)?'clé enregistrée ✓':'clé gratuite à créer'}
+function statutMoteur(id){if(id==='pc')return E.pc.url?'configuré':'à configurer';if(id==='libre')return 'toujours disponible';return aCle(id)?'clé enregistrée ✓':id==='zai'?'clé Z.ai, payant à l\'usage':'clé gratuite à créer'}
 function majReglages(){
   const p=$('#pReglages'),P=E.profil;
   p.innerHTML=`<h1>Réglages</h1>
@@ -281,7 +281,7 @@ function majReglages(){
   <p class="aide" style="margin-top:0">${esc(P.prenom?P.prenom+' · ':'')}${P.tu?'tutoiement':'vouvoiement'} · ton ${esc(P.ton)} · réponses ${P.longueur==='detaillee'?'détaillées':'courtes'}</p>
   <button class="btn" id="rAssist">🪄 Refaire l'assistant de démarrage</button>
   <h3>Cerveau (texte, code, agents)</h3>
-  ${['groq','gemini','pollinations','openrouter','pc','libre'].map(id=>`<div class="carte-m ${E.moteur===id?'on':''}" data-m="${id}"><span class="r"></span><div><b>${esc(MOTEURS[id].nom)}</b><span>${esc(MOTEURS[id].desc)}<br><i style="color:${aCle(id)||id==='libre'||(id==='pc'&&E.pc.url)?'var(--ok)':'var(--doux)'}">${statutMoteur(id)}</i></span></div></div>`).join('')}
+  ${['groq','gemini','zai','pollinations','openrouter','pc','libre'].map(id=>`<div class="carte-m ${E.moteur===id?'on':''}" data-m="${id}"><span class="r"></span><div><b>${esc(MOTEURS[id].nom)}</b><span>${esc(MOTEURS[id].desc)}<br><i style="color:${aCle(id)||id==='libre'||(id==='pc'&&E.pc.url)?'var(--ok)':'var(--doux)'}">${statutMoteur(id)}</i></span></div></div>`).join('')}
   <h3>Images</h3>
   <p class="aide" style="margin-top:0">Ordre : clé Pollinations ➜ Hugging Face ➜ service gratuit sans clé (lent, limité). ${aCle('pollinations')?'<span class="ok">Pollinations actif ✓</span>':''} ${aCle('hf')?'<span class="ok">Hugging Face actif ✓</span>':''}</p>
   <button class="btn" id="rHf">🤗 Jeton Hugging Face (images gratuites)</button>
@@ -363,7 +363,7 @@ function assistant(n){
   if(n===2){titre='Ma voix';corps=`<div class="carte-m ${E.voixActive?'on':''}" id="aVoixOn"><span class="r"></span><div><b>Je te réponds à voix haute</b><span>Tu peux le changer à tout moment avec le bouton 🔊.</span></div></div>
   <div class="champ"><label>Voix</label><select id="voix"></select></div><div class="champ"><label>Vitesse <span id="vv">${Number(E.vitesse).toFixed(1)}</span>×</label><input type="range" id="vit" min="0.6" max="1.6" step="0.05" value="${E.vitesse}" style="width:100%;accent-color:#7c5cff"></div><div class="aide" id="aideVoix"></div>
   <button class="btn" id="aEcoute">🔊 Écouter la voix</button><button class="btn" id="aMicro">🎙 Autoriser et tester le micro</button><div class="aide" id="aMic"></div>`}
-  if(n===3){titre='Mon cerveau';peutPasser=true;corps=`<p class="doux">C'est lui qui réfléchit, écrit le code et dirige les agents. Choisis-en un : une clé gratuite se crée en 1 minute.</p><div id="aMot">${['groq','gemini','pollinations','openrouter','pc'].map(id=>`<div class="carte-m ${E.moteur===id&&(aCle(id)||id==='pc')?'on':''}" data-m="${id}"><span class="r"></span><div><b>${esc(MOTEURS[id].nom)}${id==='groq'?' · recommandé':''}</b><span>${esc(MOTEURS[id].desc)}${aCle(id)?' — <i style="color:var(--ok)">clé enregistrée ✓</i>':''}</span></div></div>`).join('')}</div><div id="aForm"></div><p class="aide">Sans clé, Clipia utilise le moteur « Libre » : il marche, mais très lentement et sans garantie.</p>`}
+  if(n===3){titre='Mon cerveau';peutPasser=true;corps=`<p class="doux">C'est lui qui réfléchit, écrit le code et dirige les agents. Choisis-en un : une clé gratuite se crée en 1 minute.</p><div id="aMot">${['groq','gemini','zai','pollinations','openrouter','pc'].map(id=>`<div class="carte-m ${E.moteur===id&&(aCle(id)||id==='pc')?'on':''}" data-m="${id}"><span class="r"></span><div><b>${esc(MOTEURS[id].nom)}${id==='groq'?' · recommandé':id==='zai'?' · facultatif · code':''}</b><span>${esc(MOTEURS[id].desc)}${aCle(id)?' — <i style="color:var(--ok)">clé enregistrée ✓</i>':''}</span></div></div>`).join('')}</div><div id="aForm"></div><p class="aide">Sans clé, Clipia utilise le moteur « Libre » : il marche, mais très lentement et sans garantie.</p>`}
   if(n===4){titre='Mes pouvoirs';peutPasser=true;const img=aCle('pollinations')||aCle('hf');corps=`<p class="doux">Voici ce que je saurai faire une fois ton cerveau relié :</p>
   <div class="carte-m on" style="cursor:default"><span class="r"></span><div><b>💻 Code</b><span>Applis, jeux, sites — avec aperçu et enregistrement.</span></div></div>
   <div class="carte-m on" style="cursor:default"><span class="r"></span><div><b>🎵 Musique</b><span>Je compose sur le téléphone, sans service externe.</span></div></div>

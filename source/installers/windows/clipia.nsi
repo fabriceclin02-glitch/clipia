@@ -35,6 +35,12 @@ Section "Kodi + pack Clipia (centre multimédia, recommandé)"
   SetOutPath "$INSTDIR"
 SectionEnd
 
+Section /o "GLM-5.2 de Z.ai pour coder (facultatif, payant à l'usage)"
+  DetailPrint "Ouverture de la page Z.ai pour créer ta clé API…"
+  ExecShell "open" "https://z.ai/manage-apikey/apikey-list"
+  DetailPrint "Colle ta clé dans Clipia : étape « GLM-5.2 de Z.ai » de l'assistant de démarrage, ou Réglages."
+SectionEnd
+
 !ifdef LOGICIELS
 !define MUI_COMPONENTSPAGE_TEXT_TOP "Clipia est toujours installé. Coche en plus les logiciels libres que tu veux (téléchargés par Windows via winget : Internet requis, aucune clé). Tu pourras en ajouter plus tard dans Clipia > Logithèque."
 !insertmacro MUI_PAGE_COMPONENTS
