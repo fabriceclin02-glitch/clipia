@@ -13,7 +13,7 @@ export function installerLicence({ el, esc, API }) {
     if (document.getElementById('dev-ov')) return;
     let e = {}; try { e = await fetch(API + '/api/licence/etat').then(x => x.json()); } catch {}
     const f = el(`<div id="dev-ov" role="dialog" aria-modal="true" aria-label="Option développeur"><div class="b"><button class="x" id="dev-x" aria-label="Fermer">✕</button>
-      <img src="/assets/mascotte.svg" alt="Clipia" width="90" style="display:block;margin:-4px auto 2px"><h1 style="text-align:center">Option développeur</h1>
+      <img src="/assets/icone-192.png" alt="Logo Clipia" width="72" style="display:block;margin:-4px auto 6px;border-radius:18px"><h1 style="text-align:center">Option développeur</h1>
       <div style="text-align:center;opacity:.8">Clipia reste gratuite. Cette option ajoute les outils pour coder.</div>
       <div class="p" style="text-align:center">9,90 € <small>par mois · résiliable à tout moment</small></div>
       <ul><li>Clipia lit et améliore son propre code (avec ton accord, sauvegarde et annulation)</li><li>Serveur MCP : brancher Clipia à tes outils de code</li><li>Aide prioritaire pour tes projets</li></ul>
