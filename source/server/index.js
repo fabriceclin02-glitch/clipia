@@ -60,6 +60,7 @@ import * as noyauPerso from './noyau/personnalite.js';
 import * as noyauDemarrage from './noyau/demarrage.js';
 import * as v6 from './noyau/v6.js';
 import * as credit from './noyau/credit.js';
+import * as licence from './noyau/licence.js';
 import * as pontOC from './noyau/pont-openclaw.js';
 import * as distant from './noyau/acces-distant.js';
 import * as appareils from './noyau/appareils.js';
@@ -234,7 +235,7 @@ function executerTache(type, payload) {
 }
 
 /** Réponse à un message reçu : le pilote autonome s'en charge. */
-/* Correctif 8.8.0 — les messages reçus (WhatsApp, Telegram, Slack) passent désormais par le MÊME cerveau que le chat :
+/* Correctif 10.0.0 — les messages reçus (WhatsApp, Telegram, Slack) passent désormais par le MÊME cerveau que le chat :
    outils (images, clips, ordinateur, navigateur, agents), mémoire, bascule automatique de moteur. Avant : ancien pilote du
    studio, avec le premier moteur à clé trouvé et aucune de ces capacités. */
 const histMessagerie = new Map();
@@ -257,6 +258,9 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('access-control-allow-headers', 'content-type, authorization, stripe-signature, x-clipia-ext');
   res.setHeader('access-control-allow-methods', 'GET,POST,PUT,DELETE,OPTIONS');
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+
+  // X10 — licence à vie : sans code valide, seule l'activation répond (l'interface affiche alors l'écran d'activation).
+  if (p.startsWith('/api/') && !licence.active() && !p.startsWith('/api/licence/') && p !== '/api/version') { res.writeHead(402, { 'content-type': 'application/json; charset=utf-8' }); return res.end(JSON.stringify({ erreur: 'licence', message: 'Clipia X10 demande une licence (10 € à vie). Active-la pour continuer.', urlAchat: licence.URL_ACHAT })); }
 
   // X7 — accès distant : tout ce qui ne vient pas de l'ordinateur lui-même n'atteint que le téléphone/MCP, avec jeton.
   if (!req.headers.authorization && url.searchParams.get('k')) req.headers.authorization = 'Bearer ' + url.searchParams.get('k');   // <img>/<video> ne peuvent pas envoyer d'en-tête
@@ -304,7 +308,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '8.8.0', mode: 'opérationnel',
+        version: '10.0.0', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -625,6 +629,9 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/ext' && req.method === 'GET') return json(res, extensions.etat());
     if (p === '/api/ext/activer' && req.method === 'POST') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); try { return json(res, extensions.basculer(String(b.id || ''), Boolean(b.actif))); } catch (e) { return json(res, { erreur: e.message }, 400); } }
+    if (p === '/api/licence/etat' && req.method === 'GET') return json(res, licence.etat());
+    if (p === '/api/licence/activer' && req.method === 'POST') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); const r = licence.activer(b.email, b.code); return json(res, r.ok ? r : { ...r, erreur: r.raison }, r.ok ? 200 : 400); }
+    if (p === '/api/credit/code' && req.method === 'POST') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); const r = licence.activerRecharge(b.email, b.code, credit.crediter); return json(res, r.ok ? r : { ...r, erreur: r.raison }, r.ok ? 200 : 400); }
     if (p === '/api/credit' && req.method === 'GET') return json(res, credit.etat());
     if (p === '/api/credit/battement' && req.method === 'POST') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, credit.battement((await jbody(req)).sec)); }
     if (p === '/api/credit/acheter' && req.method === 'POST') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, credit.acheter((await jbody(req)).heures)); }
@@ -1162,7 +1169,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/valider' && req.method === 'POST') {
           const b = await jbody(req); const r = appareils.valider(String(b.code || ''), String(b.appareil || 'Téléphone'), ipTel);
           if (!r.ok) return json(res, { erreur: r.erreur }, r.code);
-          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '8.8.0' } });
+          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '10.0.0' } });
         }
         if (p === '/api/appairage/creer' && req.method === 'POST') {
           if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403);
@@ -1178,7 +1185,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/appareils' && req.method === 'GET') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { appareils: appareils.appareils(), accordsTelephone: chatTel.accordsDepuisTelephone(), actif: distant.actif() }); }
         if (p.startsWith('/api/appairage/appareils/') && req.method === 'DELETE') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { ok: appareils.revoquer(decodeURIComponent(p.split('/')[4])) }); }
         if (p === '/api/appairage/reglages' && req.method === 'POST') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); if (b.accordsTelephone !== undefined) chatTel.reglerAccordsTelephone(b.accordsTelephone); return json(res, { accordsTelephone: chatTel.accordsDepuisTelephone() }); }
-        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '8.8.0', accordsTelephone: chatTel.accordsDepuisTelephone() });
+        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '10.0.0', accordsTelephone: chatTel.accordsDepuisTelephone() });
         if (p === '/api/chat/depuis' && req.method === 'GET') {
           const r = await chatTel.depuis(Number(url.searchParams.get('seq') || 0), Number(url.searchParams.get('ms') || 0), 'principal', url.searchParams.get('init') === '1');
           return json(res, r);
@@ -1196,7 +1203,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '8.8.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '10.0.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1700,7 +1707,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.8.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '10.0.0' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)
@@ -1716,7 +1723,7 @@ function ecouteTelephone() {
 }
 if (distant.actif()) setTimeout(ecouteTelephone, 400);
 server.listen(PORT, HOST, () => {
-  /* Correctif 8.8.0 — Telegram / Slack repartent tout seuls au lancement si un jeton est enregistré (avant : muets jusqu'à un clic manuel). */
+  /* Correctif 10.0.0 — Telegram / Slack repartent tout seuls au lancement si un jeton est enregistré (avant : muets jusqu'à un clic manuel). */
   setTimeout(() => { try { const e = etatMessagerie(); if (e.configure && e.autorises.length) { const r = demarrerMessagerie((t, c) => repondreMessage(t, {}, c)); console.log('  Messagerie : écoute de ' + r.canaux.join(', ')); } } catch (err) { console.error('messagerie :', err.message); } }, 1500);
   try { travaux.reprisePostDemarrage(); planning.demarrer();
 sauvegarde.demarrer(); } catch {}

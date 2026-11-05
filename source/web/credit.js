@@ -33,13 +33,15 @@ export function installerCredit({ $, el, esc, api, toast }) {
     $('#cr-boite', fen).innerHTML = `<h2>⏱ Mon temps au cabinet de psychologues</h2>
       <div>${E.epuise ? '<b style="color:#ff8c8c">Ton temps est épuisé.</b>' : `Il te reste <b>${hm(E.restantSec)}</b>${E.enEssai ? ' sur tes <b>2 heures offertes</b>' : ''}.`}</div>
       <div class="cr-barre"><i style="width:${E.epuise ? 0 : pct}%"></i></div>
-      <p class="petit" style="font-size:12.5px;opacity:.8">Cette offre ne concerne que le <b>cabinet de psychologues</b> : tout le reste de Clipia reste libre et gratuit. Le compteur ne tourne que pendant tes séances (fenêtre ouverte et active). Après les 2 heures offertes : <b>${E.prixHeure} € l'heure</b>, en un seul paiement pour une ou plusieurs heures.</p>
+      <p class="petit" style="font-size:12.5px;opacity:.8">Ce temps ne concerne que le <b>cabinet de psychologues</b> (2 h incluses avec ta licence, puis 5 € l'heure). Le compteur ne tourne que pendant tes séances (fenêtre ouverte et active). Après les 2 heures offertes : <b>${E.prixHeure} € l'heure</b>, en un seul paiement pour une ou plusieurs heures.</p>
       <h3 style="margin:14px 0 4px">Ajouter des heures</h3>
       <div class="cr-packs">${E.packs.map(p => `<button data-h="${p.heures}" class="${p.heures === h ? 'on' : ''}"><b>${p.heures} h</b><small>${p.prix} €</small></button>`).join('')}</div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">Ou un autre nombre : <input type="number" id="cr-n" min="1" max="500" value="${h}"> h = <b id="cr-tot">${h * E.prixHeure} €</b></div>
       <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn or" id="cr-payer">Payer ${h * E.prixHeure} € (${h} h)</button><button class="btn" id="cr-x">Fermer</button></div>
       <div id="cr-msg" class="petit" style="margin-top:10px;font-size:12.5px"></div>
-      ${E.paiementActif ? '' : '<div class="petit" style="margin-top:8px;font-size:12px;opacity:.75">Paiement bientôt activé : en attendant, rien n\'est bloqué et rien n\'est débité.</div>'}`;
+      <h3 style="margin:16px 0 4px">J'ai un code de recharge</h3>
+      <div style="display:grid;gap:6px"><input id="cr-mail" type="email" placeholder="E-mail utilisé pour le paiement" style="padding:8px 10px;border-radius:9px;border:1px solid #6d4fd6;background:#0d0a28;color:#fff"><input id="cr-code" placeholder="CLIPX-XXXXX-…" style="padding:8px 10px;border-radius:9px;border:1px solid #6d4fd6;background:#0d0a28;color:#fff;font-family:monospace"><button class="btn" id="cr-ok">Ajouter mes heures</button></div>`;
+    $('#cr-ok', fen).onclick = async () => { const m = $('#cr-msg', fen); m.textContent = '…'; try { const r = await api('/api/credit/code', { method: 'POST', headers: H, body: JSON.stringify({ email: $('#cr-mail', fen).value, code: $('#cr-code', fen).value }) }); m.textContent = r.ok ? `✅ ${r.heures} h ajoutées.` : (r.raison || 'Code refusé.'); if (r.ok) charger(); } catch (e) { m.textContent = e.message || 'Code refusé.'; } };
     const maj = n => { heuresChoisies = Math.max(1, Math.min(500, Math.round(+n) || 1)); dessiner(); };
     $('#cr-boite', fen).querySelectorAll('[data-h]').forEach(b => b.onclick = () => maj(b.dataset.h));
     $('#cr-n', fen).onchange = ev => maj(ev.target.value);

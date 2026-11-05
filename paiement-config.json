@@ -1,0 +1,13 @@
+{
+  "_aide": "Colle ici tes liens de paiement Revolut (voir PAIEMENT-REVOLUT.md). Un lien vide = bouton « bientôt disponible ». Pas de mot de passe ni de clé secrète ici : uniquement des liens publics https://.",
+  "contact": "fabriceclin02@gmail.com",
+  "x10": { "prix": 10, "lien": "" },
+  "cabinet": [
+    { "heures": 1,  "prix": 5,   "lien": "" },
+    { "heures": 2,  "prix": 10,  "lien": "" },
+    { "heures": 5,  "prix": 25,  "lien": "" },
+    { "heures": 10, "prix": 50,  "lien": "" },
+    { "heures": 20, "prix": 100, "lien": "" }
+  ],
+  "commander": ""
+}

@@ -34,17 +34,25 @@ t('plan appliqué / ambigu refusé', () => {
   fs.rmSync(d, { recursive: true });
 });
 
-// 3. Le serveur démarre et répond
-const port = 4700 + Math.floor(Math.random() * 200);
-const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clipia-data-'));
-const srv = spawn(process.execPath, ['server/index.js'], { cwd: racine, env: { ...process.env, PORT: String(port), CLIPIA_DATA_DIR: dataDir }, stdio: 'ignore' });
-let vivant = false;
-for (let i = 0; i < 40 && !vivant; i++) {
-  await new Promise(r => setTimeout(r, 250));
-  try { vivant = (await fetch(`http://127.0.0.1:${port}/api/etat`)).ok; } catch {}
+// 3. Le serveur démarre et répond (licence neutralisée pour le test), puis SANS licence il doit refuser (402)
+async function lancer(env) {
+  const port = 4700 + Math.floor(Math.random() * 200);
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clipia-data-'));
+  const srv = spawn(process.execPath, ['server/index.js'], { cwd: racine, env: { ...process.env, PORT: String(port), CLIPIA_DATA_DIR: dataDir, ...env }, stdio: 'ignore' });
+  let statut = 0, licence = null;
+  for (let i = 0; i < 40 && !statut; i++) {
+    await new Promise(r => setTimeout(r, 250));
+    try { const r = await fetch(`http://127.0.0.1:${port}/api/etat`); statut = r.status; licence = await (await fetch(`http://127.0.0.1:${port}/api/licence/etat`)).json(); } catch {}
+  }
+  srv.kill();
+  await new Promise(r => { srv.once('exit', r); setTimeout(r, 1500); });
+  try { fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
+  return { statut, licence };
 }
-srv.kill();
-await new Promise(r => { srv.once('exit', r); setTimeout(r, 1500); });
-t('le serveur répond sur /api/etat', () => assert.ok(vivant, 'serveur injoignable'));
-try { fs.rmSync(dataDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 }); } catch {}
+const avec = await lancer({ CLIPIA_TEST_SANS_LICENCE: '1' });
+t('le serveur répond sur /api/etat', () => assert.equal(avec.statut, 200, 'serveur injoignable'));
+const sans = await lancer({ CLIPIA_TEST_SANS_LICENCE: '' });
+t('sans licence : l\'API est refusée (402) et l\'activation reste joignable', () => { assert.equal(sans.statut, 402); assert.equal(sans.licence?.active, false); });
+const { verifier } = await import(new URL('../server/noyau/licence.js', import.meta.url));
+t('un faux code de licence est rejeté', () => { assert.equal(verifier('CLIPX-AAAAA-BBBBB-CCCCC', 'a@b.fr').ok, false); assert.equal(verifier('n\'importe quoi'.repeat(12), 'a@b.fr').ok, false); });
 console.log(`\n${ok} vérifications réussies`);

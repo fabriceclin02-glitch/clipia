@@ -4,6 +4,7 @@
  * Tant que le paiement n'est pas configuré (version 6.0.5), rien n'est bloqué : on affiche seulement le compteur.
  */
 import { store } from '../lib/store.js';
+import { URL_CABINET } from './licence.js';
 
 export const OFFERT_SEC = 2 * 3600;
 export const PRIX_HEURE = 5;
@@ -31,7 +32,7 @@ export function etat() {
     offertSec: OFFERT_SEC, utiliseSec: c.utiliseSec, offertRestantSec: offertRestant, achatRestantSec: achatRestant, restantSec: restant,
     epuise: restant <= 0, enEssai: offertRestant > 0 && c.achatSec === 0,
     prixHeure: PRIX_HEURE, packs: PACKS, achats: c.achats.slice(-20),
-    paiementActif: p.actif && Boolean(p.lien), paiementConfigure: Boolean(p.lien), bloque: p.actif && Boolean(p.lien) && restant <= 0
+    paiementActif: true, paiementConfigure: true, bloque: restant <= 0
   };
 }
 /** Un battement d'activité (≤ 60 s à la fois : impossible de gonfler ou vider le compteur d'un coup). */
@@ -45,11 +46,8 @@ export function crediter(heures, reference = '') {
   const c = lire(); c.achatSec += Math.round(h * 3600); c.achats.push({ quand: new Date().toISOString(), heures: h, montant: h * PRIX_HEURE, reference: String(reference).slice(0, 80) });
   ecrire(c); return etat();
 }
-/** Prépare un achat : le lien de paiement est celui configuré par le vendeur (Stripe Payment Link, etc.). */
+/** Achat d'heures : page de paiement sécurisée (Revolut) du site ; le code reçu après paiement se saisit dans « Mon temps ». */
 export function acheter(heures) {
-  const h = Math.max(1, Math.min(500, Math.round(Number(heures) || 0))); const p = paiement();
-  const total = h * PRIX_HEURE;
-  if (!p.actif || !p.lien) return { ok: false, enPreparation: true, heures: h, total, message: `Le paiement n'est pas encore activé (il arrive dans la prochaine version). Rien n'est débité. ${h} h = ${total} €.` };
-  const u = new URL(p.lien); u.searchParams.set('client_reference_id', 'clipia-' + h + 'h'); u.searchParams.set('quantity', String(h));
-  return { ok: true, heures: h, total, url: u.toString() };
+  const h = Math.max(1, Math.min(500, Math.round(Number(heures) || 0)));
+  return { ok: true, heures: h, total: h * PRIX_HEURE, url: URL_CABINET + '?h=' + h };
 }

@@ -25,6 +25,7 @@ import { installerEntreprise } from './entreprise.js';
 import { installerAccueil } from './accueil.js';
 import { installerTelephone } from './telephone-vue.js';
 import { installerAudit } from './audit-vue.js';
+import { installerLicence } from './licence.js';
 import { installerDictee } from './dictee.js';
 const $ = (s, r = document) => r.querySelector(s);
 const el = (h) => {
@@ -5998,6 +5999,7 @@ installerLogitheque({ $, el, esc, api, API, VUES, toast });
 installerOpenClaw({ $, el, esc, api, API, VUES, toast });
 installerTelephone({ $, el, esc, api, API, VUES, toast });
 installerAudit({ $, el, esc, api, API, VUES, toast });
+installerLicence({ el, esc, API });
 // Bouton « Rafraîchir » toujours visible en bas à droite : au cas où la discussion se fige.
 if (!document.getElementById('btnRafraichir')) {
   document.head.append(el(`<style>#btnRafraichir{position:fixed;right:16px;bottom:16px;z-index:9999;width:46px;height:46px;border-radius:50%;border:1px solid #6d4fd6;background:#1a1450ee;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px #0008;display:grid;place-items:center}#btnRafraichir:hover{background:#4b3bb0}#btnRafraichir.tourne{animation:rafT .6s linear infinite}@keyframes rafT{to{transform:rotate(360deg)}}
