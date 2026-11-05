@@ -49,11 +49,15 @@ function sauvegarder(relatif, abs) {
   return { dossier, dest };
 }
 
+import { devActive } from './licence.js';
+const exigerDev = () => { if (!devActive()) throw new CodeError('Option développeur requise (9,90 € par mois) : https://fabriceclin02-glitch.github.io/clipia/developpeur.html'); };
+
 export const OUTILS_AUTOCODE = {
   code_clipia_lire: {
     groupe: 'autocode',
     description: 'Lit le code de Clipia elle-même (server/ ou web/). Paramètre : chemin (un fichier, ou un dossier pour le lister). Lis toujours avant de modifier.',
     async run({ chemin }) {
+      exigerDev();
       const { abs, relatif } = resoudre(chemin);
       if (!fs.existsSync(abs)) throw new CodeError('Introuvable : ' + relatif);
       if (fs.statSync(abs).isDirectory()) {
@@ -70,6 +74,7 @@ export const OUTILS_AUTOCODE = {
     groupe: 'autocode',
     description: 'Modifie ton propre code. Paramètres : chemin, ancien (passage exact à remplacer) et nouveau ; OU contenu (pour créer un fichier neuf) ; raison (une phrase) ; accord. Une copie de sauvegarde est faite et le fichier est vérifié ; la personne doit donner son accord.',
     async run({ chemin, ancien, nouveau, contenu, raison = '', accord }) {
+      exigerDev();
       const { abs, relatif } = resoudre(chemin);
       const existe = fs.existsSync(abs);
       let apres;

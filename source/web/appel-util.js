@@ -1,8 +1,8 @@
-/** Détection du mot d'appel « Clipia » dans une transcription (tolérante aux erreurs de reconnaissance). */
+/** Détection du mot d'appel « Kodi » dans une transcription (tolérante aux erreurs de reconnaissance). */
 const norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
 
-const VARIANTES = 'clipia|clippia|clipya|clipea|klipia|clipiya|clipiat|clipias|clip ia|cli pia|clip pia|cleepia|clipi a';
+const VARIANTES = 'kodi|kodie|kody|kodi|codi|codie|cody|coddy|kaudi|koudi|ko di|co di|kodi|qodi|caudi|codi';
 const APPEL = new RegExp('(?:^|\\s)(?:(?:hey|he|ok|okay|dis|salut|ohe|bonjour)\\s+)?(' + VARIANTES + ')(?=\\s|$)');
 const BRUT = new RegExp('(?:' + VARIANTES.replace(/ /g, '[\\s\\-]?') + ')(?![a-zà-ÿ])', 'i');
 

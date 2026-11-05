@@ -1,81 +1,51 @@
 {
-  "version": "10.0.0",
-  "fichiers": {
-    "windows": {
-      "nom": "Clipia-Setup-10.0.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-10.0.0-windows-x64.exe",
-      "taille": "77 Mo",
-      "sha256": "9d603ffd7f1c000f7bf3b9cc714efcaf2c53617c8535fccf26cbeca8d0b24253"
-    },
-    "portable": {
-      "nom": "Clipia-Portable-10.0.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-10.0.0-windows-x64.zip",
-      "taille": "41 Mo",
-      "sha256": "63cf0d2765c7846313f50fb8787324654341ba7004a6756ae6156f033a9fdfad"
-    },
-    "linux": {
-      "nom": "clipia_10.0.0_amd64.deb",
-      "url": "telechargements/clipia_10.0.0_amd64.deb",
-      "taille": "35 Mo",
-      "sha256": "f453927e460105be8d85f72f505f95033750b93fcec688ddcd59da060cc8a470"
-    },
-    "macos": {
-      "nom": "Clipia-10.0.0-macos.zip",
-      "url": "telechargements/Clipia-10.0.0-macos.zip",
-      "taille": "49 Mo",
-      "sha256": "2c05de76e8e38ed8159ab034afd2e7a0f43940f68f46a750f81336529afe633f"
-    },
-    "telephone": {
-      "nom": "Installer depuis Safari / Chrome",
-      "url": "app/",
-      "taille": "iPhone, iPad et Android"
-    },
-    "os": {
-      "nom": "Clipia-OS-4.0.iso (11 parties, à recoller)",
-      "parties": [
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part00"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part01"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part02"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part03"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part04"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part05"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part06"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part07"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part08"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part09"
-        },
-        {
-          "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part10"
-        }
-      ],
-      "taille": "1,06 Go en 11 parties",
-      "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
-    },
-    "android": {
-      "nom": "Clipia-8.10.0.apk",
-      "url": "telechargements/Clipia-8.10.0.apk",
-      "taille": "2.6 Mo",
-      "sha256": "012e70c05282b00351812b6849f242befb3d49a15a7d01f96a35149a2276c0b2"
-    }
+ "version": "10.1.0",
+ "fichiers": {
+  "telephone": {
+   "nom": "Installer depuis Safari / Chrome",
+   "url": "app/",
+   "taille": "iPhone, iPad et Android"
   },
-  "anciennes": []
+  "os": {
+   "nom": "Clipia-OS-4.0.iso (11 parties, à recoller)",
+   "parties": [
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part00"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part01"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part02"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part03"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part04"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part05"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part06"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part07"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part08"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part09"
+    },
+    {
+     "url": "https://github.com/fabriceclin02-glitch/clipia/raw/os-images/Clipia-OS-4.0.iso.part10"
+    }
+   ],
+   "taille": "1,06 Go en 11 parties",
+   "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
+  }
+ },
+ "anciennes": []
 }

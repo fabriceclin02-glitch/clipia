@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" role="img" aria-label="Clipi, la mascotte de Clipia">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" role="img" aria-label="Clipia, la mascotte et le logo">
 <defs>
 <radialGradient id="c" cx="40%" cy="30%" r="80%"><stop offset="0" stop-color="#b9a8ff"/><stop offset=".55" stop-color="#6d4fe8"/><stop offset="1" stop-color="#2f6fe0"/></radialGradient>
 <linearGradient id="v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfd6ff"/></linearGradient>

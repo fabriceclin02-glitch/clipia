@@ -27,7 +27,7 @@ W="$SRC/installers/windows"
 makensis -V1 -DOUT="$WORK/Clipia.exe" -DICON="$W/clipia.ico" "$W/lanceur.nsi"
 makensis -V1 -DOUT="$WORK/Quitter-Clipia.exe" -DICON="$W/clipia.ico" "$W/quitter.nsi"
 FFOPT=""; [ -f "${FFMPEG_WIN_DIR:-/home/claude/ffwin}/ffmpeg.exe" ] && FFOPT="-DFFDIR=${FFMPEG_WIN_DIR:-/home/claude/ffwin}"
-node "$SRC/installers/gen-nsis.mjs" > "$WORK/logiciels.nsh"; makensis -V1 -DLOGICIELS="$WORK/logiciels.nsh" $FFOPT -DVERSION="$VER" -DOUT="$DIST/Clipia-Setup-$VER-windows-x64.exe" -DICON="$W/clipia.ico" \
+node "$SRC/installers/gen-nsis.mjs" > "$WORK/logiciels.nsh"; makensis -V1 -DLOGICIELS="$WORK/logiciels.nsh" $FFOPT -DBMPDIR="$W" -DVERSION="$VER" -DOUT="$DIST/Clipia-Setup-$VER-windows-x64.exe" -DICON="$W/clipia.ico" \
   -DLAUNCHER="$WORK/Clipia.exe" -DQUITTER="$WORK/Quitter-Clipia.exe" -DNODE="$NODE_WIN" -DKODIPACK="$SRC/installers/kodi-pack" -DAPPDIR="$APP" -DLISEZMOI="$WORK/LISEZ-MOI.txt" -DAUDITBAT="$WORK/Audit-Clipia.bat" -DDIAG="$W/Diagnostic-installe.bat" "$W/clipia.nsi"
 
 
@@ -37,11 +37,11 @@ P="$WORK/Clipia-Portable"; rm -rf "$P"; mkdir -p "$P/runtime" "$P/donnees"
 cp -a "$APP" "$P/app"; cp "$NODE_WIN" "$P/runtime/node.exe"
 cp "$WORK/Clipia-portable.exe" "$P/Clipia.exe"; cp "$WORK/Quitter-Clipia.exe" "$P/Quitter-Clipia.exe"; sed 's/$/\r/' "$W/Diagnostic-portable.bat" > "$P/Diagnostic-Clipia.bat"; cp "$WORK/Audit-Clipia.bat" "$P/Audit-Clipia.bat"
 cat > "$P/LISEZ-MOI.txt" <<'LM'
-CLIPIA — version portable (sans installation)
+CLIPIA X10 — version portable, gratuite, prête à l'emploi (sans installation)
 
 1. Dézippe ce dossier où tu veux (Bureau, clé USB...).
 2. Double-clique Clipia.exe : Clipia démarre et s'ouvre dans ton navigateur.
-   Pour le mode appel (dire « Clipia »), utilise Chrome ou Edge.
+   Pour le mode appel (dire « Kodi »), utilise Chrome ou Edge.
 3. Pour arrêter : Quitter-Clipia.exe.
    Si quelque chose ne va pas : Diagnostic-Clipia.bat affiche le journal et les erreurs.
    IMPORTANT : extrais TOUT le zip (clic droit > Extraire tout) avant de lancer Clipia.exe ; ne le lance pas depuis WinRAR.
@@ -101,7 +101,7 @@ rm -rf "$WORK/macpack"; mkdir -p "$WORK/macpack"; cp -a "$A" "$WORK/macpack/"; c
 # .dmg : image hybride ISO9660 + HFS+ (xorriso). Non testée sur un vrai Mac.
 M="$WORK/dmg"; rm -rf "$M"; mkdir -p "$M"; cp -a "$A" "$M/"; ln -s /Applications "$M/Applications"
 cp "$WORK/LISEZ-MOI.txt" "$M/LISEZ-MOI.txt"
-xorriso -as mkisofs -V "Clipia X8 $VER" -hfsplus -iso-level 3 -J -R -o "$DIST/Clipia-$VER-macos.dmg" "$M" >/dev/null 2>&1
+xorriso -as mkisofs -V "Clipia X10 $VER" -hfsplus -iso-level 3 -J -R -o "$DIST/Clipia-$VER-macos.dmg" "$M" >/dev/null 2>&1
 
 # 5. Empreintes
 (cd "$DIST" && sha256sum Clipia-* clipia_* > SHA256SUMS.txt); ls -la "$DIST"

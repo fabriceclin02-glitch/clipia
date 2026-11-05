@@ -34,7 +34,7 @@ t('plan appliqué / ambigu refusé', () => {
   fs.rmSync(d, { recursive: true });
 });
 
-// 3. Le serveur démarre et répond (licence neutralisée pour le test), puis SANS licence il doit refuser (402)
+// 3. Le serveur démarre et répond ; Clipia est gratuite (aucun 402), l'option développeur est inactive par défaut
 async function lancer(env) {
   const port = 4700 + Math.floor(Math.random() * 200);
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'clipia-data-'));
@@ -52,7 +52,7 @@ async function lancer(env) {
 const avec = await lancer({ CLIPIA_TEST_SANS_LICENCE: '1' });
 t('le serveur répond sur /api/etat', () => assert.equal(avec.statut, 200, 'serveur injoignable'));
 const sans = await lancer({ CLIPIA_TEST_SANS_LICENCE: '' });
-t('sans licence : l\'API est refusée (402) et l\'activation reste joignable', () => { assert.equal(sans.statut, 402); assert.equal(sans.licence?.active, false); });
+t('gratuite : l\'API répond sans licence (pas de 402) et l\'option développeur est inactive', () => { assert.equal(sans.statut, 200); assert.equal(sans.licence?.active, true); assert.equal(sans.licence?.dev, false); });
 const { verifier } = await import(new URL('../server/noyau/licence.js', import.meta.url));
 t('un faux code de licence est rejeté', () => { assert.equal(verifier('CLIPX-AAAAA-BBBBB-CCCCC', 'a@b.fr').ok, false); assert.equal(verifier('n\'importe quoi'.repeat(12), 'a@b.fr').ok, false); });
 console.log(`\n${ok} vérifications réussies`);

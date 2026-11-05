@@ -1,5 +1,5 @@
 /**
- * CLIPIA X10 — licence à vie (10 €) et codes de recharge du cabinet.
+ * CLIPIA X10 — gratuite pour tous. Option développeur (9,90 €/mois, PayPal) et codes de recharge du cabinet.
  * Pas de serveur, pas de compte : un code signé (Ed25519) vérifié ICI avec la clé publique embarquée.
  * Seul le vendeur possède la clé privée (outils/licence.mjs) : un code ne se fabrique pas sans elle.
  * Le code est lié à l'e-mail de l'acheteur (empreinte) : un code partagé ne marche pas avec un autre e-mail.
@@ -12,8 +12,8 @@ import { fileURLToPath } from 'node:url';
 import { store } from '../lib/store.js';
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
-export const PRIX_X10 = 10;
-export const URL_ACHAT = 'https://fabriceclin02-glitch.github.io/clipia/acheter.html';
+export const PRIX_DEV = 9.9;   // option développeur, par mois (Clipia elle-même est gratuite)
+export const URL_ACHAT = 'https://fabriceclin02-glitch.github.io/clipia/developpeur.html';
 export const URL_CABINET = 'https://fabriceclin02-glitch.github.io/clipia/cabinet.html';
 const ALPHA = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';   // base 32 de Crockford (sans I, L, O, U)
 
@@ -33,25 +33,41 @@ export function verifier(code, email) {
     const msg = brut.subarray(0, 13), sig = brut.subarray(13, 77);
     if (!crypto.verify(null, msg, clePublique(), sig)) return { ok: false, raison: 'Code invalide.' };
     if (!crypto.timingSafeEqual(msg.subarray(6, 10), empreinteEmail(email))) return { ok: false, raison: 'Ce code n\'a pas été émis pour cet e-mail. Utilise l\'adresse avec laquelle tu as payé.' };
-    const t = msg[0]; if (t !== 1 && t !== 2) return { ok: false, raison: 'Type de code inconnu.' };
-    return { ok: true, type: t === 1 ? 'x10' : 'heures', id: msg.subarray(1, 6).toString('hex'), heures: msg[10] };
+    const t = msg[0]; if (t !== 1 && t !== 2 && t !== 3) return { ok: false, raison: 'Type de code inconnu.' };
+    return { ok: true, type: t === 1 ? 'x10' : t === 2 ? 'heures' : 'dev', id: msg.subarray(1, 6).toString('hex'), heures: msg[10], jour: msg.readUInt16BE(11) };
   } catch (e) { return { ok: false, raison: 'Code illisible.' }; }
 }
 
 const lire = () => store.setting('licence') || null;
 export const sansLicenceAutorise = () => process.env.CLIPIA_TEST_SANS_LICENCE === '1';
-export function active() { return sansLicenceAutorise() || Boolean(lire()?.id); }
-export function etat() { const l = lire(); return { active: active(), depuis: l?.quand || null, email: l?.email ? l.email.replace(/^(.).*(@.*)$/, '$1•••$2') : null, prix: PRIX_X10, urlAchat: URL_ACHAT }; }
+/** Clipia est gratuite : plus aucun verrou. Seule l'option développeur (ci-dessous) se débloque par un code. */
+export function active() { return true; }
+const JOUR0 = Date.UTC(2026, 0, 1);
+/** Option développeur : code « mois » (1 à 12). Valable 31 jours par mois à partir du jour d'émission du code. */
+export function dev() {
+  if (sansLicenceAutorise()) return { actif: true, jusqu: null };
+  const l = store.setting('option-dev'); if (!l?.fin) return { actif: false, jusqu: null };
+  return { actif: Date.now() < l.fin, jusqu: new Date(l.fin).toISOString().slice(0, 10) };
+}
+export const devActive = () => dev().actif;
+export function etat() { const d = dev(); return { active: true, gratuite: true, dev: d.actif, devJusqu: d.jusqu, prixDev: PRIX_DEV, urlAchat: URL_ACHAT }; }
 
 const essais = new Map();   // anti-force brute : 8 essais / 10 min
 function limite() { const t = Date.now(); const a = (essais.get('g') || []).filter(x => t - x < 600000); if (a.length >= 8) return true; a.push(t); essais.set('g', a); return false; }
 
 export function activer(email, code) {
   if (limite()) return { ok: false, raison: 'Trop d\'essais. Réessaie dans quelques minutes.' };
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(email || ''))) return { ok: false, raison: 'Entre l\'e-mail utilisé pour le paiement.' };
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(email || ''))) return { ok: false, raison: 'Entre l\'e-mail utilisé pour le paiement PayPal.' };
   const v = verifier(code, email); if (!v.ok) return v;
-  if (v.type !== 'x10') return { ok: false, raison: 'Ce code est une recharge du cabinet : saisis-le dans « Mon temps » (⏱).' };
-  store.setting('licence', { id: v.id, email: String(email).trim().toLowerCase(), quand: new Date().toISOString() });
+  if (v.type !== 'dev') return { ok: false, raison: v.type === 'heures' ? 'Ce code est une recharge du cabinet : saisis-le dans « Mon temps » (⏱).' : 'Ce code n\'est pas un code de l\'option développeur.' };
+  const mois = Math.max(1, Math.min(12, v.heures || 1));
+  const fin = JOUR0 + (v.jour + 31 * mois) * 86400000;
+  const deja = store.setting('option-dev-codes') || [];
+  if (deja.includes(v.id)) return { ok: false, raison: 'Ce code a déjà été utilisé.' };
+  if (Date.now() > fin) return { ok: false, raison: 'Ce code est expiré. Renouvelle ton abonnement.' };
+  const actuelle = store.setting('option-dev')?.fin || 0;
+  store.setting('option-dev-codes', [...deja, v.id].slice(-200));
+  store.setting('option-dev', { fin: Math.max(fin, actuelle), email: String(email).trim().toLowerCase(), quand: new Date().toISOString() });
   return { ok: true, ...etat() };
 }
 
@@ -59,7 +75,7 @@ export function activer(email, code) {
 export function activerRecharge(email, code, crediter) {
   if (limite()) return { ok: false, raison: 'Trop d\'essais. Réessaie dans quelques minutes.' };
   const v = verifier(code, email); if (!v.ok) return v;
-  if (v.type !== 'heures') return { ok: false, raison: 'Ce code est une licence : saisis-le à l\'activation.' };
+  if (v.type !== 'heures') return { ok: false, raison: 'Ce code n\'est pas une recharge du cabinet.' };
   const deja = store.setting('recharges-utilisees') || [];
   if (deja.includes(v.id)) return { ok: false, raison: 'Ce code a déjà été utilisé.' };
   store.setting('recharges-utilisees', [...deja, v.id].slice(-500));

@@ -1,13 +1,38 @@
 {
-  "_aide": "Colle ici tes liens de paiement Revolut (voir PAIEMENT-REVOLUT.md). Un lien vide = bouton « bientôt disponible ». Pas de mot de passe ni de clé secrète ici : uniquement des liens publics https://.",
+  "_aide": "Clipia est gratuite. L'option développeur (9,90 €/mois) se paie par abonnement PayPal vers le compte ci-dessous. Le cabinet garde ses liens Revolut. Uniquement des liens publics https://, jamais de mot de passe ni de clé.",
   "contact": "fabriceclin02@gmail.com",
-  "x10": { "prix": 10, "lien": "" },
+  "dev": {
+    "prix": 9.9,
+    "periode": "mois",
+    "paypal": "chocos08@gmail.com",
+    "lien": "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=chocos08%40gmail.com&item_name=Clipia%20-%20Option%20d%C3%A9veloppeur&currency_code=EUR&a3=9.90&p3=1&t3=M&src=1&sra=1&no_note=1&lc=FR&return=https%3A%2F%2Ffabriceclin02-glitch.github.io%2Fclipia%2Fmerci.html&cancel_return=https%3A%2F%2Ffabriceclin02-glitch.github.io%2Fclipia%2Fdeveloppeur.html"
+  },
   "cabinet": [
-    { "heures": 1,  "prix": 5,   "lien": "" },
-    { "heures": 2,  "prix": 10,  "lien": "" },
-    { "heures": 5,  "prix": 25,  "lien": "" },
-    { "heures": 10, "prix": 50,  "lien": "" },
-    { "heures": 20, "prix": 100, "lien": "" }
+    {
+      "heures": 1,
+      "prix": 5,
+      "lien": ""
+    },
+    {
+      "heures": 2,
+      "prix": 10,
+      "lien": ""
+    },
+    {
+      "heures": 5,
+      "prix": 25,
+      "lien": ""
+    },
+    {
+      "heures": 10,
+      "prix": 50,
+      "lien": ""
+    },
+    {
+      "heures": 20,
+      "prix": 100,
+      "lien": ""
+    }
   ],
   "commander": ""
 }

@@ -1,6 +1,6 @@
 ; Clipia — installeur Windows (sans droits administrateur, installé pour l'utilisateur courant)
 Unicode true
-Name "Clipia X8 ${VERSION}"
+Name "Clipia X10 ${VERSION}"
 OutFile "${OUT}"
 InstallDir "$LOCALAPPDATA\Programs\Clipia"
 RequestExecutionLevel user
@@ -9,7 +9,12 @@ SetCompressor /SOLID lzma
 !include "LogicLib.nsh"
 !define MUI_ICON "${ICON}"
 !define MUI_UNICON "${ICON}"
-!define MUI_WELCOMEPAGE_TEXT "Clipia X8 est un studio créatif IA : image, vidéo, musique, texte, projets et agents.$\r$\n$\r$\nCette installation embarque tout ce qu'il faut (pas besoin d'installer Node.js). Aucun droit administrateur n'est demandé.$\r$\n$\r$\nPour les modèles IA gratuits et hors ligne, installe aussi Ollama (une case à cocher à la fin te mène au téléchargement). Clipia téléchargera ensuite les modèles adaptés à ta machine, avec ton accord."
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${BMPDIR}\bienvenue.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${BMPDIR}\bienvenue.bmp"
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP "${BMPDIR}\entete.bmp"
+!define MUI_HEADERIMAGE_RIGHT
+!define MUI_WELCOMEPAGE_TEXT "Clipia X10 est gratuite : ton studio créatif IA qui écoute, réfléchit, puis crée. Dis « Kodi » et elle t'écoute.$\r$\n$\r$\nCette installation embarque tout ce qu'il faut (pas besoin d'installer Node.js) et ne demande aucun droit administrateur. Au premier lancement, un assistant plein écran te guide pas à pas."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\Clipia.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Lancer Clipia maintenant"
 !define MUI_FINISHPAGE_SHOWREADME "https://ollama.com/download/windows"
@@ -52,7 +57,7 @@ SectionEnd
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "French"
 
-Section "Clipia X8 (obligatoire)"
+Section "Clipia X10 (obligatoire)"
   SectionIn RO
   ; Ferme Clipia s'il tourne (sinon node.exe est verrouillé : « Erreur lors de l'ouverture du fichier en écriture »)
   DetailPrint "Fermeture de Clipia s'il est ouvert…"

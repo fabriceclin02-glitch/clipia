@@ -1,0 +1,35 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Option développeur — Clipia X10, 9,90 € par mois</title><meta name="description" content="Option développeur de Clipia X10 (Clipia reste gratuite) : 9,90 € par mois, paiement PayPal, résiliable à tout moment."><meta name="theme-color" content="#080a1c"><link rel="icon" href="icone.png"><meta name="robots" content="index,follow"><style>
+:root{--bg:#080a1c;--carte:#11153a;--texte:#eef0ff;--doux:#a9afd6;--bord:#2a3070;--violet:#7c5cff;--bleu:#2f8cff;--cyan:#42d7ff;--ok:#43e6a8;--grad:linear-gradient(135deg,#7c5cff,#2f8cff)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1000px 600px at 80% -10%,#25207a66,transparent 60%),var(--bg);color:var(--texte);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+a{color:var(--cyan)}.c{max-width:960px;margin:0 auto;padding:0 16px}header{padding:16px 0}.logo{display:inline-flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.6px;text-decoration:none;color:var(--texte);font-size:20px}.logo img{width:30px;height:30px;border-radius:8px}
+h1{font-size:clamp(28px,5vw,44px);margin:.4em 0 .2em;line-height:1.15}.sous{color:var(--doux);max-width:640px}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin:26px 0}.carte{background:var(--carte);border:1px solid var(--bord);border-radius:20px;padding:24px}
+.prix{font-size:56px;font-weight:800;line-height:1}.prix small{font-size:15px;font-weight:500;color:var(--doux)}
+ul.l{padding:0;list-style:none;margin:16px 0}ul.l li{padding:5px 0 5px 26px;position:relative}ul.l li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+.btn{display:inline-block;border:0;border-radius:14px;padding:14px 22px;font:inherit;font-weight:700;color:#fff;background:var(--grad);cursor:pointer;text-decoration:none;width:100%;text-align:center}.btn[aria-disabled=true]{opacity:.45;cursor:not-allowed}
+.btn.sec{background:#ffffff14;border:1px solid var(--bord);width:auto}label.ck{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--doux);margin:12px 0}label.ck input{margin-top:4px;width:18px;height:18px;flex:none}
+.petit{font-size:13px;color:var(--doux)}.note{border-left:3px solid var(--violet);background:#7c5cff14;padding:10px 14px;border-radius:0 12px 12px 0;margin:16px 0;font-size:14px}.pack{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--bord);border-radius:14px;margin:8px 0;cursor:pointer;background:#ffffff08}.pack.on{border-color:var(--violet);background:#7c5cff22}.pack input{accent-color:#7c5cff}
+footer{padding:30px 0 50px;color:var(--doux);font-size:13px;border-top:1px solid #2a307055;margin-top:30px}
+</style></head><body>
+<header class="c"><a class="logo" href="index.html"><img src="icone.png" alt="">CLIPIA</a></header><main class="c">
+<img src="img/mascotte/mascotte.svg" alt="Clipia, la mascotte et le logo" width="150" style="float:right;margin:0 0 0 10px"><h1>Option développeur<br><span style="background:var(--grad);-webkit-background-clip:text;color:transparent">9,90 € par mois.</span></h1>
+<p class="sous">Clipia X10 est <b>gratuite</b> pour tout le monde. L'option développeur ajoute les outils pour coder avec Clipia. Abonnement mensuel PayPal, résiliable quand tu veux.</p>
+<div class="grille">
+ <div class="carte"><div class="prix">9,90 €<small> &nbsp;TTC · par mois</small></div>
+  <ul class="l"><li>Clipia lit et améliore son propre code (avec ton accord, sauvegarde et annulation en un clic)</li><li>Serveur MCP : branche Clipia à tes outils de développement</li><li>Aide pour tes projets de code</li><li>Clipia complète reste gratuite, avec ou sans l'option</li></ul>
+  <label class="ck"><input type="checkbox" id="cgv"><span>J'ai lu et j'accepte les <a href="cgv.html" target="_blank" rel="noopener">conditions de vente</a>.</span></label>
+  <label class="ck"><input type="checkbox" id="ret"><span>Je demande l'accès immédiat au contenu numérique et je reconnais perdre mon droit de rétractation dès la livraison du code.</span></label>
+  <a class="btn" id="payer" href="#" aria-disabled="true" rel="noopener">S'abonner avec PayPal — 9,90 € / mois</a>
+  <p class="petit" id="info" style="margin-top:10px"></p></div>
+ <div class="carte"><h2 style="margin-top:0">Comment ça marche</h2>
+  <ol style="padding-left:20px;color:var(--doux)"><li><b style="color:var(--texte)">Tu t'abonnes</b> sur la page sécurisée de PayPal. Utilise l'e-mail de ton compte PayPal : le code y est lié.</li><li><b style="color:var(--texte)">Tu reçois ton code</b> par e-mail (<span id="delai">sous 24 h, souvent en quelques minutes</span>). Un nouveau code est envoyé à chaque mois payé.</li><li><b style="color:var(--texte)">Tu l'actives</b> dans Clipia : bouton « &lt;/&gt; Dév » en bas de l'écran, e-mail + code. L'option reste active 31 jours par mois payé.</li></ol>
+  <div class="note">Le code est lié à l'e-mail du paiement. Pour résilier : dans PayPal, « Paiements automatiques » → Clipia → Annuler. Besoin d'aide : <a id="mail" href="mailto:fabriceclin02@gmail.com">fabriceclin02@gmail.com</a>.</div></div>
+</div>
+<script>
+(async()=>{let c={dev:{prix:9.9,lien:''},contact:''};try{c=await (await fetch('paiement-config.json',{cache:'no-store'})).json()}catch{}
+const b=document.getElementById('payer'),a=document.getElementById('cgv'),r=document.getElementById('ret'),i=document.getElementById('info');
+if(c.contact){const m=document.getElementById('mail');m.href='mailto:'+c.contact;m.textContent=c.contact}
+const maj=()=>{const ok=a.checked&&r.checked&&c.dev&&c.dev.lien;b.setAttribute('aria-disabled',ok?'false':'true');b.href=ok?c.dev.lien:'#';b.target=ok?'_blank':'';
+ i.textContent=!(c.dev&&c.dev.lien)?'Le paiement va ouvrir très bientôt.':(a.checked&&r.checked?'':'Coche les deux cases pour continuer.')};
+a.onchange=r.onchange=maj;b.onclick=e=>{if(b.getAttribute('aria-disabled')==='true')e.preventDefault()};maj()})();
+</script></main><footer class="c"><a href="index.html">Accueil</a> · <a href="cgv.html">Conditions de vente &amp; mentions légales</a> · Paiement sécurisé par PayPal : Clipia ne voit ni ne stocke aucune donnée bancaire.</footer></body></html>
