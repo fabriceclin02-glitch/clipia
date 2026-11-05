@@ -83,6 +83,19 @@ public class MainActivity extends AppCompatActivity {
     private static final int DEMANDE_MICRO = 4201;
     private static final int DEMANDE_PERM = 4202;
     private boolean assistEnAttente = false;
+    private String pairFrag = null;   // lien clipia://pair?... reçu en scannant le QR code du PC
+
+    private boolean capterPair(Intent in) {
+        if (in == null) return false;
+        Uri d = in.getData();
+        if (d != null && "clipia".equals(d.getScheme()) && "pair".equals(d.getHost())) {
+            String frag = d.getEncodedQuery() != null ? d.getEncodedQuery() : (d.getFragment() == null ? "" : d.getFragment());
+            pairFrag = frag;
+            if (vue != null) versJs("window.__clipiaPair&&window.__clipiaPair(" + org.json.JSONObject.quote(frag) + ")");
+            return true;
+        }
+        return false;
+    }
 
     private WebView vue;
     private View horsLigne;
@@ -136,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
         s.setDatabaseEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
+        s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);   // images, vidéos et sons du PC (réseau local, http) dans la discussion « Mon PC »
         s.setLoadWithOverviewMode(true);
         s.setUseWideViewPort(true);
         s.setSupportZoom(false);
@@ -234,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         if (!reseauPresent()) { montrerHorsLigne(true); return; }
         montrerHorsLigne(false);
         if (estAssist(getIntent())) assistEnAttente = true;
+        capterPair(getIntent());
         vue.loadUrl(ACCUEIL);
     }
 
@@ -429,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        if (capterPair(intent)) return;
         Uri d = intent.getData();
         if (d != null && "clipia".equals(d.getScheme()) && "oauth".equals(d.getHost()) && vue != null) {
             String frag = d.getFragment() == null ? "" : d.getFragment();
@@ -493,6 +509,9 @@ public class MainActivity extends AppCompatActivity {
     // Pont expose a la page
     // ------------------------------------------------------------------
     private class Pont {
+
+        @JavascriptInterface
+        public String pairEnAttente() { String f = pairFrag; pairFrag = null; return f == null ? "" : f; }
 
         @JavascriptInterface
         public String version() { return "8.6.0"; }

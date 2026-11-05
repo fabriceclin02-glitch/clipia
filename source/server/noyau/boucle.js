@@ -126,6 +126,7 @@ Chaque étape : un titre court, et un détail précis (quoi cliquer, quoi taper,
 
 COMMENT TU T'EN SERS
 - Si une réponse en mots suffit, tu réponds en mots. Aucun outil pour une conversation.
+- Avant de créer une image, une vidéo, une musique ou un clip : tu écris UNE phrase qui dit ce que tu comprends de la demande et quel moteur tu vas utiliser, et pourquoi (selon ce qui est demandé : réalisme, animation, durée, image de départ, gratuit ou payant). Puis tu lances l'outil ; le résultat s'affichera dans la conversation.
 - Pour agir, tu écris une phrase courte (ce que tu fais), puis UN SEUL bloc :
 \`\`\`action
 {"outil":"nom","parametres":{...}}
@@ -364,6 +365,8 @@ async function executer(nom, params, projet, onEvent, preuves, etapes, cadre = {
   const preuve = { outil: nom, ok: true, preuve: sortie.preuve || null };
   preuves.push(preuve);
   if (sortie.effet) onEvent({ type: 'effet', outil: nom, ...sortie.effet });
+  if (sortie.donnees && typeof sortie.donnees === 'object' && sortie.donnees.moteur)
+    onEvent({ type: 'moteur', outil: nom, moteur: String(sortie.donnees.moteur).slice(0, 80), raison: String(sortie.donnees.raison || '').slice(0, 300) });
   if (sortie.donnees && typeof sortie.donnees === 'object' && sortie.donnees.url)
     onEvent({ type: 'effet', outil: nom, genre: 'media', url: String(sortie.donnees.url), nom: sortie.donnees.nom ? String(sortie.donnees.nom) : undefined });
   onEvent({ type: 'resultat', outil: nom, ok: true, resultat: String(sortie.resume || '').slice(0, 400), preuve: sortie.preuve || null });

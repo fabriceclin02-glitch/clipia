@@ -7,6 +7,7 @@ import os from 'node:os';
 import { createRequire } from 'node:module';
 import { vault } from '../lib/vault.js';
 import { store } from '../lib/store.js';
+import * as appareils from './appareils.js';
 
 const require = createRequire(import.meta.url);
 export const actif = () => store.setting('acces-distant') === true;
@@ -20,7 +21,8 @@ export const activer = (v) => { store.setting('acces-distant', Boolean(v)); retu
 export function jetonValide(h) {
   if (!actif()) return false;
   const m = /^Bearer\s+(\S+)$/i.exec(String(h || '')); const a = Buffer.from(m ? m[1] : ''), b = Buffer.from(jeton());
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
+  if (a.length === b.length && crypto.timingSafeEqual(a, b)) return true;
+  return Boolean(m && appareils.parJeton(m[1]));       // jeton propre à un téléphone appairé par QR code
 }
 const LOCAUX = new Set(['127.0.0.1', '::1', '::ffff:127.0.0.1']);
 export function estDistant(req) {
@@ -28,7 +30,7 @@ export function estDistant(req) {
   const tunnel = req.headers['x-forwarded-for'] || req.headers['cf-connecting-ip'] || req.headers.forwarded || req.headers['x-forwarded-host'];
   return !LOCAUX.has(req.socket.remoteAddress) || Boolean(tunnel) || !(h === 'localhost' || h === '127.0.0.1' || h === '::1' || h.endsWith('.localhost'));
 }
-export const cheminTelephone = (p) => p === '/telephone' || p === '/telephone/' || p === '/telephone.webmanifest' || p === '/telephone-sw.js' || p === '/telephone-icone.svg' || p === '/mcp' || p.startsWith('/api/telephone/');
+export const cheminTelephone = (p) => p === '/telephone' || p === '/telephone/' || p === '/telephone.webmanifest' || p === '/telephone-sw.js' || p === '/telephone-icone.svg' || p === '/mcp' || p.startsWith('/api/telephone/') || p.startsWith('/api/chat/') || p === '/api/appairage/valider' || p.startsWith('/media/') || p === '/chat-pc.js';
 export function adresses(port) {
   const sortie = [];
   for (const [nom, l] of Object.entries(os.networkInterfaces())) for (const a of l || []) if (a.family === 'IPv4' && !a.internal) sortie.push({ interface: nom, url: `http://${a.address}:${port}` });

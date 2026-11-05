@@ -8,7 +8,7 @@ const FILE = path.join(DATA_DIR, 'clipia.json');
 const EMPTY = {
   users: [], sessions: [], projects: [], jobs: [], assets: [],
   connections: [], events: [], usage: [], settings: {}, workflows: [],
-  atelier_projets: [], atelier_agents: [], atelier_executions: [], archive: [], conversations: [], workflows: [], autonome_runs: [], travaux: []
+  chat_msgs: [], atelier_projets: [], atelier_agents: [], atelier_executions: [], archive: [], conversations: [], workflows: [], autonome_runs: [], travaux: []
 };
 
 let db = null;

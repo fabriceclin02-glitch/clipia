@@ -22,6 +22,7 @@ body{background:var(--bg);color:var(--texte);font:16px/1.5 system-ui,-apple-syst
 .vue{position:fixed;inset:0 0 calc(var(--tab) + var(--bas)) 0;z-index:2;display:none;flex-direction:column;pointer-events:none}
 .vue.on{display:flex}
 .vue>*{pointer-events:auto}
+#pMonPC{padding:var(--haut) 0 0;overflow:hidden;display:flex;flex-direction:column}#pMonPC .cpc{flex:1;min-height:0}
 .plein{background:var(--bg);pointer-events:auto;overflow-y:auto;overscroll-behavior:contain;padding:calc(var(--haut) + 14px) 16px 24px;-webkit-overflow-scrolling:touch;user-select:text;-webkit-user-select:text}
 header.h{display:flex;align-items:center;gap:10px;padding:calc(var(--haut) + 10px) 14px 6px;pointer-events:none}
 header.h>*{pointer-events:auto}
@@ -130,6 +131,7 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <!-- PARLER -->
 <section class="vue acc on" id="v-accueil"><div class="haut"><b id="accDate"></b></div><div class="panneau" id="accPanneau"></div></section>
 <section class="vue" id="v-store"><div class="plein" id="pStore"></div></section>
+<section class="vue" id="v-monpc"><div class="plein" id="pMonPC"></div></section>
 <section class="vue" id="v-clipbook"><div class="plein" id="pClipbook"></div></section>
 <section class="vue" id="v-cliptok"><div class="plein ctp" id="pClipTok"></div></section>
 <section class="vue" id="v-studio"><div class="plein" id="pStudio"></div></section>
@@ -191,5 +193,7 @@ p.doux,.aide{color:var(--doux);font-size:14px;margin:0 0 12px}.aide{font-size:12
 <script src="js/social.js"></script>
 <script src="js/google.js"></script>
 <script src="js/kodi.js"></script>
+<script src="js/chat-ui.js"></script>
+<script src="js/chat-pc.js"></script>
 </body>
 </html>

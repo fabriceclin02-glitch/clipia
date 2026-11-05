@@ -1,0 +1,14 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Clipia — Connecter mon téléphone</title>
+<style>body{margin:0;font:16px system-ui,sans-serif;background:#070b16;color:#eef;display:grid;place-items:center;min-height:100vh;padding:20px;box-sizing:border-box}main{max-width:420px;text-align:center;display:grid;gap:14px}
+a.b{display:block;padding:15px;border-radius:14px;background:#00a884;color:#fff;font-weight:700;text-decoration:none}a.s{color:#9db4ff}p{margin:0;color:#aab}.orb{width:84px;height:84px;border-radius:50%;margin:0 auto;background:radial-gradient(circle at 32% 28%,#e6dcff,#7c5cff 45%,#241470);box-shadow:0 0 30px #7c5cff88}</style></head>
+<body><main><div class="orb"></div><h1 style="margin:0">Connecter mon téléphone</h1>
+<p id="m">Ouverture de l'application Clipia…</p>
+<a class="b" id="o" href="#">Ouvrir dans l'application Clipia</a>
+<p>L'application n'est pas installée ? <a class="s" href="../#telecharger">Télécharge Clipia pour Android</a>.</p>
+<p style="font-size:13px">iPhone ou sans application : scanne plutôt le <b>deuxième QR code</b> (« Navigateur du téléphone ») affiché sur l'ordinateur.</p></main>
+<script>
+const h=location.hash.slice(1);const lien='clipia://pair?'+h;
+document.getElementById('o').href=lien;
+if(!/[?&]?h=/.test(h)||!/c=/.test(h)){document.getElementById('m').textContent='Lien incomplet : affiche un nouveau QR code sur ton ordinateur (Clipia → Téléphone → Connecter mon téléphone).';document.getElementById('o').style.display='none'}
+else setTimeout(()=>{location.href=lien},500);
+</script></body></html>

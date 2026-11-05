@@ -144,7 +144,7 @@ export const PROVIDERS = [
     models:['openai','openai-fast','mistral','llama','deepseek','qwen-coder'],
     docs:'https://pollinations.ai',
     note:'Service communautaire gratuit : aucun compte, aucune clé. En contrepartie, pas de garantie de disponibilité ni de confidentialité.' },
-  { id:'pollinations-image', label:'Pollinations Images (sans clé)', kind:'image', tier:'sans-cle',
+  { id:'pollinations-image', label:'Pollinations Images (sans clé)', kind:'image', tier:'sans-cle', urlKey:'POLLINATIONS_IMAGE_URL',
     base:'https://image.pollinations.ai', sansCle:true,
     modalities:['image'], models:['flux','turbo','kontext'],
     docs:'https://pollinations.ai',

@@ -33,12 +33,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { DATA_DIR } from '../lib/env.js';
+import { DATA_DIR, ffmpegBin } from '../lib/env.js';
 import { enqueue, subscribe, getJob } from '../jobs/queue.js';
 import { store } from '../lib/store.js';
 import * as graphe from '../cerveau/graphe.js';
 import * as archive from './archive.js';
 import { pour, chaine } from './demarrage.js';
+import { PROVIDERS } from '../providers/registry.js';
+import { credential } from '../providers/gateway.js';
+import { MEDIA_DIR } from '../providers/media.js';
 import { OUTILS as OUTILS_CODE, PROJETS_DIR, creerProjet, AgentError } from '../agent/tools.js';
 import { OUTILS_MACHINE } from './machine.js';
 import { OUTILS_NAVIGATEUR } from './navigateur.js';
@@ -141,7 +144,8 @@ export const OUTILS = {
       const f = fichiersDe(r.resultat);
       return { resume: `Image générée${f.length ? ` : ${path.basename(f[0])}` : ''}`,
                preuve: f.length ? preuveFichier(f[0]) : preuveTache(r.job),
-               donnees: { url: r.resultat?.url, fichier: f[0] } };
+               donnees: { url: r.resultat?.[0]?.url || r.resultat?.url, fichier: f[0], moteur: (PROVIDERS.find(x => x.id === r.job?.payload?.provider)?.label) || r.job?.payload?.provider || undefined,
+                          raison: raisons.length ? `les moteurs précédents ont échoué (${raisons.join(' ; ').slice(0, 160)})` : 'premier moteur disponible, essayé en premier (gratuit d\'abord)' } };
     }
   },
 
@@ -158,6 +162,53 @@ export const OUTILS = {
       return { resume: `Clip monté${f.length ? ` : ${path.basename(f[0])}` : ''}`,
                preuve: f.length ? preuveFichier(f[0]) : preuveTache(r.job),
                donnees: { url: r.resultat?.url, fichier: f[0], detail: r.resultat?.detail } };
+    }
+  },
+
+  video_creer: {
+    groupe: 'créer',
+    besoin: 'montage',
+    description: 'Crée une vidéo à partir d\'une description. Choisit TOUT SEUL le meilleur moteur disponible selon la demande (Luma, Runway, fal.ai/Kling si une clé est enregistrée ; sinon diaporama animé gratuit fabriqué avec des images générées + FFmpeg). Paramètres : description (anglais de préférence), duree (secondes, 5 par défaut), image (URL d\'une image de départ, facultatif), style (cinéma, animation, réaliste… facultatif).',
+    async run({ description, duree = 5, image = '', style = '' }) {
+      if (!description) throw new AgentError('Il faut décrire la vidéo.');
+      const dispo = PROVIDERS.filter(p => p.kind === 'video' && p.id !== 'ffmpeg' && credential(p)).map(p => p.id);
+      const prompt = String(description + (style ? ', ' + style : '')).slice(0, 900);
+      /* Choix du moteur selon la demande */
+      const ordre = image ? ['runway', 'luma', 'fal'] : /anim|cartoon|dessin|manga|3d/i.test(style + description) ? ['fal', 'luma'] : ['luma', 'fal'];
+      const choix = ordre.find(x => dispo.includes(x));
+      if (choix) {
+        const pourquoi = { luma: image ? 'Luma anime très bien une image de départ' : 'Luma Dream Machine : le plus naturel pour du texte vers vidéo réaliste',
+                           runway: 'Runway Gen-4 : le plus fidèle pour animer une image fournie', fal: 'fal.ai (Kling) : bon pour l\'animation et les mouvements marqués' }[choix];
+        const r = await attendreTache('video', { provider: choix, prompt, duration: Math.min(10, Math.max(3, +duree || 5)), imageUrl: image || null, ratio: '16:9' }, { plafondMs: 600000 });
+        if (r.ok) {
+          const f = fichiersDe(r.resultat);
+          return { resume: `Vidéo créée avec ${choix}`, preuve: f.length ? preuveFichier(f[0]) : preuveTache(r.job),
+                   donnees: { url: r.resultat?.url, fichier: f[0], moteur: choix, raison: pourquoi } };
+        }
+        /* le moteur payant a échoué : on le dit, puis on bascule sur le gratuit */
+        var echec = `${choix} a échoué (${String(r.pourquoi).slice(0, 140)})`;
+      }
+      /* Moteur gratuit : diaporama animé (images générées + FFmpeg) */
+      const n = Math.min(5, Math.max(3, Math.round((+duree || 5) / 2)));
+      const angles = ['wide establishing shot', 'medium shot, dynamic angle', 'close-up detail', 'atmospheric cinematic shot', 'final wide shot, golden light'];
+      const imgs = [];
+      for (let i = 0; i < n; i++) {
+        const r = await OUTILS.image_creer.run({ description: `${prompt}, ${angles[i]}, cinematic`, largeur: 1280, hauteur: 720 });
+        if (r.donnees?.fichier) imgs.push(r.donnees.fichier);
+      }
+      if (imgs.length < 2) throw new AgentError(`Impossible de fabriquer la vidéo : ${echec ? echec + ' ; ' : ''}moins de 2 images ont pu être générées (Internet ou clé d\'image manquants).`);
+      const sec = 3, out = path.join(MEDIA_DIR, `video_${crypto.randomBytes(6).toString('hex')}.mp4`);
+      const args = ['-y']; imgs.forEach(f => args.push('-i', f));   // une seule image par plan : zoompan produit lui-même les images
+      const fc = imgs.map((_, i) => `[${i}:v]scale=2560:1440:force_original_aspect_ratio=increase,crop=2560:1440,zoompan=z='min(zoom+0.0012,1.2)':d=${sec * 25}:s=1280x720:fps=25,format=yuv420p[v${i}]`).join(';')
+        + ';' + imgs.map((_, i) => `[v${i}]`).join('') + `concat=n=${imgs.length}:v=1:a=0[v]`;
+      args.push('-filter_complex', fc, '-map', '[v]', '-c:v', 'libx264', '-preset', 'veryfast', '-movflags', '+faststart', out);
+      const code = await new Promise((fin) => { const pr = spawn(ffmpegBin(), args, { windowsHide: true }); let err = ''; pr.stderr.on('data', d => err = (err + d).slice(-4000)); pr.on('error', e => fin({ c: 1, err: e.message })); pr.on('close', c => fin({ c, err })); });
+      if (code.c !== 0 || !fs.existsSync(out)) throw new AgentError('Montage impossible : ' + String(code.err).split('\n').filter(l => /rror|nvalid|ailed/i.test(l)).slice(-2).join(' · ').slice(0, 300));
+      const id = 'ast_' + crypto.randomBytes(6).toString('hex');
+      store.insert('assets', { id, file: out, ext: 'mp4', bytes: fs.statSync(out).size, url: '/media/' + path.basename(out), kind: 'video', prompt });
+      return { resume: `Vidéo créée (diaporama animé de ${imgs.length} plans, moteur gratuit)`, preuve: preuveFichier(out),
+               donnees: { url: '/media/' + path.basename(out), fichier: out, moteur: 'Diaporama animé gratuit (images IA + FFmpeg)',
+                          raison: (echec ? echec + ' ; ' : 'aucune clé vidéo (Luma, Runway, fal.ai) n\'est enregistrée ; ') + 'je fabrique donc une vraie vidéo avec des images générées et un mouvement de caméra. Pour de la vidéo IA animée, ajoute une clé dans Réglages → Clés.' } };
     }
   },
 
