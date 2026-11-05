@@ -24,6 +24,7 @@ import { installerPouvoirs } from './pouvoirs.js';
 import { installerEntreprise } from './entreprise.js';
 import { installerAccueil } from './accueil.js';
 import { installerTelephone } from './telephone-vue.js';
+import { installerAudit } from './audit-vue.js';
 import { installerDictee } from './dictee.js';
 const $ = (s, r = document) => r.querySelector(s);
 const el = (h) => {
@@ -215,6 +216,7 @@ const MENU = [
   { id:'communaute', ic:'🌍', t:'Communauté & évolution' },
   { id:'promotion', ic:'📣', t:'Promotion en 1 clic' },
   { id:'telephone', ic:'📱', t:'Téléphone & MCP' },
+  { id:'audit', ic:'🔎', t:'Audit du PC & de Clipia' },
   { id:'depanner', ic:'🩺', t:'Résoudre un problème' },
   { id:'extensions', ic:'🧩', t:'Skills & extensions' },
   { id:'temps', ic:'⏪', t:'Remonter le temps' },
@@ -5929,6 +5931,7 @@ installerDepannage({ $, el, esc, api, API, VUES, toast });
 installerLogitheque({ $, el, esc, api, API, VUES, toast });
 installerOpenClaw({ $, el, esc, api, API, VUES, toast });
 installerTelephone({ $, el, esc, api, API, VUES, toast });
+installerAudit({ $, el, esc, api, API, VUES, toast });
 installerPromotion({ $, el, esc, api, API, VUES, toast });
 installerTravaux({ $, el, esc, api, API, VUES, toast });
 installerCommunaute({ $, el, esc, api, API, VUES, toast });

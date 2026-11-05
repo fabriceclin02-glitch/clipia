@@ -54,6 +54,18 @@ SectionEnd
 
 Section "Clipia X8 (obligatoire)"
   SectionIn RO
+  ; Ferme Clipia s'il tourne (sinon node.exe est verrouillé : « Erreur lors de l'ouverture du fichier en écriture »)
+  DetailPrint "Fermeture de Clipia s'il est ouvert…"
+  nsExec::Exec 'powershell -NoProfile -WindowStyle Hidden -Command "8787..8798 | ForEach-Object { try { Invoke-WebRequest -UseBasicParsing -TimeoutSec 2 -Method POST -Headers @{\"x-clipia-accord\"=\"1\"} (\"http://127.0.0.1:\" + $_ + \"/api/systeme/quitter\") | Out-Null } catch {} }"'
+  Sleep 1200
+  nsExec::Exec 'powershell -NoProfile -WindowStyle Hidden -Command "$d=\"$INSTDIR\"; for($i=0;$i -lt 6;$i++){ $p=Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($d,[StringComparison]::OrdinalIgnoreCase) }; if(-not $p){break}; $p | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 700 }"'
+  ; Filet de sécurité : un exécutable encore verrouillé peut être renommé, puis remplacé
+  IfFileExists "$INSTDIR\runtime\node.exe" 0 +3
+    Delete "$INSTDIR\runtime\node.old"
+    Rename "$INSTDIR\runtime\node.exe" "$INSTDIR\runtime\node.old"
+  IfFileExists "$INSTDIR\outils\ffmpeg.exe" 0 +3
+    Delete "$INSTDIR\outils\ffmpeg.old"
+    Rename "$INSTDIR\outils\ffmpeg.exe" "$INSTDIR\outils\ffmpeg.old"
   SetOutPath "$INSTDIR"
   File "${LAUNCHER}"
   File "${QUITTER}"
@@ -61,6 +73,7 @@ Section "Clipia X8 (obligatoire)"
   File "/oname=Audit-Clipia.bat" "${AUDITBAT}"
   SetOutPath "$INSTDIR\runtime"
   File "${NODE}"
+  Delete /REBOOTOK "$INSTDIR\runtime\node.old"
 !ifdef FFDIR
   SetOutPath "$INSTDIR\outils"
   File "${FFDIR}\ffmpeg.exe"
@@ -91,6 +104,8 @@ SectionEnd
 Section "Uninstall"
   ExecWait 'powershell -NoProfile -WindowStyle Hidden -Command "try{Invoke-WebRequest -UseBasicParsing -Method POST -Headers @{\"x-clipia-accord\"=\"1\"} http://127.0.0.1:8787/api/systeme/quitter | Out-Null}catch{}"'
   Sleep 800
+  nsExec::Exec 'powershell -NoProfile -WindowStyle Hidden -Command "$d=\"$INSTDIR\"; Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.StartsWith($d,[StringComparison]::OrdinalIgnoreCase) -and $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue"'
+  Sleep 600
   RMDir /r "$INSTDIR\app"
   RMDir /r "$INSTDIR\runtime"
   RMDir /r "$INSTDIR\outils"
