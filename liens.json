@@ -1,29 +1,29 @@
 {
-  "version": "8.7.0",
+  "version": "8.8.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-8.7.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-8.7.0-windows-x64.exe",
+      "nom": "Clipia-Setup-8.8.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-8.8.0-windows-x64.exe",
       "taille": "77 Mo",
-      "sha256": "b5dd0dad268797f490013236064ed9d195840182cd22addda024ade944cadacf"
+      "sha256": "209727b149a8e3deb9fbff5ddfa5d90b57c1fd85f0d6bcca71af1526913a63a3"
     },
     "portable": {
-      "nom": "Clipia-Portable-8.7.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-8.7.0-windows-x64.zip",
+      "nom": "Clipia-Portable-8.8.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-8.8.0-windows-x64.zip",
       "taille": "41 Mo",
-      "sha256": "eb282a9fa4dc4f00f06e27172eeb60281e06b04f8848a9955233baf1e2cff479"
+      "sha256": "52e431265269488a9f0e08c29cdbc1cc9009d4c4d888b84c8b21a15c044042de"
     },
     "linux": {
-      "nom": "clipia_8.7.0_amd64.deb",
-      "url": "telechargements/clipia_8.7.0_amd64.deb",
-      "taille": "34 Mo",
-      "sha256": "a3403719b3aa5e334a5a416d890e85b1a4cbb0d19d1f21c95ecbdf7554677f61"
+      "nom": "clipia_8.8.0_amd64.deb",
+      "url": "telechargements/clipia_8.8.0_amd64.deb",
+      "taille": "35 Mo",
+      "sha256": "671e628f9645f10323bea7ccdd7a67dd7910c335d86973ff9bcbe1af7ad4c038"
     },
     "macos": {
-      "nom": "Clipia-8.7.0-macos.zip",
-      "url": "telechargements/Clipia-8.7.0-macos.zip",
+      "nom": "Clipia-8.8.0-macos.zip",
+      "url": "telechargements/Clipia-8.8.0-macos.zip",
       "taille": "49 Mo",
-      "sha256": "f09618800f0994655843bc6c777a75a641db45cc4aff20384c45c9a302e0f163"
+      "sha256": "09b5b61a291bc849dca092875bd5ffb7f9e8569666ca8d82cfa2a2a3cf6681a5"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",

@@ -234,7 +234,7 @@ function executerTache(type, payload) {
 }
 
 /** Réponse à un message reçu : le pilote autonome s'en charge. */
-/* Correctif 8.7.0 — les messages reçus (WhatsApp, Telegram, Slack) passent désormais par le MÊME cerveau que le chat :
+/* Correctif 8.8.0 — les messages reçus (WhatsApp, Telegram, Slack) passent désormais par le MÊME cerveau que le chat :
    outils (images, clips, ordinateur, navigateur, agents), mémoire, bascule automatique de moteur. Avant : ancien pilote du
    studio, avec le premier moteur à clé trouvé et aucune de ces capacités. */
 const histMessagerie = new Map();
@@ -304,7 +304,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '8.7.0', mode: 'opérationnel',
+        version: '8.8.0', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -739,6 +739,7 @@ const server = http.createServer(async (req, res) => {
 
     // ─── CONTRÔLE DE L'ORDINATEUR : arrêt d'urgence et état ───────────────
     if (p === '/api/ordi' && req.method === 'GET') return json(res, { actif: ordinateur.sessionActive(), secondes: ordinateur.sessionRestante() });
+    if (p === '/api/ordi/apercu' && req.method === 'GET') { if (req.headers['x-clipia-accord'] !== '1') return json(res, { erreur: "Réservé à l'interface." }, 403); try { return json(res, { url: await ordinateur.apercu() }); } catch { return json(res, { url: null }); } }
     if (p === '/api/ordi/stop' && req.method === 'POST') return json(res, { ok: true, etait: ordinateur.arreter() });
 
     // ─── CERVEAU AUTONOME : comprendre, planifier, agir, vérifier ─────────
@@ -1161,7 +1162,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/valider' && req.method === 'POST') {
           const b = await jbody(req); const r = appareils.valider(String(b.code || ''), String(b.appareil || 'Téléphone'), ipTel);
           if (!r.ok) return json(res, { erreur: r.erreur }, r.code);
-          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '8.7.0' } });
+          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '8.8.0' } });
         }
         if (p === '/api/appairage/creer' && req.method === 'POST') {
           if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403);
@@ -1177,7 +1178,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/appareils' && req.method === 'GET') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { appareils: appareils.appareils(), accordsTelephone: chatTel.accordsDepuisTelephone(), actif: distant.actif() }); }
         if (p.startsWith('/api/appairage/appareils/') && req.method === 'DELETE') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { ok: appareils.revoquer(decodeURIComponent(p.split('/')[4])) }); }
         if (p === '/api/appairage/reglages' && req.method === 'POST') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); if (b.accordsTelephone !== undefined) chatTel.reglerAccordsTelephone(b.accordsTelephone); return json(res, { accordsTelephone: chatTel.accordsDepuisTelephone() }); }
-        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '8.7.0', accordsTelephone: chatTel.accordsDepuisTelephone() });
+        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '8.8.0', accordsTelephone: chatTel.accordsDepuisTelephone() });
         if (p === '/api/chat/depuis' && req.method === 'GET') {
           const r = await chatTel.depuis(Number(url.searchParams.get('seq') || 0), Number(url.searchParams.get('ms') || 0), 'principal', url.searchParams.get('init') === '1');
           return json(res, r);
@@ -1195,7 +1196,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '8.7.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '8.8.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1268,7 +1269,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const r = await noyauBoucle.converser({
           message: String(b.message || ''), historique: Array.isArray(b.historique) ? b.historique : [],
-          vocal: Boolean(b.vocal), mode: b.mode || undefined, projet: b.projet, reprise: b.reprise || null, blanc: b.blanc === undefined ? undefined : Boolean(b.blanc),
+          vocal: Boolean(b.vocal), mode: b.mode || undefined, projet: b.projet, reprise: b.reprise || null, blanc: b.blanc === undefined ? undefined : Boolean(b.blanc), enCours: Array.isArray(b.enCours) ? b.enCours : undefined,
           chaineModeles: b.provider ? [{ provider: b.provider, model: b.model || undefined }] : undefined
         }, envoyer);
         envoyer({ type: 'termine', texte: r.texte, attente: r.attente || null, preuves: r.preuves, modele: r.modele || null });
@@ -1699,7 +1700,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.7.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '8.8.0' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)
@@ -1715,7 +1716,7 @@ function ecouteTelephone() {
 }
 if (distant.actif()) setTimeout(ecouteTelephone, 400);
 server.listen(PORT, HOST, () => {
-  /* Correctif 8.7.0 — Telegram / Slack repartent tout seuls au lancement si un jeton est enregistré (avant : muets jusqu'à un clic manuel). */
+  /* Correctif 8.8.0 — Telegram / Slack repartent tout seuls au lancement si un jeton est enregistré (avant : muets jusqu'à un clic manuel). */
   setTimeout(() => { try { const e = etatMessagerie(); if (e.configure && e.autorises.length) { const r = demarrerMessagerie((t, c) => repondreMessage(t, {}, c)); console.log('  Messagerie : écoute de ' + r.canaux.join(', ')); } } catch (err) { console.error('messagerie :', err.message); } }, 1500);
   try { travaux.reprisePostDemarrage(); planning.demarrer();
 sauvegarde.demarrer(); } catch {}

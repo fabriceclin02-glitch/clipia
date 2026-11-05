@@ -187,6 +187,19 @@ function limite() {
   if (recentes.length >= 40) throw new Error('Trop d\'actions en une minute (40 maximum). Ralentis.');
   recentes.push(t);
 }
+/** Aperçu en direct de l'écran pour la « vue de travail » : seulement pendant une session de contrôle autorisée, au plus 1 image / seconde, 4 fichiers conservés. */
+let dernierApercu = 0;
+export async function apercu() {
+  if (!sessionActive()) return null;
+  if (Date.now() - dernierApercu < 900) return null;
+  dernierApercu = Date.now();
+  const dossier = path.join(PROJETS_DIR, 'ordinateur'); fs.mkdirSync(dossier, { recursive: true });
+  const f = path.join(dossier, `apercu-${Date.now()}.png`);
+  await capturer(f);
+  if (!fs.existsSync(f)) return null;
+  try { fs.readdirSync(dossier).filter(n => n.startsWith('apercu-')).sort().slice(0, -4).forEach(n => fs.unlinkSync(path.join(dossier, n))); } catch {}
+  return urlCapture(f);
+}
 const urlCapture = f => '/api/projets/ordinateur/' + encodeURIComponent(path.basename(f));
 
 Object.assign(OUTILS, {

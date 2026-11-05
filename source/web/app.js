@@ -1720,7 +1720,7 @@ VUES.clipia = async (v) => {
     </button>
     <div class="question">Que me veux-tu ?</div>
     <div class="etat-voix" id="etat">Touchez l'orbe — je vous accueille et je vous écoute.</div>
-    <div class="etat-voix" style="font-size:12.5px;opacity:.85"><kbd style="border:1px solid #ffffff44;border-radius:6px;padding:1px 8px">Espace</kbd> = Clipia se tait et t'écoute (à tout moment) · ré-appuie pour envoyer · <label><input type="checkbox" id="espaceOn" checked> activé</label></div>
+    <div class="etat-voix aide-espace" style="font-size:12.5px;opacity:.85"><kbd id="kbdEspace" role="button" tabindex="0" title="Clique : Clipia se tait et t'écoute" style="border:1px solid #ffffff44;border-radius:6px;padding:1px 8px;cursor:pointer">Espace</kbd> = Clipia se tait et t'écoute (à tout moment) · ré-appuie pour envoyer · <label><input type="checkbox" id="espaceOn" checked> activé</label></div>
     <div style="display:flex;justify-content:center;margin:6px 0 14px">
       <button id="grosMicro" aria-pressed="false" style="display:flex;align-items:center;gap:12px;padding:16px 34px;font-size:17px;font-weight:700;color:#fff;border:0;border-radius:999px;cursor:pointer;background:linear-gradient(135deg,#7c3aed,#2563eb);box-shadow:0 8px 30px rgba(124,58,237,.45)">
         <span id="grosMicroIc" style="font-size:24px">🎙</span><span id="grosMicroTxt">Parler à Clipia</span>
@@ -1965,7 +1965,14 @@ VUES.clipia = async (v) => {
   let jointes = [];
   let vocalActif = true;
   let recognition = null, enEcoute = false;
-  let occupe = false, ctrlTour = null, ignorerFin = false;   // V5 : écoute pendant que Clipia réfléchit
+  let occupe = false, ctrlTour = null, ignorerFin = false;
+  // Deux cerveaux : l'ACCUEIL (toujours disponible, voix / clavier / souris) et les tâches qui tournent en parallèle. Plusieurs tours peuvent coexister.
+  const toursActifs = new Map();
+  const majOccupe = () => { occupe = toursActifs.size > 0; ctrlTour = occupe ? [...toursActifs.keys()].pop() : null; };
+  const commencerTour = (message) => { const c = new AbortController(); toursActifs.set(c, { message: String(message || '').slice(0, 240), debut: Date.now() }); majOccupe(); return c; };
+  const finirTour = (c) => { toursActifs.delete(c); majOccupe(); };
+  const toutArreter = () => { for (const c of [...toursActifs.keys()]) { try { c.abort(); } catch {} } toursActifs.clear(); majOccupe(); couperVoix(); };
+  const MOT_STOP_TACHE = /^\s*(clipia[\s,]*)?(stop|stoppe|arr[eê]te|annule|laisse tomber|abandonne)\b/i;   // V5 : écoute pendant que Clipia réfléchit
   // Mode « conversation vocale » : elle écoute, répond à voix haute, puis
   // réécoute sans qu'on touche à rien. Un silence ne met pas fin au tour :
   // sinon le mode s'arrêterait à la première hésitation.
@@ -2279,6 +2286,12 @@ VUES.clipia = async (v) => {
   const MOTS_STOP = /\b(clipia|clippia|stop|stoppe|attends?|arr[eê]te|tais[- ]toi|silence|ok|okay|oké|d'accord)\b/i;
   let garde = null;
   function gardeStop() { const r = garde; garde = null; if (r) { try { r.onend = null; r.onresult = null; r.onerror = null; r.abort(); } catch {} } }
+  // « Clipia ! » ou Espace pendant qu'elle travaille : l'accueil se tait et t'écoute, sans interrompre le travail en cours.
+  function reprendreLaMain() {
+    gardeStop(); couperVoix(); bip(); appelDeclenche = true;      // le travail continue en arrière-plan ; je reste disponible
+    etatOrbe('ecoute'); dire('Je t\'écoute…');
+    if (!enEcoute) setTimeout(() => { if (!enEcoute) ecouter(); }, 200);
+  }
   function interrompre() {
     gardeStop(); couperVoix(); bip();
     // « stop » ou « OK » : elle se tait aussitôt et se met à t'écouter (sans rien dire d'autre).
@@ -2399,6 +2412,7 @@ VUES.clipia = async (v) => {
           if (e.results[i].isFinal) final += t; else partiel += t;
         }
         const vu = (final + partiel).trim(); if (vu) window.__paroleUser = Date.now();
+        if (vu && (occupe || parleEnCours()) && detecterAppel(vu).trouve) couperVoix();   // « Clipia » : elle s'arrête et t'écoute
         dire(vu || 'Je vous écoute…');
         legende.textContent = vu || 'Je vous écoute…'; window.clipiaScene?.texte(vu);
         if (vu) { dlgVoir(vu); clearTimeout(minuteur); minuteur = setTimeout(() => { try { recognition.stop(); } catch {} }, 1800); }   // elle te laisse finir : 1,8 s de vrai silence
@@ -2419,9 +2433,11 @@ VUES.clipia = async (v) => {
         let t = final.trim();
         if (ignorerFin) { ignorerFin = false; return; }
         if (t && estEcho(t)) { t = ''; dire('(écho ignoré)'); }
+        if (t) { const ap = detecterAppel(t); if (ap.trouve) { t = ap.reste.trim(); if (!t) { bip(); dire('Oui ? Je t\'écoute.'); if (conversationVocale) setTimeout(() => { if (!enEcoute) ecouter(); }, 250); return; } } }
         if (t) {
           blancs = 0;
-          if (occupe) { try { ctrlTour?.abort(); } catch {} couperVoix(); }   // tu me coupes : j'abandonne et je t'écoute
+          if (occupe && MOT_STOP_TACHE.test(t)) { toutArreter(); dlgMsg('user', t); dire('D\'accord, j\'arrête ce que je faisais.'); if (conversationVocale) relancerEcoute(); return; }
+          if (occupe) couperVoix();   // tu me parles : je te réponds tout de suite, le travail continue en arrière-plan
           dlgMsg('user', t); $('#saisie').value = t; envoyer(true);
         }
         else if (conversationVocale && occupe) setTimeout(() => { if (conversationVocale && occupe && !enEcoute) ecouter(); }, 300);
@@ -2579,11 +2595,52 @@ VUES.clipia = async (v) => {
     carte.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }
 
+  // ── Vue de travail : sous la bulle de Clipia, on voit ce qu'elle fait en direct (action en cours, aperçu de l'écran, image produite) ──
+  if (!document.getElementById('vt-css')) document.head.append(el(`<style id="vt-css">
+  .vt{margin-top:10px;border:1px solid #6d4fd677;border-radius:16px;background:linear-gradient(160deg,#1a1450dd,#0d0a28ee);overflow:hidden;max-width:min(100%,560px);animation:vtin .35s ease}@keyframes vtin{from{opacity:0;transform:translateY(8px)}}
+  .vt.fini{opacity:0;max-height:0;margin:0;border-width:0;transition:all .6s ease .3s}
+  .vt-t{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:12.5px;border-bottom:1px solid #ffffff18;color:#c9c2ff}.vt-t b{flex:1}
+  .vt-p{width:9px;height:9px;border-radius:50%;background:#ffb84d;animation:vtp 1.1s infinite}@keyframes vtp{50%{opacity:.25;transform:scale(.7)}}
+  .vt-a{display:flex;gap:12px;align-items:center;padding:12px}.vt-i{font-size:30px;width:52px;height:52px;border-radius:14px;background:#ffffff12;display:grid;place-items:center;animation:vti 2s ease-in-out infinite}@keyframes vti{50%{transform:translateY(-3px)}}
+  .vt-l{font-weight:600}.vt-d{font-size:12.5px;opacity:.75;word-break:break-word;max-height:3.2em;overflow:hidden}
+  .vt-e{display:none;position:relative;margin:0 12px 10px;border-radius:10px;overflow:hidden;border:1px solid #ffffff22;background:#000}.vt-e img{display:block;width:100%;max-height:300px;object-fit:contain;cursor:zoom-in}
+  .vt-e::after{content:"EN DIRECT";position:absolute;top:6px;left:6px;font-size:10px;letter-spacing:.08em;background:#e5484dcc;padding:2px 7px;border-radius:99px;color:#fff}
+  .vt-j{padding:0 12px 10px;font-size:12px;opacity:.8;display:grid;gap:2px}.vt-m{margin:0 12px 10px;padding:6px 10px;border-radius:10px;background:#4b3bb033;border:1px solid #6d4fd6aa;font-size:12.5px}
+  </style>`));
+  const ICONES_VT = [[/^ordi_/, '🖥️'], [/^(chrome|navigateur)/, '🌐'], [/^image/, '🎨'], [/^video|^clip/, '🎬'], [/^(musique|voix|son)/, '🎵'], [/^(fichier|disque)/, '📁'], [/^(executer|machine|code)/, '💻'], [/^(web|recherche)/, '🔎'], [/^(app_|studio)/, '🛠️']];
+  const iconeVT = (n) => (ICONES_VT.find(([r]) => r.test(n)) || [0, '⚙️'])[1];
+  function vueTravail() {
+    const r = el(`<div class="vt" aria-live="polite"><div class="vt-t"><span class="vt-p"></span><b>Clipia travaille…</b><span class="vt-s">0 s</span></div>
+      <div class="vt-a"><div class="vt-i">💭</div><div><div class="vt-l">Je réfléchis à ta demande</div><div class="vt-d"></div></div></div>
+      <div class="vt-e"><img alt="Aperçu en direct"></div><div class="vt-m" hidden></div><div class="vt-j"></div></div>`);
+    const q = s => r.querySelector(s); let n = 0, apercuEnCours = false;
+    const ecran = (url) => { const i = q('.vt-e img'); i.src = url; i.onclick = () => window.open(url); q('.vt-e').style.display = 'block'; };
+    return {
+      racine: r,
+      temps: s => { q('.vt-s').textContent = s + ' s'; },
+      outil: e => { n++; const nom = String(e.outil || ''); q('.vt-i').textContent = iconeVT(nom); q('.vt-l').textContent = nom.replace(/_/g, ' ') + '…'; q('.vt-d').textContent = e.parametres ? String(e.parametres).slice(0, 160) : 'étape ' + n; q('.vt-j').insertAdjacentHTML('beforeend', `<div>▸ ${esc(nom.replace(/_/g, ' '))}</div>`); const j = q('.vt-j'); while (j.children.length > 4) j.firstChild.remove(); },
+      moteur: e => { const m = q('.vt-m'); m.hidden = false; m.innerHTML = `🎛 Moteur choisi : <b>${esc(e.moteur)}</b>${e.raison ? ` <span style="opacity:.7">— ${esc(e.raison.slice(0, 120))}</span>` : ''}`; },
+      image: (src, brut) => { if (/\.(png|jpe?g|webp|gif)(\?|$)/i.test(brut || src)) ecran(src); },
+      resultat: async e => {
+        q('.vt-i').textContent = e.ok ? '✅' : '⚠️';
+        if (apercuEnCours || !/^(ordi_|chrome_|navigateur)/.test(String(e.outil || '')) || e.outil === 'ordi_capturer') return;
+        apercuEnCours = true;                      // aperçu de l'écran : uniquement pendant une session de contrôle autorisée
+        try { const d = await fetch(API + '/api/ordi/apercu', { headers: { 'x-clipia-accord': '1' } }).then(x => x.json()); if (d.url) ecran(API + d.url + '?t=' + Date.now()); } catch {}
+        apercuEnCours = false;
+      },
+      fin: () => { q('.vt-p').style.animation = 'none'; q('.vt-p').style.background = '#3ddc84'; q('.vt-t b').textContent = 'Terminé'; setTimeout(() => r.classList.add('fini'), 900); setTimeout(() => r.remove(), 2200); }
+    };
+  }
+
   async function tourNoyau({ message, reprise = null, sortie, vocal, signal }) {
     const panneau = el('<details class="reflexion" open style="margin-top:8px;font-size:12.5px;color:var(--texte-faible);border-left:2px solid var(--or-sombre,#6d4fd6);padding-left:10px"><summary style="cursor:pointer;user-select:none">💭 Clipia réfléchit…</summary></details>');
     const trace = el('<div style="display:grid;gap:3px;margin-top:4px"></div>'); panneau.append(trace);
     const medias = el('<div style="display:grid;gap:8px;margin-top:8px"></div>');
-    sortie.parentElement.append(panneau, medias);
+    const vt = vueTravail();
+    sortie.parentElement.append(vt.racine, panneau, medias);
+    const t0 = Date.now(); const chrono = setInterval(() => vt.temps(Math.round((Date.now() - t0) / 1000)), 1000);
+    const finVT = () => { clearInterval(chrono); vt.fin(); };
+    try {
     let nEtapes = 0;
     actEtape('Réflexion');
     const lignes = {};
@@ -2597,6 +2654,7 @@ VUES.clipia = async (v) => {
           historique: hist.slice(0, message ? -1 : undefined).map(m => ({ role: m.role, content: m.content })),
           blanc: window.clipiaV61?.blanc?.() || undefined,
           vocal: Boolean(vocal || vocalActif || conversationVocale),
+          enCours: [...toursActifs.values()].filter(t => t.message !== String(message || '').slice(0, 240)).map(t => t.message),
           provider: choisi || undefined, model: choisi ? ($('#variante')?.value || undefined) : undefined
         })
       });
@@ -2615,6 +2673,8 @@ VUES.clipia = async (v) => {
         if (e.type === 'reflexion') { nEtapes = e.etape; actEtape('Réflexion'); trace.append(el(`<div style="opacity:.8">▸ Étape ${e.etape}${e.etape > 1 ? ' — je continue' : ' — je comprends ta demande'}</div>`)); }
         if (e.type === 'pensee') trace.append(el(`<div style="font-style:italic;white-space:pre-wrap;max-height:9em;overflow:auto;opacity:.85">💭 ${esc(e.texte)}</div>`));
         if (e.type === 'message') { sortie.textContent = e.texte; if (e.texte) trace.append(el(`<div style="opacity:.8">🗨 ${esc(e.texte.slice(0, 240))}</div>`)); }
+        if (e.type === 'outil') vt.outil(e);
+        if (e.type === 'moteur') vt.moteur(e);
         if (e.type === 'outil') {
           const d = el(`<div>⚙ ${esc(e.outil.replace(/_/g, ' '))}${e.parametres ? ' — ' + esc(e.parametres) : ''}</div>`);
           actEtape('Exécution'); lignes[e.outil] = d; trace.append(d); dire(`J'utilise « ${e.outil.replace(/_/g, ' ')} »…`); panneau.querySelector('summary').textContent = '💭 Clipia agit : ' + e.outil.replace(/_/g, ' ') + '…';
@@ -2622,6 +2682,7 @@ VUES.clipia = async (v) => {
         if (e.type === 'simule') window.clipiaV61?.carteSimule(trace, e);
         if (e.type === 'attente') actEtape('Interaction');
         if (e.type === 'resultat') {
+          vt.resultat(e);
           actEtape('Vérification');
           const d = lignes[e.outil]; if (d) {
             d.style.color = e.ok ? 'var(--ok)' : 'var(--alerte)';
@@ -2630,7 +2691,7 @@ VUES.clipia = async (v) => {
         }
         if (e.type === 'effet') {
           if (e.genre === 'ouvrir' && e.cible) setTimeout(() => { location.hash = '#/' + e.cible; }, 1200);
-          if (e.genre === 'media' && e.url) { const lv = window.clipiaLivrables?.livrer({ url: e.url, nom: e.nom, outil: e.outil }); if (lv) medias.append(lv); else medias.append(mediaLien({ url: /^\//.test(e.url) ? API + e.url : e.url })); }
+          if (e.genre === 'media' && e.url) { vt.image(/^\//.test(e.url) ? API + e.url : e.url, e.url); const lv = window.clipiaLivrables?.livrer({ url: e.url, nom: e.nom, outil: e.outil }); if (lv) medias.append(lv); else medias.append(mediaLien({ url: /^\//.test(e.url) ? API + e.url : e.url })); }
         }
         if (e.type === 'termine') final = e;
       }
@@ -2655,6 +2716,7 @@ VUES.clipia = async (v) => {
     }
     if (vocal || vocalActif) parler(texte, () => { if (conversationVocale) ecouter(); else atoiMontrer(); });
     else { etatOrbe(''); if (conversationVocale) relancerEcoute(); else { dire('Je t\'écoute.'); atoiMontrer(); } }
+    } finally { finVT(); }
   }
 
   function mediaLien(e) {
@@ -2707,7 +2769,7 @@ VUES.clipia = async (v) => {
     // Texte seul : le noyau (moteur le plus rapide, personnalité du serveur, outils avec preuves).
     // Avec une image jointe : l'ancien chemin, qui transmet les images au moteur de vision.
     if (!images.length) {
-      ctrlTour = new AbortController(); const monCtrl = ctrlTour; occupe = true;
+      const monCtrl = commencerTour(texte);
       // Elle continue d'écouter pendant qu'elle réfléchit (mode conversation vocale).
       if (conversationVocale) setTimeout(() => { if (occupe && conversationVocale && !enEcoute) ecouter(); }, 700);
       try { await tourNoyau({ message: texte, sortie, vocal, signal: monCtrl.signal }); }
@@ -2718,15 +2780,15 @@ VUES.clipia = async (v) => {
           // Une réponse ne reste jamais sans réponse : une fenêtre propose un autre cerveau et relance la même question.
           if (!/heures offertes/.test(e.message)) window.clipiaV61?.proposerAutreModele({ erreur: e.message, essayer: async (provider, model) => {
             const m = $('#modele'); if (m) { m.value = provider || ''; await majVariantes(); const v = $('#variante'); if (v && model) v.value = model; }
-            sortie.textContent = '…'; ctrlTour = new AbortController(); const c2 = ctrlTour; occupe = true;
+            sortie.textContent = '…'; const c2 = commencerTour(texte);
             try { await tourNoyau({ message: texte, sortie, vocal, signal: c2.signal }); try { localStorage.setItem('clipia:cerveau', JSON.stringify({ provider: provider || '', model: model || '' })); window.dispatchEvent(new Event('clipia:cerveau')); } catch {} return true; }
             catch (e2) { sortie.textContent = '⚠ ' + e2.message; etatOrbe(''); return e2.message; }
-            finally { if (ctrlTour === c2) { occupe = false; ctrlTour = null; } }
+            finally { finirTour(c2); }
           } });
           if (conversationVocale) relancerEcoute();
         }
       }
-      finally { if (ctrlTour === monCtrl) { occupe = false; ctrlTour = null; } }
+      finally { finirTour(monCtrl); }
       return;
     }
 
@@ -2824,6 +2886,7 @@ VUES.clipia = async (v) => {
   orbe.onclick = () => {
     if (!sceneRacine.classList.contains('dock')) return accueillir();
     // orbe rangée à côté de la discussion : elle sert d'interrupteur d'écoute (et coupe la parole si elle parle)
+    if (occupe) return reprendreLaMain();
     if (parleEnCours()) return interrompre();
     $('#bConvVocale').onclick();
   };
@@ -2836,11 +2899,13 @@ VUES.clipia = async (v) => {
     const c = ev.target; if (c && (/^(INPUT|TEXTAREA|SELECT|BUTTON|A|SUMMARY)$/.test(c.tagName) || c.isContentEditable)) return;
     ev.preventDefault();
     vocalActif = true;
+    if (occupe) return reprendreLaMain();          // elle travaille : Espace = je te rends la main
     if (parleEnCours()) return interrompre();
     if (enEcoute) return arreter();
     atoiCacher(); couperVoix(); ecouter();
   };
   document.addEventListener('keydown', window.__espaceHandler, true);
+  { const kb = $('#kbdEspace'); if (kb) kb.onclick = () => window.__espaceHandler({ code: 'Space', preventDefault() {}, target: document.body }); }
   const casEspace = $('#espaceOn'); if (casEspace) { casEspace.checked = espaceOn(); casEspace.onchange = () => { try { localStorage.setItem('clipia:espace', casEspace.checked ? 'on' : 'off'); } catch {} }; }
   $('#experience').onclick = () => {
     vocalActif = true;
@@ -2988,6 +3053,7 @@ VUES.clipia = async (v) => {
     try { r.start(); } catch { veille = null; }
   }
   function repondreAppel(reste) {
+    if (occupe) couperVoix();
     bip(); appelDeclenche = true;
     const mots = (reste || '').split(/\s+/).filter(Boolean);
     if (mots.length >= 1) { dlgMsg('user', reste); $('#saisie').value = reste; dire('Appel : « ' + reste + ' »'); envoyer(true); return; }
@@ -5932,6 +5998,15 @@ installerLogitheque({ $, el, esc, api, API, VUES, toast });
 installerOpenClaw({ $, el, esc, api, API, VUES, toast });
 installerTelephone({ $, el, esc, api, API, VUES, toast });
 installerAudit({ $, el, esc, api, API, VUES, toast });
+// Bouton « Rafraîchir » toujours visible en bas à droite : au cas où la discussion se fige.
+if (!document.getElementById('btnRafraichir')) {
+  document.head.append(el(`<style>#btnRafraichir{position:fixed;right:16px;bottom:16px;z-index:9999;width:46px;height:46px;border-radius:50%;border:1px solid #6d4fd6;background:#1a1450ee;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 20px #0008;display:grid;place-items:center}#btnRafraichir:hover{background:#4b3bb0}#btnRafraichir.tourne{animation:rafT .6s linear infinite}@keyframes rafT{to{transform:rotate(360deg)}}
+  .aide-espace{position:fixed!important;left:14px!important;bottom:62px!important;top:auto!important;right:auto!important;width:auto!important;max-width:min(330px,calc(100vw - 90px));text-align:left!important;z-index:70;background:#0d0a28dd;border:1px solid #ffffff1f;border-radius:12px;padding:7px 10px;margin:0!important;line-height:1.35}
+  .dock.dock-bas .aide-espace{display:block!important}</style>`));
+  const rb = el('<button id="btnRafraichir" type="button" title="Rafraîchir la page (si la discussion bug)" aria-label="Rafraîchir la page">↻</button>');
+  rb.onclick = () => { rb.classList.add('tourne'); setTimeout(() => location.reload(), 150); };
+  document.body.append(rb);
+}
 installerPromotion({ $, el, esc, api, API, VUES, toast });
 installerTravaux({ $, el, esc, api, API, VUES, toast });
 installerCommunaute({ $, el, esc, api, API, VUES, toast });
