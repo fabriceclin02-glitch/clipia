@@ -69,6 +69,12 @@
       ],
       "taille": "1,06 Go en 11 parties",
       "sha256": "b1457c8da930929c3da6190c59e4edc1d0a4aa4228635dcf168b7917105f24b8"
+    },
+    "android": {
+      "nom": "Clipia-8.10.0.apk",
+      "url": "telechargements/Clipia-8.10.0.apk",
+      "taille": "2.6 Mo",
+      "sha256": "77ecc1a1fa98d382c8030708e69310521cb19886eec641cffc7ab4b125a3e70b"
     }
   },
   "anciennes": []
