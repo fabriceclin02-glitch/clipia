@@ -1,29 +1,29 @@
 {
-  "version": "10.1.0",
+  "version": "10.2.0",
   "fichiers": {
     "windows": {
-      "nom": "Clipia-Setup-10.1.0-windows-x64.exe",
-      "url": "telechargements/Clipia-Setup-10.1.0-windows-x64.exe",
-      "taille": "78 Mo",
-      "sha256": "31ef0a977902f1c591d9a6459ba1adb6aaf81235ff4614ffead1eaf1d3824315"
+      "nom": "Clipia-Setup-10.2.0-windows-x64.exe",
+      "url": "telechargements/Clipia-Setup-10.2.0-windows-x64.exe",
+      "taille": "77 Mo",
+      "sha256": "80206305791659da27260d2b1f2f72e6fd730fbee7ffcbc0b45593db3e4206ba"
     },
     "portable": {
-      "nom": "Clipia-Portable-10.1.0-windows-x64.zip",
-      "url": "telechargements/Clipia-Portable-10.1.0-windows-x64.zip",
+      "nom": "Clipia-Portable-10.2.0-windows-x64.zip",
+      "url": "telechargements/Clipia-Portable-10.2.0-windows-x64.zip",
       "taille": "41 Mo",
-      "sha256": "7c7c29c07b710c5e03a385d6e5f239f32a431797f602880de92647125bb303ce"
+      "sha256": "1745b6b4cc516a7c4f722c9101a27d1c9ffbcea98989ecfbd78c3429f3a8ec5c"
     },
     "linux": {
-      "nom": "clipia_10.1.0_amd64.deb",
-      "url": "telechargements/clipia_10.1.0_amd64.deb",
+      "nom": "clipia_10.2.0_amd64.deb",
+      "url": "telechargements/clipia_10.2.0_amd64.deb",
       "taille": "35 Mo",
-      "sha256": "524becaa72748238141eb147cf9d988a6bcd897d9070bacba93aff51408ec1bf"
+      "sha256": "b4a5cb8b865d46617e845d6895f6e0e635205af36f6898cf2654089c713235b0"
     },
     "macos": {
-      "nom": "Clipia-10.1.0-macos.zip",
-      "url": "telechargements/Clipia-10.1.0-macos.zip",
-      "taille": "50 Mo",
-      "sha256": "a57541fde34c4599d19cafda5839eb7734224c980b6896cd773343c6bfc43e58"
+      "nom": "Clipia-10.2.0-macos.zip",
+      "url": "telechargements/Clipia-10.2.0-macos.zip",
+      "taille": "49 Mo",
+      "sha256": "68a698f2275dadcf8b322cdc510bfe9556dde1cf9be55a9392bfb52c131eb216"
     },
     "telephone": {
       "nom": "Installer depuis Safari / Chrome",
