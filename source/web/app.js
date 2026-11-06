@@ -193,6 +193,7 @@ window.toast = toast;
 // ── Navigation ─────────────────────────────────────────────────────────────
 const MENU = [
   { s: 'Mon agent personnel' },
+  { id:'glm',        ic:'🧠', t:'GLM-5.2 (Z.ai)' },
   { id:'moi',        ic:'✨', t:'Créer mon IA' },
   { id:'installateur', ic:'🚀', t:'Assistant d\'installation' },
   { id:'cabinet', ic:'🛋', t:'Cabinet de psychologues' },

@@ -25,6 +25,30 @@ export function installerV4({ $, el, esc, api, API, VUES, route, toast, MENU }) 
   const profilCharge = () => api('/api/noyau/personnalite').then(r => { window.__profil = r.profil; return r; }).catch(() => ({ profil: {}, modes: [] }));
   profilCharge();
 
+
+  /* ═════════ GLM-5.2 (Z.ai) : page dédiée, configuration de la clé API ═════════ */
+  VUES.glm = async (v) => {
+    const e = await api('/api/v4/etat').catch(() => ({ etapes: [] }));
+    const fait = !!(e.etapes.find(x => x.id === 'glm') || {}).fait;
+    v.append(el(`<h1>🧠 GLM-5.2 de Z.ai</h1><p class="sous">Le modèle ouvert de 753 milliards de paramètres, très bon en code et en tâches longues. Il tourne chez Z.ai avec <b>ta</b> clé API (facultatif, payant à l'usage).</p>
+      <div class="carte"><div class="rang" style="justify-content:space-between"><b>État</b><span class="etiq ${fait ? 'ok' : 'neutre'}">${fait ? '✓ clé enregistrée : GLM-5.2 est actif' : 'pas encore configuré'}</span></div>
+        <ol class="v4-ol" style="margin-top:10px"><li>Va sur <a href="https://z.ai/manage-apikey/apikey-list" target="_blank" rel="noopener">z.ai/manage-apikey</a>, crée un compte et ajoute un petit crédit.</li>
+        <li>Crée une clé API et copie-la.</li><li>Colle-la ci-dessous, puis clique <b>Tester et activer</b> : la clé est testée avant d'être gardée sur ton ordinateur, jamais dans une conversation.</li></ol>
+        <div class="rang"><input type="password" id="glm-cle" placeholder="clé Z.ai…" autocomplete="off" style="flex:1;min-width:220px"><button class="btn or" id="glm-test">Tester et activer</button></div>
+        <div class="v4-msg" id="glm-msg" style="margin-top:8px"></div></div>`));
+    const m = (t, c) => { const x = $('#glm-msg', v); x.style.color = c || 'var(--texte-doux)'; x.textContent = t; };
+    $('#glm-test', v).onclick = async () => {
+      const valeur = $('#glm-cle', v).value.trim();
+      try {
+        m('Test de la clé…');
+        const t = await api('/api/coffre/tester', { method: 'POST', body: JSON.stringify({ fournisseur: 'zai', valeur }) });
+        if (!t.ok) return m(t.message, 'var(--erreur)');
+        await api('/api/coffre', { method: 'POST', body: JSON.stringify({ id: 'provider:zai', valeur }) });
+        m('✓ ' + t.message, 'var(--ok)'); setTimeout(route, 1500);
+      } catch (err) { m(err.message, 'var(--erreur)'); }
+    };
+  };
+
   /* ═════════ INSTALLATION GUIDÉE ═════════ */
   VUES.installation = async (v) => {
     const e = await api('/api/v4/etat');

@@ -167,7 +167,7 @@ clipia/
 </div>
 
 
-## Clipia X10 (10.2.1) — installeurs avec Kodi
+## Clipia X10 (10.2.2) — installeurs avec Kodi
 - **10.0.0** : l'installeur Windows propose « Kodi + pack Clipia » (Kodi officiel via winget, pack Clipia, accueil 3D, extensions légales) ; paquet Linux avec `clipia-kodi` ; zip macOS avec dossier `Kodi-Clipia` (installer-kodi-mac.command). Aucun contenu ni extension pirate.
 
 ## Nouveautés de Clipia X10 (8.4.0) — « deux cerveaux »
