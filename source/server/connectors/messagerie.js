@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Pilotage entrant par messagerie : Telegram, Slack, WhatsApp.
+ * CLIPIA X10 — Pilotage entrant par messagerie : Telegram, Slack, WhatsApp.
  *
  *  • Telegram : interrogation longue (getUpdates) → marche depuis un PC, sans adresse publique.
  *  • Slack    : Socket Mode (jeton d'application xapp-…, sans adresse publique, demande Node 22+)

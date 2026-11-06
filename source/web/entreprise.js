@@ -1,4 +1,4 @@
-/* CLIPIA X8 — « Lancer mon entreprise » : des missions toutes prêtes, confiées à des travailleurs en arrière-plan. */
+/* CLIPIA X10 — « Lancer mon entreprise » : des missions toutes prêtes, confiées à des travailleurs en arrière-plan. */
 export function installerEntreprise({ $, el, esc, api, API, VUES, toast }) {
   const H = { 'content-type': 'application/json', 'x-clipia-accord': '1' };
   document.head.append(el(`<style>.en .carte{background:#ffffff0d;border:1px solid #ffffff22;border-radius:14px;padding:16px;margin:12px 0}.en .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}.en .m{border:1px solid #ffffff2a;border-radius:12px;padding:12px;background:#ffffff0a}.en .m b{display:block;margin-bottom:4px}.en .m p{font-size:13px;opacity:.85;margin:4px 0 8px}.en input,.en textarea,.en select{width:100%;border-radius:10px;padding:10px;background:#0003;border:1px solid #ffffff2a;color:inherit;font:inherit;margin:6px 0}.en .petit{font-size:13px;opacity:.8}</style>`));

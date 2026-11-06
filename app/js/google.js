@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 — connexion Google (Gmail, Agenda). Flux « implicite » : aucun secret dans l'appli, jeton valable ~1 h. */
+/* Clipia X10 — connexion Google (Gmail, Agenda). Flux « implicite » : aucun secret dans l'appli, jeton valable ~1 h. */
 const Google=(()=>{
   const SCOPES=['openid','email','https://www.googleapis.com/auth/gmail.readonly','https://www.googleapis.com/auth/gmail.send','https://www.googleapis.com/auth/calendar.readonly'];
   let st=null;

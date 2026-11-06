@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Les DEUX CERVEAUX.
+ * CLIPIA X10 — Les DEUX CERVEAUX.
  *
  *  • Le cerveau d'ACCUEIL : la conversation (voix, chat). Il ne se bloque jamais
  *    sur une longue tâche : il confie le travail et reste disponible.

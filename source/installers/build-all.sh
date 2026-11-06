@@ -41,7 +41,7 @@ CLIPIA X10 — version portable, gratuite, prête à l'emploi (sans installation
 
 1. Dézippe ce dossier où tu veux (Bureau, clé USB...).
 2. Double-clique Clipia.exe : Clipia démarre et s'ouvre dans ton navigateur.
-   Pour le mode appel (dire « Kodi »), utilise Chrome ou Edge.
+   Pour le mode appel (dire « Clipia »), utilise Chrome ou Edge.
 3. Pour arrêter : Quitter-Clipia.exe.
    Si quelque chose ne va pas : Diagnostic-Clipia.bat affiche le journal et les erreurs.
    IMPORTANT : extrais TOUT le zip (clic droit > Extraire tout) avant de lancer Clipia.exe ; ne le lance pas depuis WinRAR.

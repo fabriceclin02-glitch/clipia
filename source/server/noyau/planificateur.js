@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Tâches planifiées : « tous les matins à 8 h, fais-moi la veille de mon secteur ».
+ * CLIPIA X10 — Tâches planifiées : « tous les matins à 8 h, fais-moi la veille de mon secteur ».
  * À l'heure dite, la mission est confiée à un travail d'arrière-plan (travaux.js) : Clipia reste disponible.
  *
  * Garde-fous : intervalle minimum 15 min, 10 tâches actives au plus, jamais deux exécutions de la même tâche en

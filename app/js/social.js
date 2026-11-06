@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 — Clipbook (réseau social) et ClipTok (vidéos courtes). Mode solo hors-ligne, ou serveur Supabase. */
+/* Clipia X10 — Clipbook (réseau social) et ClipTok (vidéos courtes). Mode solo hors-ligne, ou serveur Supabase. */
 const Soc=(()=>{
   let cfg=M.lire('soc.cfg',{url:'',cle:''}),ses=M.lire('soc.ses',null);
   const loc=()=>M.lire('soc.local',{posts:[],coms:[],likes:{},suivis:[],msgs:[],moi:{nom:'Moi',bio:''}});

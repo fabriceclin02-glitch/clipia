@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 mobile — cerveau : consignes, outils, agents et sous-agents */
+/* Clipia X10 mobile — cerveau : consignes, outils, agents et sous-agents */
 
 const TOUS_OUTILS=['image','musique','video','code','deleguer','agent_creer','memoire','pc','contact','message','app_ouvrir','telephone','google','kodi'];
 const OUTILS_ANDROID=['contact','message','app_ouvrir','telephone'];
@@ -45,7 +45,7 @@ function systeme(agent,prof,voix){
   const P=E.profil,pc=!!(E.pc.url&&E.pc.jeton);
   const permis=(agent?agent.outils:TOUS_OUTILS).filter(o=>o!=='pc'||pc).filter(o=>o!=='google'||(window.Google&&Google.connecte())).filter(o=>o!=='kodi'||(window.Kodi&&Kodi.actif())).filter(o=>!OUTILS_ANDROID.includes(o)||!!NATIF).filter(o=>o!=='deleguer'||prof<2).filter(o=>o!=='agent_creer'||prof<1);
   const l=[];
-  l.push(agent&&prof>0?`Tu es « ${agent.nom} », un sous-agent de Clipia. ${agent.instructions}`:agent?`Tu es Clipia X8 (CLENDAX, créée par Clin Fabrice), en ce moment dans le rôle de l'agent « ${agent.nom} » : ${agent.role} ${agent.instructions}`:`Tu es Clipia X8, l'assistante personnelle de CLENDAX, créée par Clin Fabrice. Tu es une vraie assistante qui agit : tu codes, crées des images, des musiques et des vidéos, et diriges des agents et sous-agents.`);
+  l.push(agent&&prof>0?`Tu es « ${agent.nom} », un sous-agent de Clipia. ${agent.instructions}`:agent?`Tu es Clipia X10 (CLENDAX, créée par Clin Fabrice), en ce moment dans le rôle de l'agent « ${agent.nom} » : ${agent.role} ${agent.instructions}`:`Tu es Clipia X10, l'assistante personnelle de CLENDAX, créée par Clin Fabrice. Tu es une vraie assistante qui agit : tu codes, crées des images, des musiques et des vidéos, et diriges des agents et sous-agents.`);
   l.push(`Langue : français. ${P.tu?'Tu tutoies':'Tu vouvoies'} la personne${P.prenom?' et tu l\'appelles '+P.prenom:''}. Ton : ${TONS[P.ton]||TONS.chaleureux}.`);
   l.push(prof>0?'Réponds par le résultat utile, de façon concise.':(P.longueur==='detaillee'?'Tes réponses sont complètes mais claires.':'Tes réponses parlées sont courtes (1 à 3 phrases) car elles sont lues à voix haute ; pas de listes ni d\'emoji. Ne recopie jamais de code dans ta réponse : il est dans le fichier créé.'));
   if(permis.length){

@@ -1787,7 +1787,7 @@ VUES.clipia = async (v) => {
         <button class="ic-btn" id="bTestMicro" title="Tester le microphone">⚙</button>
         <button class="ic-btn" id="bConvVocale" title="Conversation vocale continue — elle écoute, répond à voix haute, et réécoute">💬🎙</button>
         <button class="btn or mini" id="bParler" title="Appuie, parle jusqu'au bout, rappuie (ou attends 3 secondes de silence)">🎤 Parler</button>
-        <button class="ic-btn" id="bAppel" title="Mode appel — dis « Kodi » à tout moment et elle te répond, comme un assistant vocal">📣</button>
+        <button class="ic-btn" id="bAppel" title="Mode appel — dis « Clipia » à tout moment et elle te répond, comme un assistant vocal">📣</button>
         <button class="ic-btn" id="bReglages" title="Comment Clipia doit te parler">🎚</button>
         <select id="modele" style="width:auto;max-width:168px;padding:6px 10px;font-size:12.5px;border-radius:9px"
           title="Moteur : Auto choisit le meilleur cerveau disponible">
@@ -2070,7 +2070,7 @@ VUES.clipia = async (v) => {
   function atoiCacher() { clearTimeout(atoiTimer); if (!atoi.classList.contains('on')) return; atoi.classList.add('off'); setTimeout(() => atoi.classList.remove('on', 'off'), 420); }
   scene.querySelector('#atoiMic').onclick = () => { atoiCacher(); couperVoix(); ecouter(); };
   atoi.addEventListener('click', e => { if (e.target === atoi) atoiCacher(); });
-  const STATUTS = { ecoute: ["Je t'écoute…", '#3ddc84'], reflechit: ['Je réfléchis…', '#ffb84d'], parle: ["Je parle… dis « Kodi » pour m'arrêter", '#7c5cff'] };
+  const STATUTS = { ecoute: ["Je t'écoute…", '#3ddc84'], reflechit: ['Je réfléchis…', '#ffb84d'], parle: ["Je parle… dis « Clipia » pour m'arrêter", '#7c5cff'] };
   const etatOrbe = (c) => {
     orbe.className = 'orbe' + (c ? ' ' + c : '');
     window.clipiaScene?.etat(modeVoix() || conversationVocale || c ? c : '');
@@ -2283,11 +2283,11 @@ VUES.clipia = async (v) => {
     setTimeout(fin, 8000 + texte.length * 120);
   }
 
-  // ── Interruption : « Kodi », « stop », « attends »… et elle se tait aussitôt ──
+  // ── Interruption : « Clipia », « stop », « attends »… et elle se tait aussitôt ──
   const MOTS_STOP = /\b(clipia|clippia|stop|stoppe|attends?|arr[eê]te|tais[- ]toi|silence|ok|okay|oké|d'accord)\b/i;
   let garde = null;
   function gardeStop() { const r = garde; garde = null; if (r) { try { r.onend = null; r.onresult = null; r.onerror = null; r.abort(); } catch {} } }
-  // « Kodi ! » ou Espace pendant qu'elle travaille : l'accueil se tait et t'écoute, sans interrompre le travail en cours.
+  // « Clipia ! » ou Espace pendant qu'elle travaille : l'accueil se tait et t'écoute, sans interrompre le travail en cours.
   function reprendreLaMain() {
     gardeStop(); couperVoix(); bip(); appelDeclenche = true;      // le travail continue en arrière-plan ; je reste disponible
     etatOrbe('ecoute'); dire('Je t\'écoute…');
@@ -2330,7 +2330,7 @@ VUES.clipia = async (v) => {
   async function parler(texte, apres) {
     if (!vocalActif) { apres?.(); return; }
     let propre = String(texte || '').replace(/\[\[action:[^\]]*\]\]/gi, '').replace(/```[\s\S]*?(```|$)/g, ' ').replace(/`[^`\n]*`/g, ' ').replace(/https?:\/\/\S+/g, ' ').replace(/\s{2,}/g, ' ').trim();
-    // Elle ne prononce jamais son propre nom à voix haute : « Kodi » reste le mot qui l'interrompt, il ne peut pas venir d'elle-même.
+    // Elle ne prononce jamais son propre nom à voix haute : « Clipia » reste le mot qui l'interrompt, il ne peut pas venir d'elle-même.
     propre = propre.replace(/\b(?:clipia|clippia)\b/gi, '').replace(/\s+([,.!?;:])/g, '$1').replace(/([,;:])\s*(?=[,.!?;:])/g, '').replace(/^[\s,;:.!?-]+/, '').replace(/\s{2,}/g, ' ').trim();
     if (!propre) { apres?.(); return; }
     dernierDit = propre; window.clipiaScene?.texte(propre.length > 160 ? propre.slice(0, 157) + '…' : propre);
@@ -2413,7 +2413,7 @@ VUES.clipia = async (v) => {
           if (e.results[i].isFinal) final += t; else partiel += t;
         }
         const vu = (final + partiel).trim(); if (vu) window.__paroleUser = Date.now();
-        if (vu && (occupe || parleEnCours()) && detecterAppel(vu).trouve) couperVoix();   // « Kodi » : elle s'arrête et t'écoute
+        if (vu && (occupe || parleEnCours()) && detecterAppel(vu).trouve) couperVoix();   // « Clipia » : elle s'arrête et t'écoute
         dire(vu || 'Je vous écoute…');
         legende.textContent = vu || 'Je vous écoute…'; window.clipiaScene?.texte(vu);
         if (vu) { dlgVoir(vu); clearTimeout(minuteur); minuteur = setTimeout(() => { try { recognition.stop(); } catch {} }, 1800); }   // elle te laisse finir : 1,8 s de vrai silence
@@ -2753,7 +2753,7 @@ VUES.clipia = async (v) => {
     $('#saisie').value = ''; $('#saisie').style.height = 'auto';
     jointes = []; dessinerJointes();
 
-    // X8 : les réponses sur l'avancement des travaux sont instantanées (sans modèle) — elle répond toujours.
+    // X10 : les réponses sur l'avancement des travaux sont instantanées (sans modèle) — elle répond toujours.
     if (!images.length) {
       let rapide = null; try { rapide = await window.clipiaTravaux?.rapide(brut); } catch {}
       if (rapide) {
@@ -2991,7 +2991,7 @@ VUES.clipia = async (v) => {
   $('#grosMicro').onclick = async () => { await $('#bConvVocale').onclick(); majGrosMicro(); };
   const ivMicro = setInterval(majGrosMicro, 600);
 
-  // ── Mode appel : « Kodi ! » ───────────────────────────────────────────
+  // ── Mode appel : « Clipia ! » ───────────────────────────────────────────
   //
   // Une écoute en arrière-plan ne cherche qu'un mot : Clipia. Dès qu'elle l'entend,
   // un bip, un « Oui ? » parlé, puis elle écoute la demande (ou prend celle qui
@@ -3013,7 +3013,7 @@ VUES.clipia = async (v) => {
   function majAppelUI() {
     const b = $('#bAppel'); if (!b) return;
     b.classList.toggle('actif', appelActif);
-    b.title = appelActif ? 'Mode appel ACTIF — dis « Kodi ». Clique pour le couper.' : 'Mode appel — dis « Kodi » à tout moment et elle te répond';
+    b.title = appelActif ? 'Mode appel ACTIF — dis « Clipia ». Clique pour le couper.' : 'Mode appel — dis « Clipia » à tout moment et elle te répond';
   }
   function veilleStop() { const r = veille; veille = null; if (r) { try { r.onend = null; r.onresult = null; r.onerror = null; r.abort(); } catch {} } }
   function veilleDemarrer() {
@@ -3031,7 +3031,7 @@ VUES.clipia = async (v) => {
       cumul = Array.from(e.results).map(x => x[0].transcript).join(' ');   // après stop(), le résultat final arrive ici
       if (!declenche && detecterAppel(cumul).trouve) declenche = true;
       if (declenche) {
-        // « Kodi » seul : elle répond vite. « Kodi, fais-moi… » : elle te laisse finir (3 s de silence).
+        // « Clipia » seul : elle répond vite. « Clipia, fais-moi… » : elle te laisse finir (3 s de silence).
         clearTimeout(attenteAppel);
         const dejaDit = detecterAppel(cumul).reste.trim().length > 0;
         attenteAppel = setTimeout(() => { try { r.stop(); } catch { r.onend?.(); } }, dejaDit ? 3000 : 1300);
@@ -3066,7 +3066,7 @@ VUES.clipia = async (v) => {
   $('#bAppel').onclick = () => {
     if (!SR) return dire('Le mode appel demande la reconnaissance vocale intégrée de Chrome ou Edge. Ce navigateur n\'en a pas : utilise 💬🎙 ou ouvre Clipia dans Chrome.');
     appelActif = !appelActif; memoAppel(appelActif); majAppelUI();
-    if (appelActif) { dire('Mode appel activé : dis « Kodi » à tout moment.'); veilleDemarrer(); }
+    if (appelActif) { dire('Mode appel activé : dis « Clipia » à tout moment.'); veilleDemarrer(); }
     else { veilleStop(); dire('Mode appel coupé.'); }
   };
   // chien de garde : relance la veille quand plus rien d'autre n'utilise le micro

@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Initiatives : ce que Clipia remarque et propose d'elle-même, sans rien exécuter.
+ * CLIPIA X10 — Initiatives : ce que Clipia remarque et propose d'elle-même, sans rien exécuter.
  * Règles simples et vérifiables (pas de devinette) ; chaque proposition dit POURQUOI, et le clic de la personne
  * est toujours nécessaire pour agir. Rien n'est envoyé, publié, payé ni installé ici.
  */

@@ -1,4 +1,4 @@
-/** CLIPIA X8 — Kodi piloté à la voix.
+/** CLIPIA X10 — Kodi piloté à la voix.
  *  Kodi (centre multimédia libre) s'installe depuis la Logithèque ou l'installateur. Clipia le commande ensuite par son interface
  *  JSON-RPC locale (http://127.0.0.1:8080). Cette interface est désactivée par défaut dans Kodi : l'action « activer » la
  *  met en marche (avec un mot de passe aléatoire gardé dans les données de Clipia) — uniquement avec l'accord de la personne.

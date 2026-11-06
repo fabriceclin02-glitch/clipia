@@ -14,7 +14,7 @@ SetCompressor /SOLID lzma
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "${BMPDIR}\entete.bmp"
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_WELCOMEPAGE_TEXT "Clipia X10 est gratuite : ton studio créatif IA qui écoute, réfléchit, puis crée. Dis « Kodi » et elle t'écoute.$\r$\n$\r$\nCette installation embarque tout ce qu'il faut (pas besoin d'installer Node.js) et ne demande aucun droit administrateur. Au premier lancement, un assistant plein écran te guide pas à pas."
+!define MUI_WELCOMEPAGE_TEXT "Clipia X10 est gratuite : ton studio créatif IA qui écoute, réfléchit, puis crée. Dis « Clipia » et elle t'écoute.$\r$\n$\r$\nCette installation embarque tout ce qu'il faut (pas besoin d'installer Node.js) et ne demande aucun droit administrateur. Au premier lancement, un assistant plein écran te guide pas à pas."
 !define MUI_FINISHPAGE_RUN "$INSTDIR\Clipia.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Lancer Clipia maintenant"
 !define MUI_FINISHPAGE_SHOWREADME "https://ollama.com/download/windows"

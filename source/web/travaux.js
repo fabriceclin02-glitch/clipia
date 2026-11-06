@@ -1,4 +1,4 @@
-/* CLIPIA X8 — Les deux cerveaux : suivi en direct des travaux d'arrière-plan, annonces vocales, réponses instantanées. */
+/* CLIPIA X10 — Les deux cerveaux : suivi en direct des travaux d'arrière-plan, annonces vocales, réponses instantanées. */
 export function installerTravaux({ $, el, esc, api, API, VUES, toast }) {
   const H = { 'content-type': 'application/json', 'x-clipia-accord': '1' };
   const T = new Map();                       // id -> travail

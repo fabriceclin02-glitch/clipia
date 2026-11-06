@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 — couche « système » : écran d'accueil, Studio, Store, Dépôt IA, contacts, messages, appels */
+/* Clipia X10 — couche « système » : écran d'accueil, Studio, Store, Dépôt IA, contacts, messages, appels */
 const SITE=new URL('../',location.href).href;
 const attendrePerm=nom=>new Promise(res=>{if(!NATIF||!NATIF.aPermission)return res(false);if(NATIF.aPermission(nom))return res(true);const t=setTimeout(()=>{window.__clipiaPerm=null;res(false)},60000);window.__clipiaPerm=ok=>{clearTimeout(t);window.__clipiaPerm=null;res(ok)};NATIF.demanderPermission(nom)});
 let _pend=null;$('#voile').addEventListener('click',()=>{if(_pend){const f=_pend;_pend=null;f(null)}});

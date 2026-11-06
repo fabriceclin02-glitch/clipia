@@ -1,4 +1,4 @@
-/* CLIPIA X8 — « Outils MCP » et « Tâches planifiées » : étendre Clipia sans coder, et lui confier des routines. */
+/* CLIPIA X10 — « Outils MCP » et « Tâches planifiées » : étendre Clipia sans coder, et lui confier des routines. */
 export function installerPouvoirs({ $, el, esc, api, VUES, toast }) {
   const H = { 'x-clipia-accord': '1' };
   const JOURS = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'];

@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 mobile — images, musique (compositeur intégré), vidéo (montage intégré) */
+/* Clipia X10 mobile — images, musique (compositeur intégré), vidéo (montage intégré) */
 
 /* ═══ IMAGES ═══════════════════════════════════════════════════════════════ */
 const FORMATS={carre:[1024,1024],portrait:[768,1344],paysage:[1344,768]};

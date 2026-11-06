@@ -1,6 +1,6 @@
 <div align="center">
 
-# CLIPIA X8
+# CLIPIA X10
 
 ## Licence (X10)
 Clipia X10 est payant : **10 € à vie**, activé par un code signé lié à l'e-mail de l'acheteur (écran d'activation au premier lancement). Le cabinet de psychologues : 2 h incluses puis 5 €/h (codes de recharge). Voir `PAIEMENT-REVOLUT.md` et `outils/licence.mjs`. Pour les tests : `CLIPIA_TEST_SANS_LICENCE=1`.
@@ -167,10 +167,10 @@ clipia/
 </div>
 
 
-## Clipia X8 (10.2.0) — installeurs avec Kodi
+## Clipia X10 (10.2.1) — installeurs avec Kodi
 - **10.0.0** : l'installeur Windows propose « Kodi + pack Clipia » (Kodi officiel via winget, pack Clipia, accueil 3D, extensions légales) ; paquet Linux avec `clipia-kodi` ; zip macOS avec dossier `Kodi-Clipia` (installer-kodi-mac.command). Aucun contenu ni extension pirate.
 
-## Nouveautés de Clipia X8 (8.4.0) — « deux cerveaux »
+## Nouveautés de Clipia X10 (8.4.0) — « deux cerveaux »
 - **8.4.0** : **Sauvegarder mon IA** (fichier `.clipiabak` chiffré par mot de passe → clé USB, dossier Dropbox/MEGA, Dropbox direct ; réimport complet, l'ancien contenu est mis de côté), **agent plus autonome** (jamais deux fois la même action, vérification avant de conclure, échelle de secours, initiatives proposées sur l'accueil), **extension Chrome** mise en avant, **QR codes iPhone/Android** (sphère 3D sur le téléphone), accueil « vitrine » (MP3 → clip, chanteur/chanteuse virtuel, Publier partout, moteurs de clip : Canva et open source, Visual Studio Code), connecteurs **Telegram, Slack et WhatsApp** refaits (signatures vérifiées, anti-rejeu, Slack en mode Socket sans adresse publique, commandes `/etat` `/travail` `/stop`) ; **client MCP** (branche n'importe quel outil MCP, accord à chaque appel) ; **tâches planifiées** (routines lancées en arrière-plan) ; détection d'injection renforcée ; correctif : le bouton de dictée ne recouvre plus « Envoyer ».
 
 - **Deux cerveaux** : Clipia est *toujours* disponible (texte ou voix) pendant que ses **travaux tournent en arrière-plan** (jusqu'à 3 en parallèle, chacun avec son journal et son flux en direct).

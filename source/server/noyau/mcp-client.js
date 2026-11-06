@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Client MCP : branche n'importe quel serveur d'outils MCP (filesystem, mémoire, Playwright, GitHub…).
+ * CLIPIA X10 — Client MCP : branche n'importe quel serveur d'outils MCP (filesystem, mémoire, Playwright, GitHub…).
  * C'est ce qui rend Clipia extensible à l'infini comme OpenClaw ou Hermes, sans coder.
  *
  * Garde-fous :

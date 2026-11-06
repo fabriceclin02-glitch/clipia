@@ -1,4 +1,4 @@
-/* CLIPIA X8 — Accueil « vitrine », « Sauvegarder mon IA », « Créer mon chanteur / ma chanteuse », « Publier partout ». */
+/* CLIPIA X10 — Accueil « vitrine », « Sauvegarder mon IA », « Créer mon chanteur / ma chanteuse », « Publier partout ». */
 export function installerAccueil({ $, el, esc, api, API, VUES, toast }) {
   const H = { 'content-type': 'application/json', 'x-clipia-accord': '1' };
   const go = h => { location.hash = h; };

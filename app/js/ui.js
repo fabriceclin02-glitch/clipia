@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 mobile — interface : sphère 3D, voix, onglets, assistant de démarrage */
+/* Clipia X10 mobile — interface : sphère 3D, voix, onglets, assistant de démarrage */
 
 /* ═══ SPHÈRE 3D ═════════════════════════════════════════════════════════════ */
 const cv=$('#scene'),cx=cv.getContext('2d');let W=0,H=0,DPR=1;
@@ -294,7 +294,7 @@ function majReglages(){
   <h3>Enregistrement</h3>
   <div class="carte-m ${M.lire('autoSave',!!NATIF)?'on':''}" id="rAuto"><span class="r"></span><div><b>Enregistrer automatiquement mes créations</b><span>Dans Téléchargements/Clipia du téléphone.</span></div></div>
   <h3>Données</h3><button class="btn danger" id="rEff">🗑 Effacer la conversation</button>
-  <p class="aide" style="text-align:center">Clipia X8 ${VERSION} — CLENDAX · Clin Fabrice<br>Tes clés restent sur ce téléphone et ne sont envoyées qu'au service choisi.</p>`;
+  <p class="aide" style="text-align:center">Clipia X10 ${VERSION} — CLENDAX · Clin Fabrice<br>Tes clés restent sur ce téléphone et ne sont envoyées qu'au service choisi.</p>`;
   chargerVoix();
   $('#rAssist').onclick=()=>assistant(0);
   $$('.carte-m[data-m]',p).forEach(c=>c.onclick=()=>configMoteur(c.dataset.m));
@@ -341,7 +341,7 @@ function configHF(){
       try{const x=await net('https://huggingface.co/api/whoami-v2',{headers:{Authorization:'Bearer '+v},delai:20000});if(!x.ok)throw new Error(messageHttp(x,'Hugging Face'));E.cles.hf=v;sauver();m.innerHTML='<span class="ok">✓ Jeton valide : les images passeront par Hugging Face.</span>'}catch(e){m.innerHTML='<span class="ko">'+esc(e.message)+'</span>'}}})
 }
 function formPC(r,apres){
-  r.innerHTML=`<p class="doux">Sur ton ordinateur, ouvre Clipia X8 → « Téléphone & MCP », active le serveur, puis recopie l'adresse et le jeton.</p>
+  r.innerHTML=`<p class="doux">Sur ton ordinateur, ouvre Clipia X10 → « Téléphone & MCP », active le serveur, puis recopie l'adresse et le jeton.</p>
   <div class="champ"><label>Adresse de Clipia sur ton PC</label><input type="url" id="pu" placeholder="http://192.168.1.20:8787" value="${esc(E.pc.url||'')}" autocomplete="off"></div>
   <div class="champ"><label>Jeton</label><input type="password" id="pj" value="${esc(E.pc.jeton||'')}" autocomplete="off"></div>
   <button class="btn p" id="pt">Tester la connexion</button><div class="aide" id="pm">Même Wi-Fi que le PC, ou Tailscale / Cloudflare Tunnel pour sortir de chez toi. Les actions sensibles demandent ton accord <b>sur le PC</b>.</div>`;
@@ -355,7 +355,7 @@ const A=$('#assist');let etapeA=0;const NB=7;
 function exemple(){const P=E.profil,n=P.prenom||'ami';const l={chaleureux:P.tu?`Salut ${n} ! Ravie de t'aider, dis-moi tout.`:`Bonjour ${n} ! Ravie de vous aider, dites-moi tout.`,pro:P.tu?`Bonjour ${n}. Je suis prête, quelle est ta demande ?`:`Bonjour ${n}. Je suis prête, quelle est votre demande ?`,direct:P.tu?`${n}, je t'écoute. Vas-y.`:`${n}, je vous écoute. Allez-y.`,decontracte:P.tu?`Hey ${n} ! On fait quoi aujourd'hui ?`:`Bonjour ${n} ! On fait quoi aujourd'hui ?`};return l[P.ton]||l.chaleureux}
 function assistant(n){
   etapeA=n;A.classList.add('on');const P=E.profil;let corps='',titre='',peutPasser=false;
-  if(n===0){titre='Bienvenue 👋';corps=`<p class="doux">Je suis <b>Clipia X8</b>. Je code, je crée des images, des musiques et des vidéos, et je dirige des agents — tout depuis ton téléphone. Quelques réglages et on commence.</p><div class="champ"><label>Comment dois-je t'appeler ?</label><input type="text" id="aPrenom" value="${esc(P.prenom)}" placeholder="Ton prénom ou surnom" autocomplete="off"></div>`}
+  if(n===0){titre='Bienvenue 👋';corps=`<p class="doux">Je suis <b>Clipia X10</b>. Je code, je crée des images, des musiques et des vidéos, et je dirige des agents — tout depuis ton téléphone. Quelques réglages et on commence.</p><div class="champ"><label>Comment dois-je t'appeler ?</label><input type="text" id="aPrenom" value="${esc(P.prenom)}" placeholder="Ton prénom ou surnom" autocomplete="off"></div>`}
   if(n===1){titre='Comment dois-je te parler ?';corps=`<label>Tutoiement ou vouvoiement</label><div class="rang champ" id="aTu"><span class="choix ${P.tu?'on':''}" data-v="1">Tu</span><span class="choix ${P.tu?'':'on'}" data-v="0">Vous</span></div>
   <label>Mon ton</label><div class="rang champ" id="aTon">${[['chaleureux','Chaleureux'],['pro','Professionnel'],['direct','Direct'],['decontracte','Décontracté']].map(([k,l])=>`<span class="choix ${P.ton===k?'on':''}" data-v="${k}">${l}</span>`).join('')}</div>
   <label>Longueur de mes réponses</label><div class="rang champ" id="aLg"><span class="choix ${P.longueur==='courte'?'on':''}" data-v="courte">Courtes (1 à 3 phrases)</span><span class="choix ${P.longueur==='detaillee'?'on':''}" data-v="detaillee">Détaillées</span></div>

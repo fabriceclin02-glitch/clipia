@@ -1,5 +1,5 @@
 /**
- * CLIPIA X8 — Communauté et évolution.
+ * CLIPIA X10 — Communauté et évolution.
  * Vérifie s'il existe une version plus récente (liens.json publié sur le site GitHub) et prépare
  * les adresses GitHub pour proposer une idée ou signaler un bug (la personne valide elle-même sur GitHub).
  */

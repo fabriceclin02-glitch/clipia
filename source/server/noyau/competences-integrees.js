@@ -151,7 +151,7 @@ Cordialement, Fabrice Clin — fabriceclin02@gmail.com — 07 51 88 06 50
 Google Business Profile (si activité déclarée), groupes Facebook d'entrepreneurs/numérique des Ardennes, commerces de Flize/Sedan pour des démonstrations. Garde la prospection B2B séparée de Clipia.
 `),
 
-  /* ── X8 : entreprendre, gagner sa vie, aider les autres ───────────────────── */
+  /* ── X10 : entreprendre, gagner sa vie, aider les autres ───────────────────── */
   sk('entreprise-lancer', 'Lancer mon entreprise (de l\'idée au premier client)', 'Méthode complète en 8 étapes avec livrables : idée, client, offre, prix, site, premiers clients, suivi.', `
 # Quand l'utiliser
 « Je veux créer mon entreprise / gagner de l'argent / lancer une activité / monter un projet ».

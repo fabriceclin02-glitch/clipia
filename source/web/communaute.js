@@ -1,4 +1,4 @@
-/* CLIPIA X8 — Communauté & évolution : idées, bugs, mises à jour, circuit d'amélioration automatique via GitHub. */
+/* CLIPIA X10 — Communauté & évolution : idées, bugs, mises à jour, circuit d'amélioration automatique via GitHub. */
 export function installerCommunaute({ $, el, esc, api, API, VUES, toast }) {
   document.head.append(el(`<style>.cm .carte{background:#ffffff0d;border:1px solid #ffffff22;border-radius:14px;padding:16px;margin:12px 0}.cm input,.cm textarea{width:100%;border-radius:10px;padding:10px;background:#0003;border:1px solid #ffffff2a;color:inherit;font:inherit;margin:6px 0}.cm ol li{margin:8px 0}.cm .petit{font-size:13px;opacity:.8}.cm .nv{background:#00e0a422;border:1px solid #00e0a488;border-radius:12px;padding:12px;margin:10px 0}</style>`));
   async function majBandeau(force) {

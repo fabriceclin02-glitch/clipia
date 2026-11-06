@@ -1,5 +1,5 @@
 'use strict';
-/* Clipia X8 — pilotage de Kodi (lecteur multimédia) par la voix, via son interface JSON-RPC. */
+/* Clipia X10 — pilotage de Kodi (lecteur multimédia) par la voix, via son interface JSON-RPC. */
 const Kodi=(()=>{
   const cfg=()=>Object.assign({on:false,url:'http://localhost:8080',user:'kodi',mdp:''},M.lire('kodi.cfg',{}));
   const Kodi_yt=async()=>{try{const r=await k.rpc('Addons.GetAddonDetails',{addonid:'plugin.video.youtube',properties:['enabled']});return !!(r&&r.addon&&r.addon.enabled)}catch(e){return false}};
