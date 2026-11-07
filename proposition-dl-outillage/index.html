@@ -62,6 +62,36 @@ section{padding:84px 0}
 .rev .big{font:800 78px var(--fd);color:var(--or);line-height:1}.stars{color:var(--or2);font-size:26px;letter-spacing:4px}
 .ct{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
 .ag{padding:28px;border-radius:18px;background:var(--navy);border:1px solid var(--line)}.ag h3{font-size:32px}.ag a.ph{font:800 34px var(--fd);color:var(--or);text-decoration:none;display:block;margin:10px 0}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;counter-reset:s}
+.st{padding:26px;border-radius:18px;background:linear-gradient(160deg,var(--card),var(--navy));border:1px solid var(--line);position:relative;overflow:hidden}
+.st b{position:absolute;right:14px;top:-14px;font:800 120px var(--fd);color:#ffffff0d}.st h3{font-size:30px;margin-bottom:8px}.st p{color:var(--mute)}
+.bar{display:grid;gap:14px;margin-bottom:24px}
+#q{width:100%;padding:16px 20px;border-radius:14px;border:1px solid var(--line);background:var(--navy);color:#fff;font:500 18px var(--fb)}
+#q::placeholder{color:var(--mute)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--navy);color:var(--ice);padding:8px 14px;border-radius:999px;font:600 14px var(--fb);cursor:pointer}
+.chip[aria-pressed=true]{background:linear-gradient(90deg,var(--or),var(--or2));color:#1a0b00;border-color:transparent}
+.prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.pr{display:flex;flex-direction:column;text-align:left;border:1px solid var(--line);background:var(--navy);border-radius:16px;overflow:hidden;color:inherit;cursor:pointer;padding:0;font:inherit;transition:transform .15s ease-out,border-color .3s,box-shadow .3s;transform-style:preserve-3d}
+.pr:hover{border-color:var(--or);box-shadow:0 20px 50px #000a,0 0 30px #ff6b2c33}
+.pr .im{aspect-ratio:4/3;background:#fff;display:grid;place-items:center;overflow:hidden;position:relative}
+.pr .im img{width:100%;height:100%;object-fit:contain;transition:transform .5s}.pr:hover .im img{transform:scale(1.08)}
+.pr .im .ph{display:grid;place-items:center;width:100%;height:100%;background:linear-gradient(135deg,#272066,#1d1650);color:var(--or)}
+.pr .im .ph svg{width:70px;height:70px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+.pr .vb{position:absolute;left:10px;top:10px;background:var(--or);color:#1a0b00;font:700 12px var(--fb);padding:4px 10px;border-radius:999px}
+.pr .tx{padding:14px 16px}.pr small{color:var(--or);font-weight:600;font-size:13px}.pr h3{font-size:22px;margin-top:4px;line-height:1.05}
+#mod{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:#05031ccc;backdrop-filter:blur(6px);padding:16px}
+#mod.on{display:grid}
+.mc{width:min(920px,100%);max-height:92vh;overflow:auto;border-radius:22px;background:var(--navy);border:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr}
+.mc .l{background:#fff;display:grid;place-items:center;min-height:260px}.mc .l img{width:100%;max-height:420px;object-fit:contain}
+.mc .r{padding:28px;display:flex;flex-direction:column;gap:14px}.mc h2{font-size:38px}.mc .vv{border-radius:14px;overflow:hidden;background:#000}.mc video{display:block;width:100%}
+.mc .x{position:absolute;right:22px;top:20px}
+.x{background:#ffffff1a;border:0;color:#fff;font-size:22px;width:42px;height:42px;border-radius:50%;cursor:pointer}
+.mw{position:relative;width:min(920px,100%)}
+.faq details{border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px;background:var(--navy)}.faq summary{font:700 22px var(--fd);text-transform:uppercase;cursor:pointer}.faq p{color:var(--mute);margin-top:10px}
+.call{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;gap:8px;padding:10px;background:#0e0a2ef2;border-top:1px solid var(--line)}.call a{flex:1;text-align:center;padding:12px;border-radius:10px;background:var(--or);color:#1a0b00;font-weight:700;text-decoration:none}
+@media(max-width:760px){.mc{grid-template-columns:1fr}.call{display:flex}body{padding-bottom:70px}}
 footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:14px}
 .rv{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}.rv.on{opacity:1;transform:none}
 @media(max-width:760px){#c3d{width:100%;opacity:.45}.menu{display:none}.hero::before{background:#0e0a2eaa}}
@@ -81,7 +111,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-si
 
 <header><div class="w nav">
 <a class="brand" href="#top"><svg class="lg" style="--s:52px"><use href="#logo"/></svg><span><b>DL OUTILLAGE</b><small>LOCATION · VENTE · DÉPANNAGE</small></span></a>
-<nav class="menu"><a href="#services">Services</a><a href="#videos">En action</a><a href="#materiel">Matériel</a><a href="#actus">Actualités</a><a href="#contact">Contact</a></nav>
+<nav class="menu"><a href="#services">Services</a><a href="#videos">En action</a><a href="#materiel">Catalogue</a><a href="#actus">Actualités</a><a href="#contact">Contact</a></nav>
 <a class="tel" href="tel:0327650486">03 27 65 04 86</a></div></header>
 
 <main id="top">
@@ -104,15 +134,15 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-si
 <div class="card rv"><svg class="si" viewBox="0 0 64 64"><path d="M6 20h32v24H6zM38 28h12l8 9v7H38z"/><circle cx="18" cy="48" r="5"/><circle cx="48" cy="48" r="5"/></svg><h3>Livraison</h3><p>Le matériel livré sur votre chantier, sur demande.</p></div>
 </div></div></section>
 
-<section id="videos" style="background:#0a0724"><div class="w"><div class="hd rv"><span class="tag">En action</span><h2>Comprenez la machine avant de la louer</h2><p>Trois animations pour voir comment ça fonctionne. Notre équipe vous explique le reste au comptoir.</p></div>
-<div class="vids">
-<div class="v rv"><video src="nacelle.mp4" autoplay muted loop playsinline controls></video><div><b>Nacelle ciseaux</b><span>Travail en hauteur, montée et descente contrôlées</span></div></div>
-<div class="v rv"><video src="gerbeur.mp4" autoplay muted loop playsinline controls></video><div><b>Gerbeur électrique</b><span>Lever et ranger une palette en rayonnage</span></div></div>
-<div class="v rv"><video src="compresseur.mp4" autoplay muted loop playsinline controls></video><div><b>Compresseur</b><span>Comment l'air comprimé alimente vos outils</span></div></div>
-</div></div></section>
+<section id="process"><div class="w"><div class="hd rv"><span class="tag">Simple et rapide</span><h2>Louer en 3 étapes</h2></div>
+<div class="steps"><div class="st rv"><b>1</b><h3>Choisissez</h3><p>Parcourez le catalogue, repérez la machine qu'il vous faut.</p></div><div class="st rv"><b>2</b><h3>Appelez</h3><p>Disponibilité, tarif, conseils d'utilisation : un devis gratuit en un appel.</p></div><div class="st rv"><b>3</b><h3>Récupérez ou faites-vous livrer</h3><p>Au comptoir à Louvroil ou Fourmies, ou directement sur le chantier.</p></div></div></div></section>
 
-<section id="materiel"><div class="w"><div class="hd rv"><span class="tag">Catalogue</span><h2>14 familles de matériel à louer</h2></div>
-<div class="cats t3" id="cats"></div></div></section>
+<section id="videos" style="background:#0a0724"><div class="w"><div class="hd rv"><span class="tag">En action</span><h2>Comprenez la machine avant de la louer</h2><p>Des animations pour voir comment ça fonctionne. Les mêmes se retrouvent dans la fiche des machines concernées.</p></div>
+<div class="vids" id="vids"></div></div></section>
+
+<section id="materiel"><div class="w"><div class="hd rv"><span class="tag">Catalogue</span><h2>Plus de 120 machines à louer</h2><p>Cherchez par nom ou par famille. Cliquez sur une machine pour sa fiche.</p></div>
+<div class="bar"><input id="q" type="search" placeholder="Rechercher : nacelle, perforateur, compresseur…" aria-label="Rechercher une machine"><div class="chips" id="chips"></div></div>
+<div class="prods t3" id="prods"></div><p id="none" style="display:none;color:var(--mute);padding:30px 0">Aucune machine trouvée. Appelez-nous : on a peut-être ce qu'il vous faut.</p></div></section>
 
 <section id="actus" style="background:#0a0724"><div class="w"><div class="hd rv"><span class="tag">Actualités</span><h2>Du nouveau chez DL</h2></div>
 <div class="news">
@@ -123,21 +153,60 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-si
 
 <section><div class="w"><div class="rev rv"><div class="big">36</div><div><div class="stars">★★★★★</div><b style="font:700 26px var(--fd);text-transform:uppercase">Avis Google, clients satisfaits</b><p style="color:var(--mute)">« Excellent, et personnel toujours gentil et au top. » Chaque machine est contrôlée à chaque retour de location.</p></div></div></div></section>
 
+<section><div class="w"><div class="hd rv"><span class="tag">Questions</span><h2>Bon à savoir</h2></div><div class="faq rv">
+<details><summary>Puis-je louer en tant que particulier ?</summary><p>Oui. DL Outillage loue aux particuliers comme aux professionnels, avec une large gamme de matériel de bricolage et de chantier.</p></details>
+<details><summary>Livrez-vous le matériel ?</summary><p>Oui, un service de livraison est proposé. Précisez-le lors de votre appel pour avoir le tarif.</p></details>
+<details><summary>Le matériel est-il contrôlé ?</summary><p>Chaque machine est contrôlée à chaque retour de location.</p></details>
+<details><summary>Combien coûte la location ?</summary><p>Le tarif dépend de la machine et de la durée. Le devis est gratuit : appelez Louvroil ou Fourmies.</p></details>
+<details><summary>Vendez-vous aussi du matériel ?</summary><p>Oui : vente de matériel et dépannage, y compris des nouveautés comme le laser Geo Fennel.</p></details>
+</div></div></section>
+
 <section id="contact"><div class="w"><div class="hd rv"><span class="tag">Contact</span><h2>Un devis gratuit en un appel</h2></div>
 <div class="ct">
 <div class="ag rv"><h3>Agence de Louvroil</h3><a class="ph" href="tel:0327650486">03 27 65 04 86</a><p>246, route d'Avesnes<br>59720 Louvroil</p></div>
 <div class="ag rv"><h3>Agence de Fourmies</h3><a class="ph" href="tel:0327623751">03 27 62 37 51</a><p>Location, vente et dépannage<br>Demandez votre devis</p></div>
 </div></div></section>
 </main>
+<div id="mod" role="dialog" aria-modal="true" aria-label="Fiche machine"><div class="mw"><button class="x mc-x" id="mx" aria-label="Fermer">✕</button><div class="mc" id="mc"></div></div></div>
+<div class="call"><a href="tel:0327650486">Louvroil</a><a href="tel:0327623751">Fourmies</a></div>
 <footer><div class="w">© DL Outillage · Location d'équipements et matériel de bricolage · Maquette de refonte</div></footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// catégories
-const C=[['Gros œuvre / Terrassement','gros-oeuvre-et-terrassement'],['Nacelles','nacelles'],['Espaces verts','espaces-verts'],['Compresseurs / Air comprimé','compresseurs-air-comprime'],['Bâtiment / Génie civil','batiment-genie-civil'],['Perforation / Sciage','perforation-sciage'],['Groupe électrogène / Éclairage','groupe-electrogene-eclairage'],['Rénovation / Peinture','renovation-peinture'],['Travaux du bois','travaux-du-bois'],['Nettoyage','nettoyage'],['Transport / Manutention','transport-manutention'],['Aménagement de chantier','amenagement-de-chantier'],['Soudure / Pompe / Plomberie','soudure-pompe-plomberie'],['Outillage divers','outillage-divers']];
-document.getElementById('cats').innerHTML=C.map((c,i)=>`<a class="cat rv t" href="https://www.location-dl.fr/categorie-matériel/${c[1]}/"><i>${String(i+1).padStart(2,'0')}</i><b>${c[0]}</b><span>Voir les machines →</span></a>`).join('');
+const FAM=['Gros œuvre / Terrassement','Nacelles','Espaces verts','Compresseurs / Air comprimé','Bâtiment / Génie civil','Perforation / Sciage','Groupe électrogène / Éclairage','Rénovation / Peinture','Travaux du bois','Nettoyage','Transport / Manutention','Aménagement de chantier','Soudure / Pompe / Plomberie','Outillage divers'];
+const SLUG=['gros-oeuvre-et-terrassement','nacelles','espaces-verts','compresseurs-air-comprime','batiment-genie-civil','perforation-sciage','groupe-electrogene-eclairage','renovation-peinture','travaux-du-bois','nettoyage','transport-manutention','amenagement-de-chantier','soudure-pompe-plomberie','outillage-divers'];
+const D=[[0,"Chargeurs compacts sur roues / chenilles","2110/Location-mini-BOBCAT-S70-PNEUS-solutions-travaux.jpg"],[0,"Chargeuse articulée sur pneus","2110/chargeuse-articulee.jpg"],[0,"Chariots télescopiques","2110/telescopique.jpg"],[0,"Mini-pelleteuses de 1 à 15 tonnes","2109/DSC00692.jpg"],[0,"Pilonneuses","2110/mtx60e.jpg"],[0,"Plaques vibrantes","2110/Plaque-vibrante-type-450kg.jpg"],[0,"Rouleaux vibrants","2110/rouleau-1.20-m.jpg"],[1,"Camion nacelle","2110/IMG_4244.jpg"],[1,"Nacelle araignée","2110/nacelle-araignee-17m.png"],[1,"Nacelle articulée automotrice diesel","2110/nacelle-articulee-diesel.png"],[1,"Nacelle articulée électrique","2110/nacelle-articulee-electrique.jpg"],[1,"Nacelle ciseau électrique","2110/nacelle-ciseau-electrique.jpg"],[1,"Nacelle ciseau tout-terrain diesel","2110/nacelle-ciseau-diesel.jpg"],[1,"Nacelle télescopique diesel","2410/2.jpg"],[1,"Nacelle toucan électrique","2110/nacelle-toucan-electrique-JLG.png"],[1,"Nacelle tractable","2110/IMG_4249-1.jpg"],[2,"Broyeur de branches","2110/broyeur-de-branches-13cv.jpg"],[2,"Débroussailleuse","2110/debroussailleuse.jpg"],[2,"Désherbeur",""],[2,"Épandeur de sel ou d'engrais","2110/1098-EPANDEUR-DE-SEL-TRAINE-SSA500.jpg"],[2,"Fendeur et scie à bûches","2110/fendeur-de-buches-tractable.jpg"],[2,"Grignoteuse de souches","2110/grignoteuse-de-souches-sur-chenilles.jpg"],[2,"Pulvérisateur électrique","2110/732-Pulverisateur-Lance-telescopique-6-m.jpg"],[2,"Rouleau de jardinage","2110/bbd3tj.jpg"],[2,"Scarificateur","2110/scarificateur.jpeg"],[2,"Souffleur de feuilles","2110/41J5kDqSXGL._AC_.jpg"],[2,"Taille-haie","2110/taille-haie.jpg"],[2,"Tarière","2110/tariere-2-hommes.jpg"],[3,"Clé à choc",""],[3,"Compresseur essence","2110/compresseur-CM7-pour-page-10.png"],[3,"Compresseur monophasé","2110/compresseur-lacme-page-11.png"],[3,"Compresseurs de chantier","2110/compresseur-de-chantier.jpg"],[3,"Hydrogommeuse","2110/hydrogommeuse.jpg"],[3,"Micro-sableuse","2110/micro-sableuse.jpg"],[3,"Aiguille vibrante et fusée pneumatique",""],[3,"Burineurs et piqueurs pneumatiques","2110/piqueur-pneumatique.jpg"],[3,"Pistolet à peinture de précision","2110/70141.jpg"],[3,"Rejointoyeuse","2110/rejointoyeuse.jpg"],[3,"Sableuse","2110/sableuse.jpg"],[3,"Sablon, projecteur d'enduit ciment","2110/sablon-page-10.png"],[4,"Aiguille vibrante électrique","2110/aiguille-vibrante-electrique.jpg"],[4,"Bétonnières","2110/betonniere-130-l.jpg"],[4,"Brouette de maçon","2110/brouette-2.jpg"],[4,"Dumper","2110/dumper.png"],[4,"Étais","2110/etai-macon-0m70-a-1m30.jpg"],[4,"Laser rotatif","2110/niveau-laser-rotatif.jpg"],[4,"Lunette de chantier","2110/pack-niveau-optique-gfn1-trepied-lunette-de-chantier.jpg"],[4,"Machine à chape","2110/machine-a-chape-250x239.jpg"],[4,"Machine à crépir","2110/images.jpg"],[4,"Machine à projeter pour façade","2110/projeteuse-a-projeter-pour-facade.jpg"],[4,"Mini-transporteur sur chenilles","2110/mini-transporteur-sur-chenilles.jpg"],[4,"Ponceuse à béton et à marbre","2110/ponceuse-a-beton-2.jpg"],[5,"Burineurs","2110/burineur-eectrique-250x178.jpg"],[5,"Carotteuses","2110/carotteuse-portative.jpg"],[5,"Coupe-pavé",""],[5,"Meuleuses","2110/MEULEUSE-125.jpg"],[5,"Perceuse","2204/616rGwpHJNL._AC_SL1015_.jpg"],[5,"Perforateurs","2110/perfo-burineur-sds-sans-charbon-18v-li-ion-makita-bhr243z-000283514-product_zoom.jpg"],[5,"Piqueurs électriques et thermiques","2110/piqueur-28kg-electrique.jpg"],[5,"Rainureuse électrique","2110/makita-rainureuse-a-double-disque-1800-w-o-180-mm-3995201.jpg"],[5,"Scie de carreleur électrique",""],[5,"Scie de sol","2110/scie-de-sol.jpg"],[5,"Scie murale","2110/scie-murale-electrique.jpg"],[5,"Scie sur table","2110/scie-carreleur-sur-table.jpg"],[6,"Groupe électrogène","2110/groupe-electrogene-5-Kwa.jpg"],[6,"Halogène 500 W","2204/projecteur-de-chantier-portable-halogene-500w.jpg"],[6,"Mât d'éclairage",""],[6,"Projecteur",""],[7,"Agitateur peinture et enduits",""],[7,"Cardeuse","2204/telechargement.jpg"],[7,"Décolleuse de moquette","2110/decolleuse-moquette.jpg"],[7,"Décolleuse de papier peint","2110/decolleuse-papier-peint.jpg"],[7,"Malaxeur","2110/malaxeur-altrad-promix-1600-1600w.jpg"],[7,"Monodisque","2110/monodisque.jpg"],[7,"Pistolet airless","2110/pistolet-airless.png"],[7,"Ponceuse mur et plafond","2110/ponceuse-murale-et-plafond.jpg"],[7,"Projeteuse d'enduit","2110/pompe-vis-mortir-projection-small-50-imer-2.jpg"],[8,"Bordureuse","2110/bordureuse.jpg"],[8,"Ponceuse",""],[8,"Ponceuse à parquet","2110/ponceuse-a-parquet.jpg"],[8,"Scies, rabots et défonceuse",""],[9,"Aspirateur industriel","2110/aspirateur-industriel.jpg"],[9,"Autolaveuse","2204/40583-11826812.jpg"],[9,"Générateur d'eau chaude",""],[9,"Nettoyeur haute pression","2110/nettoyeur-HP-diamco.jpg"],[9,"Nettoyeur moquette","2110/injecteur-extracteur-265x331.jpg"],[9,"Nettoyeur vapeur",""],[10,"Camion benne","2110/CAMION-BENNE-2.jpg"],[10,"Camion plateau porte-voiture","2205/PLATEAU-2.jpg"],[10,"Chariot élévateur","2110/chariot-elevateur.png"],[10,"Diable",""],[10,"Échafaudages",""],[10,"Élévateur superlift",""],[10,"Escabeau et échelles","2110/ESCABEAU-MO.jpg"],[10,"Goulotte à gravats","2110/goulottes-a-gravats.jpg"],[10,"Grue d'atelier","2110/grue-datelier.jpg"],[10,"Lève-poutre","2206/leve-poutre.jpg"],[10,"Lève-plaque","2110/leve-plaque.jpg"],[10,"Monte-matériaux","2110/monte-materiaux.jpg"],[11,"Barrières","2110/barriere.jpg"],[11,"Bloc sanitaire",""],[11,"Bungalow","2110/bungalow.jpg"],[11,"Chauffages","2110/chauffage-2.jpg"],[11,"Climatiseur",""],[11,"Coffret de chantier","2206/3281851549512_1154951_A001_normal.jpg"],[11,"Cône de signalisation","2206/cone-de-signalisation-en-plastique-polyethylene-de-couleur-rouge-fluorescent-avec-2-rayures-blanches.jpg"],[11,"Déshumidificateur",""],[11,"Enrouleur","2110/enrouleur-bricolage-4-prises-h05vv-f3g1-5mm2-25m-nf-ce.jpg"],[11,"Feux de chantier","2110/feux-de-chantier.jpg"],[11,"Panneaux de signalisation","2206/panneau-de-chantier-temporaire-sur-pieds-hauteur-70cm-ou-100cm.jpg"],[11,"Table et banc de réception","2110/tables-et-bancs.jpg"],[12,"Cintreuse",""],[12,"Détartreur de chauffe-eau",""],[12,"Filière",""],[12,"Lance-brûleur",""],[12,"Plieuse à zinc",""],[12,"Pompes","2110/pompe-75m.jpg"],[12,"Poste à souder, électrique et autonome",""],[13,"Agrafeuse-cloueuse",""],[13,"Chargeur de batterie",""],[13,"Cric 3 tonnes",""],[13,"Décapeur thermique",""],[13,"Perceuse magnétique",""],[13,"Ponceuse à béton portable","2204/ponceuse_golz_psm_25_photo.jpg"],[13,"Visseuse",""]];
+const VID={nacelle:['Nacelle ciseaux','Travail en hauteur, montée et descente contrôlées'],gerbeur:['Gerbeur électrique','Lever et ranger une palette en rayonnage'],compresseur:['Compresseur','Comment l’air comprimé alimente vos outils'],compactage:['Plaque vibrante','Elle vibre et tasse le sol'],groupe:['Groupe électrogène','Du moteur à l’électricité sur le chantier'],carotte:['Carotteuse','Un trou net dans le béton'],nettoyage:['Nettoyeur haute pression','Le jet décolle la saleté en un passage']};
+function vidOf(c,n){n=n.toLowerCase();if(/plaque vibr|pilonn|rouleau vibr/.test(n))return'compactage';if(/carotteu/.test(n))return'carotte';if(/nettoyeur haute/.test(n))return'nettoyage';if(/nacelle/.test(n))return'nacelle';if(/compresseur/.test(n))return'compresseur';if(/groupe électro/.test(n))return'groupe';if(/chariot|élévateur|lève-|monte-/.test(n))return'gerbeur';return null}
+const img=p=>p?'https://www.location-dl.fr/wp-content/uploads/20'+p.slice(0,2)+'/'+p.slice(2):'';
+const PH='<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="11"/><path d="M32 8v10M32 46v10M8 32h10M46 32h10M15 15l7 7M42 42l7 7M49 15l-7 7M22 42l-7 7"/></svg>';
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+document.getElementById('vids').innerHTML=Object.keys(VID).map(k=>`<div class="v rv"><video src="${k}.mp4" muted loop playsinline controls preload="none" poster=""></video><div><b>${VID[k][0]}</b><span>${VID[k][1]}</span></div></div>`).join('');
+document.querySelectorAll('#vids video').forEach(v=>{new IntersectionObserver(e=>{e[0].isIntersecting?v.play().catch(()=>{}):v.pause()},{threshold:.4}).observe(v)});
+let fam=-1,qq='';
+const chips=document.getElementById('chips');
+chips.innerHTML='<button class="chip" data-f="-1" aria-pressed="true">Tout</button>'+FAM.map((f,i)=>`<button class="chip" data-f="${i}" aria-pressed="false">${f}</button>`).join('');
+chips.onclick=e=>{const b=e.target.closest('.chip');if(!b)return;fam=+b.dataset.f;chips.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));draw()};
+document.getElementById('q').oninput=e=>{qq=e.target.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');draw()};
+function draw(){const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+ const L=D.map((d,i)=>[d,i]).filter(([d])=>(fam<0||d[0]==fam)&&(!qq||norm(d[1]).includes(qq)||norm(FAM[d[0]]).includes(qq)));
+ document.getElementById('prods').innerHTML=L.map(([d,i])=>{const v=vidOf(d[0],d[1]);return `<button class="pr" data-i="${i}"><div class="im">${d[2]?`<img src="${img(d[2])}" alt="${esc(d[1])}" loading="lazy" onerror="this.outerHTML='<div class=ph>${PH.replace(/"/g,"&quot;")}</div>'">`:`<div class="ph">${PH}</div>`}${v?'<span class="vb">▶ Animation</span>':''}</div><div class="tx"><small>${FAM[d[0]]}</small><h3>${esc(d[1])}</h3></div></button>`}).join('');
+ document.getElementById('none').style.display=L.length?'none':'block';
+ document.querySelectorAll('.pr').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(700px) rotateY(${x*10}deg) rotateX(${-y*10}deg) translateY(-4px)`});el.addEventListener('mouseleave',()=>el.style.transform='')})}
+draw();
+const mod=document.getElementById('mod'),mc=document.getElementById('mc');
+function openP(i){const d=D[i],v=vidOf(d[0],d[1]);
+ mc.innerHTML=`<div class="l">${d[2]?`<img src="${img(d[2])}" alt="${esc(d[1])}" onerror="this.outerHTML='<div style=color:#ff6b2c;padding:60px;font-weight:700>Photo à venir</div>'">`:`<div class="ph" style="color:var(--or);padding:60px">${PH.replace('<svg','<svg width=120 height=120 style="fill:none;stroke:currentColor;stroke-width:3"')}</div>`}</div>
+ <div class="r"><span class="tag" style="margin:0">${FAM[d[0]]}</span><h2>${esc(d[1])}</h2><p style="color:var(--mute)">Disponible à la location chez DL Outillage, à Louvroil et Fourmies. Conseils d'utilisation donnés au comptoir, matériel contrôlé à chaque retour.</p>
+ ${v?`<div class="vv"><video src="${v}.mp4" autoplay muted loop playsinline controls></video></div>`:''}
+ <div class="btns"><a class="b p" href="tel:0327650486">Louvroil 03 27 65 04 86</a><a class="b s" href="tel:0327623751">Fourmies 03 27 62 37 51</a></div>
+ <a href="https://www.location-dl.fr/categorie-matériel/${SLUG[d[0]]}/" style="color:var(--mute);font-size:14px">Voir la famille sur le site actuel</a></div>`;
+ mod.classList.add('on');document.body.style.overflow='hidden'}
+function closeP(){mod.classList.remove('on');mc.innerHTML='';document.body.style.overflow=''}
+document.getElementById('prods').onclick=e=>{const b=e.target.closest('.pr');if(b)openP(+b.dataset.i)};
+document.getElementById('mx').onclick=closeP;mod.onclick=e=>{if(e.target===mod)closeP()};addEventListener('keydown',e=>{if(e.key==='Escape')closeP()});
 // inclinaison 3D
-document.querySelectorAll('.card,.cat').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*14}deg) rotateX(${-y*14}deg) translateY(-4px)`});el.addEventListener('mouseleave',()=>el.style.transform='')});
+document.querySelectorAll('.card').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*14}deg) rotateX(${-y*14}deg) translateY(-4px)`});el.addEventListener('mouseleave',()=>el.style.transform='')});
 // apparition
 const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target)}}),{threshold:.12});
 document.querySelectorAll('.rv').forEach(e=>io.observe(e));
