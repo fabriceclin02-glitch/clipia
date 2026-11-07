@@ -1,0 +1,80 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Deal-Connection</title></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: sombre néon sur trame hexagonale ; vidéo en tête, puis quatre métiers en grille, horaires en pied */
+:root{--bg:#090c14;--bg2:#0f1424;--card:#141b30;--line:#26335c;--fg:#e8edf8;--mute:#9aa7c7;--c1:#38bdf8;--c2:#a78bfa;--c3:#f472b6;--ok:#4ade80;--f-d:'Outfit','Arial Black',sans-serif;--f-b:'DM Sans',Arial,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 var(--f-b);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34zM28 100L0 84V66m56 0v18L28 100' fill='none' stroke='%2338bdf8' stroke-opacity='.12' stroke-width='1.5'/%3E%3C/svg%3E")}
+.w{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-d);line-height:1.1;margin:0;text-wrap:balance}
+.g{background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{display:flex;flex-wrap:wrap;gap:12px 22px;align-items:center;justify-content:space-between;padding-block:18px}
+.logo{display:flex;align-items:center;gap:12px;font:800 22px var(--f-d)}
+.logo i{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--c1),var(--c2),var(--c3));display:grid;place-items:center;font-style:normal;color:#fff;font-size:22px}
+nav a{color:var(--mute);text-decoration:none;font-weight:500;margin-left:18px}nav a:hover,nav a:focus-visible{color:var(--fg)}
+.hero{padding-block:36px 24px;display:grid;gap:22px}
+.hero h1{font-size:clamp(34px,6vw,64px);font-weight:800;max-width:15ch}
+.hero p{color:var(--mute);font-size:19px;max-width:52ch;margin:0}
+.vid{border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 30px 80px #000a,0 0 60px #38bdf822;background:#000}
+video{display:block;width:100%;height:auto}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.b{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;text-decoration:none;color:#06101d;background:linear-gradient(90deg,var(--c1),var(--c2))}
+.b.s{background:none;color:var(--fg);border:1px solid var(--line)}
+section{padding-block:56px 8px}
+section>h2{font-size:clamp(28px,4vw,42px);font-weight:800;margin-bottom:10px}
+.lead{color:var(--mute);max-width:60ch;margin:0 0 28px}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.card{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:24px;min-width:0}
+.card h3{font-size:24px;margin-bottom:12px}
+.card ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.card li{padding-left:26px;position:relative;color:var(--fg)}
+.card li::before{content:"✔";position:absolute;left:0;color:var(--ok)}
+.tag{font:700 12px var(--f-b);letter-spacing:.14em;text-transform:uppercase;color:var(--c1);margin-bottom:8px}
+.cash{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.chips li{border:1px solid var(--line);border-radius:999px;padding:8px 16px;background:var(--bg2);font-weight:500}
+.cond li::before{content:"•";color:var(--c3)}
+.info{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.hr{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0}
+.hr dt{color:var(--mute)}.hr dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.ph{color:var(--mute);border:1px dashed var(--line);border-radius:12px;padding:14px;margin-top:14px;font-size:14px}
+footer{margin-top:64px;border-top:1px solid var(--line);padding-block:26px;color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+@media (prefers-reduced-motion:no-preference){.card{transition:transform .25s,border-color .25s}.card:hover{transform:translateY(-4px);border-color:var(--c1)}}
+:focus-visible{outline:2px solid var(--c1);outline-offset:3px}
+</style>
+<div class="w">
+<nav><div class="logo"><i>D</i>Deal-Connection</div><div><a href="#reparation">Réparation</a><a href="#sono">Sono</a><a href="#rachat">Rachat cash</a><a href="#venir">Horaires</a></div></nav>
+
+<header class="hero">
+<h1>Votre informatique <span class="g">de proximité</span></h1>
+<p>Réparation, PC sur mesure, sonorisation, rachat de matériel. Installés dans le centre-ville de Fourmies depuis 2006, des gens qui prennent le temps de vous expliquer.</p>
+<div class="vid"><video controls preload="metadata" playsinline poster="poster.jpg"><source src="Deal-Connection-presentation.mp4" type="video/mp4"></video></div>
+<div class="btns"><a class="b" href="#reparation">Voir nos services</a><a class="b s" href="#venir">Horaires d'ouverture</a></div>
+</header>
+
+<section id="reparation"><div class="tag">Informatique</div><h2>Votre ordinateur, <span class="g">remis d'aplomb</span></h2>
+<p class="lead">Déposez votre machine pour un pré-diagnostic. Nous réparons dans les meilleurs délais, en atelier ou chez vous.</p>
+<div class="grid">
+<div class="card"><h3>Dépannage et réparation</h3><ul><li>Pré-diagnostic à la dépose</li><li>Réparation en atelier ou à domicile</li><li>Nettoyage des virus, spywares et malwares</li><li>Optimisation du système</li></ul></div>
+<div class="card"><h3>Windows et données</h3><ul><li>Réinstallation de Windows et des pilotes</li><li>Sauvegarde de vos données avant intervention</li><li>Remise à niveau et évolution du matériel</li></ul></div>
+<div class="card"><h3>Matériel sur mesure</h3><ul><li>Configuration et assemblage de votre PC</li><li>Pièces, périphériques, portables</li><li>Consommables</li></ul></div>
+</div></section>
+
+<section id="sono"><div class="tag">Sonorisation</div><h2>Vente et <span class="g">location de sono</span></h2>
+<p class="lead">Pour une soirée, une association ou un groupe : du matériel d'enceintes, de mixage et de micros, à acheter ou à louer le temps d'un événement.</p>
+<div class="card"><ul class="chips"><li>Enceintes</li><li>Tables de mixage</li><li>Micros et accessoires</li><li>Location à la journée ou au week-end</li></ul><div class="ph">Tarifs de location : demandez-nous en magasin.</div></div></section>
+
+<section id="rachat"><div class="tag">Achat / Vente</div><h2>Vous vendez, <span class="g">on vous paie cash</span></h2>
+<p class="lead">Apportez vos produits d'occasion : nous les estimons sur place et vous êtes payé immédiatement.</p>
+<div class="cash"><div class="card"><h3>Produits repris</h3><ul class="chips"><li>Téléphonie</li><li>Informatique</li><li>Consoles et jeux vidéo</li><li>Son et image</li><li>Musique</li></ul></div>
+<div class="card"><h3>Pour vendre</h3><ul class="cond"><li>Avoir 18 ans ou plus</li><li>Présenter une pièce d'identité valide avec photo</li><li>Matériel complet et en état de marche</li><li>Apporter accessoires et notices</li><li>Facture d'achat, si vous l'avez encore</li></ul></div></div></section>
+
+<section id="venir"><div class="tag">Pratique</div><h2>Venez <span class="g">nous voir</span></h2><p class="lead">Dépôt de matériel, pré-diagnostic, estimation de vos produits : passez directement au magasin.</p>
+<div class="info"><div class="card"><h3>Horaires</h3><dl class="hr"><dt>Lundi – vendredi</dt><dd>10h – 17h non stop</dd><dt>Samedi</dt><dd>10h – 12h</dd><dt>Dimanche</dt><dd>Fermé</dd></dl></div>
+<div class="card"><h3>Adresse et contact</h3><p style="margin:0;font-size:19px;line-height:1.7">1 bis rue Jean-Pierre Dupont<br>59610 Fourmies<br><b class="g" style="font-family:var(--f-d);font-size:26px;font-variant-numeric:tabular-nums">03 27 65 17 91</b></p></div></div></section>
+
+<footer><span>© Deal-Connection · Fourmies</span><span>Réparer · Équiper · Sonoriser · Racheter</span></footer>
+</div>
+</body></html>
