@@ -5,7 +5,7 @@
 :root{--navy:#1d1650;--navy2:#0e0a2e;--or:#ff6b2c;--or2:#ffb347;--ice:#e8ecff;--mute:#a9b0d6;--card:#272066;--line:#3a3190;--fd:'Barlow Condensed',Impact,sans-serif;--fb:'Barlow',Arial,sans-serif}
 *{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
 body{background:var(--navy2);color:var(--ice);font:17px/1.6 var(--fb);overflow-x:hidden}
-.w{max-width:1180px;margin:0 auto;padding:0 20px}
+.w{max-width:1180px;width:100%;margin:0 auto;padding:0 20px}
 h1,h2,h3{font-family:var(--fd);text-transform:uppercase;line-height:1;letter-spacing:.01em}
 a{color:inherit}
 /* NAV */
@@ -20,7 +20,7 @@ header{position:sticky;top:0;z-index:50;background:#0e0a2eec;backdrop-filter:blu
 .lg .teeth{transform-origin:50px 50px;animation:rot 14s linear infinite}
 .lg .ring{transform-origin:50px 50px;animation:rot 9s linear infinite reverse}
 .lg .ic{opacity:0;transform-origin:50px 50px;animation:cyc 8s infinite}
-.lg .ic:nth-of-type(2){animation-delay:2s}.lg .ic:nth-of-type(3){animation-delay:4s}.lg .ic:nth-of-type(4){animation-delay:6s}
+.lg .i2{animation-delay:2s}.lg .i3{animation-delay:4s}.lg .i4{animation-delay:6s}
 @keyframes rot{to{transform:rotate(360deg)}}
 @keyframes cyc{0%{opacity:0;transform:scale(.4)}6%,22%{opacity:1;transform:scale(1)}28%,100%{opacity:0;transform:scale(1.4)}}
 /* HERO */
@@ -65,7 +65,7 @@ section{padding:84px 0}
 footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:14px}
 .rv{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}.rv.on{opacity:1;transform:none}
 @media(max-width:760px){#c3d{width:100%;opacity:.45}.menu{display:none}.hero::before{background:#0e0a2eaa}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.lg .ic:first-of-type{opacity:1}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.lg .i1{opacity:1}}
 :focus-visible{outline:3px solid var(--or2);outline-offset:3px}
 </style></head><body>
 <svg width="0" height="0" style="position:absolute"><defs>
@@ -73,10 +73,10 @@ footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-si
 <g class="teeth"><circle cx="50" cy="50" r="40" fill="#ff6b2c"/><g fill="#ff6b2c"><rect x="44" y="1" width="12" height="14" rx="3"/><rect x="44" y="85" width="12" height="14" rx="3"/><rect x="1" y="44" width="14" height="12" rx="3"/><rect x="85" y="44" width="14" height="12" rx="3"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(45 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(135 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(225 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(315 50 50)"/></g></g>
 <circle cx="50" cy="50" r="32" fill="#1d1650"/>
 <circle class="ring" cx="50" cy="50" r="28" fill="none" stroke="#ffb347" stroke-width="2" stroke-dasharray="6 8"/>
-<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M34 62L58 38M58 38a9 9 0 1 1 8-8l-6 2-2 6z"/></g>
-<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M32 52l18-18h16v16L48 68z"/><circle cx="58" cy="42" r="2" fill="#fff"/></g>
-<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="9"/><path d="M50 30v7M50 63v7M30 50h7M63 50h7"/></g>
-<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M30 40h26v20H30zM56 46h10l6 7v7H56z"/><circle cx="40" cy="64" r="3.5" fill="#fff"/><circle cx="64" cy="64" r="3.5" fill="#fff"/></g>
+<g class="ic i1" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M34 62L58 38M58 38a9 9 0 1 1 8-8l-6 2-2 6z"/></g>
+<g class="ic i2" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M32 52l18-18h16v16L48 68z"/><circle cx="58" cy="42" r="2" fill="#fff"/></g>
+<g class="ic i3" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="9"/><path d="M50 30v7M50 63v7M30 50h7M63 50h7"/></g>
+<g class="ic i4" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M30 40h26v20H30zM56 46h10l6 7v7H56z"/><circle cx="40" cy="64" r="3.5" fill="#fff"/><circle cx="64" cy="64" r="3.5" fill="#fff"/></g>
 </symbol></defs></svg>
 
 <header><div class="w nav">
@@ -144,20 +144,20 @@ document.querySelectorAll('.rv').forEach(e=>io.observe(e));
 setTimeout(()=>document.querySelectorAll('.rv').forEach(e=>e.classList.add('on')),2500);
 // scène 3D : deux engrenages
 try{
-const cv=document.getElementById('c3d'),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
-const S=new THREE.Scene(),Cm=new THREE.PerspectiveCamera(40,1,.1,100);Cm.position.set(0,0,15);
+const cv=document.getElementById('c3d'),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});R.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const S=new THREE.Scene(),Cm=new THREE.PerspectiveCamera(40,1,.1,100);Cm.position.set(0,0,24);
 function gear(n,ro,ri,th,col){const sh=new THREE.Shape(),st=Math.PI*2/n;for(let i=0;i<n;i++){const a=i*st,p=[[ri,a],[ro,a+st*.18],[ro,a+st*.42],[ri,a+st*.6]];p.forEach((q,j)=>{const x=Math.cos(q[1])*q[0],y=Math.sin(q[1])*q[0];(i==0&&j==0)?sh.moveTo(x,y):sh.lineTo(x,y)})}
 const h=new THREE.Path();h.absarc(0,0,ri*.35,0,Math.PI*2,true);sh.holes.push(h);
 const g=new THREE.ExtrudeGeometry(sh,{depth:th,bevelEnabled:true,bevelSize:.08,bevelThickness:.08,bevelSegments:2});g.translate(0,0,-th/2);
 return new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,metalness:.7,roughness:.35}))}
-const g1=gear(14,4,3.3,1.2,0xff6b2c),g2=gear(9,2.6,2.05,1.2,0xe8ecff);g1.position.set(1,0,0);g2.position.set(-4.3,3.9,0);g2.rotation.z=.2;
-const g3=gear(8,1.9,1.5,1,0xffb347);g3.position.set(5.6,-4.2,-1);S.add(g1,g2,g3);
+const g1=gear(14,4,3.3,1.2,0xff6b2c),g2=gear(9,2.6,2.05,1.2,0xe8ecff);g1.position.set(4,-1,0);g2.position.set(-0.3,4.6,0);g2.rotation.z=.2;
+const g3=gear(8,1.9,1.5,1,0xffb347);g3.position.set(9.5,-6,-1);S.add(g1,g2,g3);
 S.add(new THREE.AmbientLight(0x8890ff,.6));const L=new THREE.DirectionalLight(0xffffff,1.6);L.position.set(5,8,10);S.add(L);const L2=new THREE.PointLight(0xff6b2c,2,30);L2.position.set(-6,-4,6);S.add(L2);
-let mx=0,my=0;addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+let vis=true;new IntersectionObserver(e=>vis=e[0].isIntersecting).observe(cv);let mx=0,my=0;addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
 function rs(){const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);Cm.aspect=w/h;Cm.updateProjectionMatrix()}rs();addEventListener('resize',rs);
 const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
 (function f(t){g1.rotation.z=t/4000;g2.rotation.z=.2-t/4000*14/9;g3.rotation.z=-t/4000*14/8+.3;
 g1.rotation.y=mx*.6;g1.rotation.x=my*.4;g2.rotation.y=mx*.5;g3.rotation.y=mx*.5;S.rotation.y+=((mx*.3)-S.rotation.y)*.05;
-R.render(S,Cm);if(!rm)requestAnimationFrame(f)})(0);
+if(vis)R.render(S,Cm);if(!rm)requestAnimationFrame(f)})(0);
 }catch(e){}
 </script></body></html>
