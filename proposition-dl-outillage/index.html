@@ -1,0 +1,163 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>DL Outillage – Location de matériel à Louvroil et Fourmies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1d1650;--navy2:#0e0a2e;--or:#ff6b2c;--or2:#ffb347;--ice:#e8ecff;--mute:#a9b0d6;--card:#272066;--line:#3a3190;--fd:'Barlow Condensed',Impact,sans-serif;--fb:'Barlow',Arial,sans-serif}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
+body{background:var(--navy2);color:var(--ice);font:17px/1.6 var(--fb);overflow-x:hidden}
+.w{max-width:1180px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--fd);text-transform:uppercase;line-height:1;letter-spacing:.01em}
+a{color:inherit}
+/* NAV */
+header{position:sticky;top:0;z-index:50;background:#0e0a2eec;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;gap:22px;padding:8px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand b{font:800 26px var(--fd);letter-spacing:.04em;line-height:1}.brand small{display:block;font:500 12px var(--fb);color:var(--mute);letter-spacing:.14em}
+.menu{display:flex;gap:22px;margin-left:auto;font-weight:600}.menu a{text-decoration:none;color:var(--mute)}.menu a:hover{color:#fff}
+.tel{background:var(--or);color:#1a0b00;padding:10px 18px;border-radius:10px;font-weight:700;text-decoration:none;white-space:nowrap}
+/* LOGO ANIME */
+.lg{width:var(--s,64px);height:var(--s,64px);flex:none;overflow:visible}
+.lg .teeth{transform-origin:50px 50px;animation:rot 14s linear infinite}
+.lg .ring{transform-origin:50px 50px;animation:rot 9s linear infinite reverse}
+.lg .ic{opacity:0;transform-origin:50px 50px;animation:cyc 8s infinite}
+.lg .ic:nth-of-type(2){animation-delay:2s}.lg .ic:nth-of-type(3){animation-delay:4s}.lg .ic:nth-of-type(4){animation-delay:6s}
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes cyc{0%{opacity:0;transform:scale(.4)}6%,22%{opacity:1;transform:scale(1)}28%,100%{opacity:0;transform:scale(1.4)}}
+/* HERO */
+.hero{position:relative;min-height:640px;display:grid;align-items:center;overflow:hidden}
+.slides{position:absolute;inset:0}.slides img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:sl 18s infinite;filter:saturate(.8)}
+.slides img:nth-child(2){animation-delay:6s}.slides img:nth-child(3){animation-delay:12s}
+@keyframes sl{0%{opacity:0;transform:scale(1.08)}6%,30%{opacity:.55}40%,100%{opacity:0;transform:scale(1)}}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0e0a2e 15%,#0e0a2ecc 50%,#0e0a2e44);z-index:1}
+#c3d{position:absolute;right:0;top:0;width:60%;height:100%;z-index:2}
+.hc{position:relative;z-index:3;padding:70px 0;max-width:640px}
+.tag{display:inline-block;font:700 14px var(--fd);letter-spacing:.2em;color:var(--or);text-transform:uppercase;margin-bottom:14px}
+.hero h1{font-size:clamp(46px,8vw,92px);font-weight:800}
+.hero h1 span{color:var(--or)}
+.hero p{margin:20px 0 28px;color:var(--ice);max-width:46ch;font-size:19px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.b{padding:14px 26px;border-radius:12px;font-weight:700;text-decoration:none;display:inline-block}
+.b.p{background:linear-gradient(90deg,var(--or),var(--or2));color:#1a0b00}.b.s{border:2px solid var(--line);background:#ffffff0d}
+.stats{display:flex;gap:34px;margin-top:38px;flex-wrap:wrap}.stats div{font:800 42px var(--fd);color:#fff}.stats small{display:block;font:500 13px var(--fb);color:var(--mute);letter-spacing:.1em;text-transform:uppercase}
+/* SECTIONS */
+section{padding:84px 0}
+.hd{margin-bottom:36px;max-width:640px}.hd h2{font-size:clamp(34px,5vw,56px);font-weight:800}.hd p{color:var(--mute);margin-top:12px}
+.sv{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+.t3{perspective:900px}
+.card{background:linear-gradient(160deg,var(--card),var(--navy));border:1px solid var(--line);border-radius:18px;padding:26px;transition:transform .15s ease-out,box-shadow .3s;transform-style:preserve-3d;will-change:transform}
+.card:hover{box-shadow:0 24px 60px #000a,0 0 40px #ff6b2c33}
+.card h3{font-size:30px;margin:12px 0 6px;transform:translateZ(30px)}.card p{color:var(--mute);transform:translateZ(14px)}
+.si{width:54px;height:54px;transform:translateZ(40px);fill:none;stroke:var(--or);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.v{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#000}.v video{display:block;width:100%;height:auto}.v div{padding:14px 18px;background:var(--navy)}.v b{font:700 22px var(--fd);text-transform:uppercase}.v span{display:block;color:var(--mute);font-size:15px}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.cat{display:block;text-decoration:none;padding:22px 18px;border-radius:16px;background:var(--navy);border:1px solid var(--line);position:relative;overflow:hidden;transition:transform .15s ease-out,border-color .3s}
+.cat:hover{border-color:var(--or)}
+.cat i{position:absolute;right:-14px;top:-18px;font:800 96px var(--fd);color:#ffffff0d;font-style:normal;transition:color .3s}.cat:hover i{color:#ff6b2c33}
+.cat b{position:relative;font:700 24px/1.05 var(--fd);text-transform:uppercase;display:block;min-height:50px}.cat span{position:relative;color:var(--or);font-weight:600;font-size:14px}
+.news{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.n{border-radius:16px;overflow:hidden;background:var(--navy);border:1px solid var(--line)}.n img{display:block;width:100%;height:190px;object-fit:cover;transition:transform .6s}.n:hover img{transform:scale(1.07)}.n div{padding:16px 18px}.n small{color:var(--or);font-weight:600}.n h3{font-size:24px;margin-top:6px}
+.n .im{overflow:hidden}
+.rev{display:flex;gap:30px;align-items:center;flex-wrap:wrap;padding:30px;border-radius:20px;background:linear-gradient(120deg,var(--card),var(--navy));border:1px solid var(--line)}
+.rev .big{font:800 78px var(--fd);color:var(--or);line-height:1}.stars{color:var(--or2);font-size:26px;letter-spacing:4px}
+.ct{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.ag{padding:28px;border-radius:18px;background:var(--navy);border:1px solid var(--line)}.ag h3{font-size:32px}.ag a.ph{font:800 34px var(--fd);color:var(--or);text-decoration:none;display:block;margin:10px 0}
+footer{border-top:1px solid var(--line);padding:30px 0;color:var(--mute);font-size:14px}
+.rv{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s}.rv.on{opacity:1;transform:none}
+@media(max-width:760px){#c3d{width:100%;opacity:.45}.menu{display:none}.hero::before{background:#0e0a2eaa}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.lg .ic:first-of-type{opacity:1}}
+:focus-visible{outline:3px solid var(--or2);outline-offset:3px}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="logo" viewBox="0 0 100 100">
+<g class="teeth"><circle cx="50" cy="50" r="40" fill="#ff6b2c"/><g fill="#ff6b2c"><rect x="44" y="1" width="12" height="14" rx="3"/><rect x="44" y="85" width="12" height="14" rx="3"/><rect x="1" y="44" width="14" height="12" rx="3"/><rect x="85" y="44" width="14" height="12" rx="3"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(45 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(135 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(225 50 50)"/><rect x="44" y="1" width="12" height="14" rx="3" transform="rotate(315 50 50)"/></g></g>
+<circle cx="50" cy="50" r="32" fill="#1d1650"/>
+<circle class="ring" cx="50" cy="50" r="28" fill="none" stroke="#ffb347" stroke-width="2" stroke-dasharray="6 8"/>
+<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M34 62L58 38M58 38a9 9 0 1 1 8-8l-6 2-2 6z"/></g>
+<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M32 52l18-18h16v16L48 68z"/><circle cx="58" cy="42" r="2" fill="#fff"/></g>
+<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="50" cy="50" r="9"/><path d="M50 30v7M50 63v7M30 50h7M63 50h7"/></g>
+<g class="ic" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M30 40h26v20H30zM56 46h10l6 7v7H56z"/><circle cx="40" cy="64" r="3.5" fill="#fff"/><circle cx="64" cy="64" r="3.5" fill="#fff"/></g>
+</symbol></defs></svg>
+
+<header><div class="w nav">
+<a class="brand" href="#top"><svg class="lg" style="--s:52px"><use href="#logo"/></svg><span><b>DL OUTILLAGE</b><small>LOCATION · VENTE · DÉPANNAGE</small></span></a>
+<nav class="menu"><a href="#services">Services</a><a href="#videos">En action</a><a href="#materiel">Matériel</a><a href="#actus">Actualités</a><a href="#contact">Contact</a></nav>
+<a class="tel" href="tel:0327650486">03 27 65 04 86</a></div></header>
+
+<main id="top">
+<div class="hero">
+<div class="slides"><img src="https://www.location-dl.fr/wp-content/uploads/slider2/BannireDLOutillage.png" alt=""><img src="https://www.location-dl.fr/wp-content/uploads/slider2/BannireDLOutillage1.png" alt=""><img src="https://www.location-dl.fr/wp-content/uploads/slider2/BannireDLOutillage4.png" alt=""></div>
+<canvas id="c3d" aria-hidden="true"></canvas>
+<div class="w"><div class="hc">
+<span class="tag">Louvroil · Fourmies · depuis des années</span>
+<h1>Le bon matériel, <span>le jour même.</span></h1>
+<p>Particuliers et professionnels : nacelles, terrassement, espaces verts, compresseurs, manutention. Louez, achetez ou faites dépanner, on vous livre.</p>
+<div class="btns"><a class="b p" href="#contact">Devis gratuit</a><a class="b s" href="#materiel">Voir le matériel</a></div>
+<div class="stats"><div>14<small>familles de matériel</small></div><div>2<small>agences</small></div><div>36<small>avis clients</small></div></div>
+</div></div></div>
+
+<section id="services"><div class="w"><div class="hd rv"><span class="tag">Nos services</span><h2>Chez D.L., ce sont les clients qui nous font évoluer</h2></div>
+<div class="sv t3">
+<div class="card rv"><svg class="si" viewBox="0 0 64 64"><path d="M14 46L40 20M40 20a11 11 0 1 1 10-10l-7 3-3 7z"/></svg><h3>Location</h3><p>Une large gamme pour particuliers et professionnels, à la journée ou plus.</p></div>
+<div class="card rv"><svg class="si" viewBox="0 0 64 64"><path d="M10 34l22-22h22v22L32 56z"/><circle cx="44" cy="22" r="3"/></svg><h3>Vente</h3><p>Matériel neuf et consommables, jusqu'aux nouveautés comme le laser Geo Fennel.</p></div>
+<div class="card rv"><svg class="si" viewBox="0 0 64 64"><circle cx="32" cy="32" r="11"/><path d="M32 8v10M32 46v10M8 32h10M46 32h10M15 15l7 7M42 42l7 7M49 15l-7 7M22 42l-7 7"/></svg><h3>Dépannage</h3><p>Réparation de vos machines, contrôle à chaque retour de location.</p></div>
+<div class="card rv"><svg class="si" viewBox="0 0 64 64"><path d="M6 20h32v24H6zM38 28h12l8 9v7H38z"/><circle cx="18" cy="48" r="5"/><circle cx="48" cy="48" r="5"/></svg><h3>Livraison</h3><p>Le matériel livré sur votre chantier, sur demande.</p></div>
+</div></div></section>
+
+<section id="videos" style="background:#0a0724"><div class="w"><div class="hd rv"><span class="tag">En action</span><h2>Comprenez la machine avant de la louer</h2><p>Trois animations pour voir comment ça fonctionne. Notre équipe vous explique le reste au comptoir.</p></div>
+<div class="vids">
+<div class="v rv"><video src="nacelle.mp4" autoplay muted loop playsinline controls></video><div><b>Nacelle ciseaux</b><span>Travail en hauteur, montée et descente contrôlées</span></div></div>
+<div class="v rv"><video src="gerbeur.mp4" autoplay muted loop playsinline controls></video><div><b>Gerbeur électrique</b><span>Lever et ranger une palette en rayonnage</span></div></div>
+<div class="v rv"><video src="compresseur.mp4" autoplay muted loop playsinline controls></video><div><b>Compresseur</b><span>Comment l'air comprimé alimente vos outils</span></div></div>
+</div></div></section>
+
+<section id="materiel"><div class="w"><div class="hd rv"><span class="tag">Catalogue</span><h2>14 familles de matériel à louer</h2></div>
+<div class="cats t3" id="cats"></div></div></section>
+
+<section id="actus" style="background:#0a0724"><div class="w"><div class="hd rv"><span class="tag">Actualités</span><h2>Du nouveau chez DL</h2></div>
+<div class="news">
+<a class="n rv" href="https://www.location-dl.fr/blog/" style="text-decoration:none"><div class="im"><img src="https://www.location-dl.fr/wp-content/uploads/2026/09/1-500x263.jpg" alt="" loading="lazy"></div><div><small>18 septembre 2026</small><h3>Gerbeur à la location chez DL Outillage</h3></div></a>
+<a class="n rv" href="https://www.location-dl.fr/blog/" style="text-decoration:none"><div class="im"><img src="https://www.location-dl.fr/wp-content/uploads/2026/09/pellet-2026-500x750.png" alt="" loading="lazy" style="object-position:center 30%"></div><div><small>18 septembre 2026</small><h3>Granulés de bois 2026</h3></div></a>
+<a class="n rv" href="https://www.location-dl.fr/blog/" style="text-decoration:none"><div class="im"><img src="https://www.location-dl.fr/wp-content/uploads/2026/07/1000029018-500x500.png" alt="" loading="lazy"></div><div><small>2 juillet 2026</small><h3>En location chez nous</h3></div></a>
+</div></div></section>
+
+<section><div class="w"><div class="rev rv"><div class="big">36</div><div><div class="stars">★★★★★</div><b style="font:700 26px var(--fd);text-transform:uppercase">Avis Google, clients satisfaits</b><p style="color:var(--mute)">« Excellent, et personnel toujours gentil et au top. » Chaque machine est contrôlée à chaque retour de location.</p></div></div></div></section>
+
+<section id="contact"><div class="w"><div class="hd rv"><span class="tag">Contact</span><h2>Un devis gratuit en un appel</h2></div>
+<div class="ct">
+<div class="ag rv"><h3>Agence de Louvroil</h3><a class="ph" href="tel:0327650486">03 27 65 04 86</a><p>246, route d'Avesnes<br>59720 Louvroil</p></div>
+<div class="ag rv"><h3>Agence de Fourmies</h3><a class="ph" href="tel:0327623751">03 27 62 37 51</a><p>Location, vente et dépannage<br>Demandez votre devis</p></div>
+</div></div></section>
+</main>
+<footer><div class="w">© DL Outillage · Location d'équipements et matériel de bricolage · Maquette de refonte</div></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// catégories
+const C=[['Gros œuvre / Terrassement','gros-oeuvre-et-terrassement'],['Nacelles','nacelles'],['Espaces verts','espaces-verts'],['Compresseurs / Air comprimé','compresseurs-air-comprime'],['Bâtiment / Génie civil','batiment-genie-civil'],['Perforation / Sciage','perforation-sciage'],['Groupe électrogène / Éclairage','groupe-electrogene-eclairage'],['Rénovation / Peinture','renovation-peinture'],['Travaux du bois','travaux-du-bois'],['Nettoyage','nettoyage'],['Transport / Manutention','transport-manutention'],['Aménagement de chantier','amenagement-de-chantier'],['Soudure / Pompe / Plomberie','soudure-pompe-plomberie'],['Outillage divers','outillage-divers']];
+document.getElementById('cats').innerHTML=C.map((c,i)=>`<a class="cat rv t" href="https://www.location-dl.fr/categorie-matériel/${c[1]}/"><i>${String(i+1).padStart(2,'0')}</i><b>${c[0]}</b><span>Voir les machines →</span></a>`).join('');
+// inclinaison 3D
+document.querySelectorAll('.card,.cat').forEach(el=>{el.addEventListener('mousemove',e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*14}deg) rotateX(${-y*14}deg) translateY(-4px)`});el.addEventListener('mouseleave',()=>el.style.transform='')});
+// apparition
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(e=>io.observe(e));
+setTimeout(()=>document.querySelectorAll('.rv').forEach(e=>e.classList.add('on')),2500);
+// scène 3D : deux engrenages
+try{
+const cv=document.getElementById('c3d'),R=new THREE.WebGLRenderer({canvas:cv,alpha:true,antialias:true});
+const S=new THREE.Scene(),Cm=new THREE.PerspectiveCamera(40,1,.1,100);Cm.position.set(0,0,15);
+function gear(n,ro,ri,th,col){const sh=new THREE.Shape(),st=Math.PI*2/n;for(let i=0;i<n;i++){const a=i*st,p=[[ri,a],[ro,a+st*.18],[ro,a+st*.42],[ri,a+st*.6]];p.forEach((q,j)=>{const x=Math.cos(q[1])*q[0],y=Math.sin(q[1])*q[0];(i==0&&j==0)?sh.moveTo(x,y):sh.lineTo(x,y)})}
+const h=new THREE.Path();h.absarc(0,0,ri*.35,0,Math.PI*2,true);sh.holes.push(h);
+const g=new THREE.ExtrudeGeometry(sh,{depth:th,bevelEnabled:true,bevelSize:.08,bevelThickness:.08,bevelSegments:2});g.translate(0,0,-th/2);
+return new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:col,metalness:.7,roughness:.35}))}
+const g1=gear(14,4,3.3,1.2,0xff6b2c),g2=gear(9,2.6,2.05,1.2,0xe8ecff);g1.position.set(1,0,0);g2.position.set(-4.3,3.9,0);g2.rotation.z=.2;
+const g3=gear(8,1.9,1.5,1,0xffb347);g3.position.set(5.6,-4.2,-1);S.add(g1,g2,g3);
+S.add(new THREE.AmbientLight(0x8890ff,.6));const L=new THREE.DirectionalLight(0xffffff,1.6);L.position.set(5,8,10);S.add(L);const L2=new THREE.PointLight(0xff6b2c,2,30);L2.position.set(-6,-4,6);S.add(L2);
+let mx=0,my=0;addEventListener('mousemove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5});
+function rs(){const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);Cm.aspect=w/h;Cm.updateProjectionMatrix()}rs();addEventListener('resize',rs);
+const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+(function f(t){g1.rotation.z=t/4000;g2.rotation.z=.2-t/4000*14/9;g3.rotation.z=-t/4000*14/8+.3;
+g1.rotation.y=mx*.6;g1.rotation.x=my*.4;g2.rotation.y=mx*.5;g3.rotation.y=mx*.5;S.rotation.y+=((mx*.3)-S.rotation.y)*.05;
+R.render(S,Cm);if(!rm)requestAnimationFrame(f)})(0);
+}catch(e){}
+</script></body></html>
