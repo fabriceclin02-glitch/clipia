@@ -1,0 +1,44 @@
+name: Photos maquette DL Outillage
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Télécharger les photos
+        run: |
+          python3 - <<'PY'
+          import re, os, urllib.request, urllib.parse
+          h = open('proposition-dl-outillage/index.html', encoding='utf-8').read()
+          paths = set(re.findall(r'\|(\d{4}/[^"\n|]+\.(?:jpg|jpeg|png))', open('proposition-dl-outillage/index.html', encoding='utf-8').read().replace('],[', '\n').replace('"', '|"')))
+          D = re.search(r'const D=(\[.*?\]);\n', h, re.S).group(1)
+          import json
+          data = json.loads(D)
+          jobs = {}
+          for c, n, p in data:
+              if p: jobs['img/' + p] = 'https://www.location-dl.fr/wp-content/uploads/20' + p[:2] + '/' + p[2:4] + '/' + p[5:]
+          for s in ['BannireDLOutillage.png','BannireDLOutillage1.png','BannireDLOutillage4.png']:
+              jobs['img/slider2/' + s] = 'https://www.location-dl.fr/wp-content/uploads/slider2/' + s
+          jobs['img/2609/1-500x263.jpg'] = 'https://www.location-dl.fr/wp-content/uploads/2026/09/1-500x263.jpg'
+          jobs['img/2609/pellet-2026-500x750.png'] = 'https://www.location-dl.fr/wp-content/uploads/2026/09/pellet-2026-500x750.png'
+          jobs['img/2607/1000029018-500x500.png'] = 'https://www.location-dl.fr/wp-content/uploads/2026/07/1000029018-500x500.png'
+          ok = bad = 0
+          for dst, url in jobs.items():
+              dst = 'proposition-dl-outillage/' + dst
+              os.makedirs(os.path.dirname(dst), exist_ok=True)
+              try:
+                  req = urllib.request.Request(urllib.parse.quote(url, safe=':/'), headers={'User-Agent': 'Mozilla/5.0'})
+                  open(dst, 'wb').write(urllib.request.urlopen(req, timeout=30).read()); ok += 1
+              except Exception as e:
+                  bad += 1; print('KO', url, e)
+          print('ok', ok, 'ko', bad)
+          PY
+      - name: Enregistrer
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add proposition-dl-outillage/img
+          git diff --cached --quiet || (git commit -m "Photos de la maquette DL Outillage" && git pull --rebase -X theirs && git push)
