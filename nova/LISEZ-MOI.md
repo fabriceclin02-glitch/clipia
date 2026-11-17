@@ -1,4 +1,4 @@
-# Clipia Nova — le navigateur intelligent qui protège ses utilisateurs
+# Clipia Nova 2 — le navigateur compagnon qui protège ses utilisateurs
 
 Conçu par **Clin Fabrice — CLENDAX (Flize, Ardennes)**.
 Moteur Chromium (le même que Chrome) · Windows · macOS · Linux.
@@ -11,6 +11,15 @@ Moteur Chromium (le même que Chrome) · Windows · macOS · Linux.
    La première fois, l'installation prend 1 à 2 minutes, puis Clipia Nova s'ouvre.
 
 Mac / Linux : ouvrez un terminal dans le dossier et lancez `./lancer-mac-linux.sh`.
+
+## Nouveautés 2.0
+
+- Compagnon Clipia plein écran (Ctrl+Espace) : sphère 3D interactive qui écoute, parle et répond
+- Voix : dictée (Whisper via Groq gratuit ou OpenAI), réponses à voix haute, mode mains libres « Clipia… »
+- Mémoire locale (« Clipia, souviens-toi que… »)
+- Plus de 30 raccourcis clavier (F1), recherche dans la page, zoom, favoris, historique
+- Mode Tor intégré (Ctrl+Maj+N) pour les sites .onion, avec Tor officiel fourni (Windows, Mac, Linux PC)
+- Android : voix native, sphère compagnon, .onion via Tor Browser
 
 ## Ce qu'il contient
 
