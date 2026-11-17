@@ -27,14 +27,10 @@ jobs:
             os: windows-latest
             tor: windows-x86_64
             cmd: npx electron-builder --win nsis portable --x64 --publish never
-          - nom: mac-arm64
-            os: macos-latest
-            tor: macos-aarch64
-            cmd: npx electron-builder --mac dmg --arm64 --publish never
-          - nom: mac-x64
-            os: macos-latest
-            tor: macos-x86_64
-            cmd: npx electron-builder --mac dmg --x64 --publish never
+          - nom: mac
+            os: macos-14
+            tor: macos-aarch64 macos-x86_64
+            cmd: npx electron-builder --mac dmg --arm64 --x64 --publish never
           - nom: linux-x64
             os: ubuntu-latest
             tor: linux-x86_64
@@ -62,12 +58,14 @@ jobs:
           set -e
           V=$(curl -fsSL https://aus1.torproject.org/torbrowser/update_3/release/downloads.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).version))")
           echo "Version Tor Browser : $V"
-          F="tor-expert-bundle-${{ matrix.tor }}-$V.tar.gz"
-          curl -fsSL -o tor.tgz "https://dist.torproject.org/torbrowser/$V/$F" || curl -fsSL -o tor.tgz "https://archive.torproject.org/tor-package-archive/torbrowser/$V/$F"
-          mkdir -p "tor/${{ matrix.tor }}"
-          tar -xzf tor.tgz -C "tor/${{ matrix.tor }}"
-          rm tor.tgz
-          ls -R "tor/${{ matrix.tor }}" | head -30
+          for P in ${{ matrix.tor }}; do
+            F="tor-expert-bundle-$P-$V.tar.gz"
+            curl -fsSL -o tor.tgz "https://dist.torproject.org/torbrowser/$V/$F" || curl -fsSL -o tor.tgz "https://archive.torproject.org/tor-package-archive/torbrowser/$V/$F"
+            mkdir -p "tor/$P"
+            tar -xzf tor.tgz -C "tor/$P"
+            rm tor.tgz
+          done
+          ls -R tor | head -40
       - run: npm install --no-audit --no-fund
       - run: ${{ matrix.cmd }}
         env:
