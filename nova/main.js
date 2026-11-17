@@ -9,6 +9,9 @@ let win;
 const DEMO = process.env.NOVA_DEMO === '1';   // mode démonstration (vidéo de présentation)
 
 app.setName('Clipia Nova');
+// Clés d'accès (passkeys / Windows Hello) : Windows les refuse aux applications non signées
+// (« application non vérifiée »). On les désactive pour que Google, TikTok… proposent le mot de passe.
+if (process.env.NOVA_PASSKEYS !== '1') app.commandLine.appendSwitch('disable-blink-features', 'WebAuth');
 if (!app.requestSingleInstanceLock()) app.quit();
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
 
@@ -31,7 +34,13 @@ app.on('web-contents-created', (_e, contents) => {
   if (contents.getType() !== 'webview') return;
   const tor = contents.session === torSession;
   if (tor) contents.setWebRTCIPHandlingPolicy('disable_non_proxied_udp');   // pas de fuite d'IP via WebRTC
-  contents.setWindowOpenHandler(({ url }) => {
+  contents.setWindowOpenHandler(({ url, disposition }) => {
+    // Fenêtre de connexion (Google, Apple, Facebook, Microsoft, TikTok…) : vraie fenêtre liée à la page,
+    // sinon la page d'origine ne reçoit jamais la réponse (page blanche « gsi/transform »).
+    const login = /(accounts\.google\.|appleid\.apple\.com|facebook\.com\/(v[\d.]+\/)?dialog|login\.(live|microsoftonline)\.com|api\.twitter\.com\/oauth|x\.com\/i\/oauth|tiktok\.com\/.*(passport|login|auth)|discord\.com\/oauth2|github\.com\/login|paypal\.com\/.*(signin|checkoutnow|webapps))/i.test(url);
+    if (disposition === 'new-window' || login) {
+      return { action: 'allow', overrideBrowserWindowOptions: { width: 520, height: 720, parent: win || undefined, autoHideMenuBar: true, backgroundColor: '#ffffff', title: 'Connexion — Clipia Nova', icon: path.join(__dirname, 'build', 'icon.png') } };
+    }
     if (win) win.webContents.send('nova:open-tab', { url, tor });
     return { action: 'deny' };
   });
@@ -84,7 +93,13 @@ const DEMO_ANSWERS = [
 let demoIdx = 0;
 
 ipcMain.handle('ai:chat', async (_e, { provider, apiKey, model, system, messages, host }) => {
-  if (DEMO) { await new Promise(r => setTimeout(r, 900)); return { text: DEMO_ANSWERS[demoIdx++ % DEMO_ANSWERS.length] }; }
+  if (DEMO) {
+    await new Promise(r => setTimeout(r, 900));
+    const q = JSON.stringify(messages).toLowerCase();
+    if (q.includes('instagram')) return { text: "Nouveau son, nouvelle énergie 🎧🔥\nLe clip arrive très vite… Restez connectés ! ✨\n\n#clendax #nouveauclip #musique #ardennes #rapfrancais #clip #studio #creation #artiste #son #beat #music #france #instamusic #clipia" };
+    if (q.includes('tiktok')) return { text: "🎬 Accroche (0-2 s) : « Ce son va tourner en boucle… »\n1. Gros plan casque, lumière violette\n2. Le beat tombe : cut sur la scène\n3. Texte à l'écran : « Nouveau clip vendredi »\n4. Regard caméra + logo CLENDAX\n🎵 Son : extrait du refrain\n#clendax #nouveauclip #fyp #musique" };
+    return { text: DEMO_ANSWERS[demoIdx++ % DEMO_ANSWERS.length] };
+  }
   const p = PROVIDERS[provider];
   if (!p) return { error: 'Moteur inconnu' };
   try {
