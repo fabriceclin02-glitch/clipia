@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self';">
+<title>Clipia Nova</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ ANIMATION 3D DE DÉMARRAGE ============ -->
+<div id="splash">
+  <canvas id="sphere"></canvas>
+  <div class="splash-txt">
+    <h1>CLIPIA <span>NOVA</span></h1>
+    <p>Le navigateur intelligent · CLENDAX</p>
+    <div class="bar"><i></i></div>
+  </div>
+</div>
+
+<!-- ============ ASSISTANT DE CONFIGURATION ============ -->
+<div id="wizard" class="hidden">
+  <div class="wz-card">
+    <canvas id="wzSphere" width="120" height="120"></canvas>
+    <div class="wz-steps" id="wzDots"></div>
+    <div id="wzBody"></div>
+    <div class="wz-nav">
+      <button class="ghost" id="wzBack">← Retour</button>
+      <button class="primary" id="wzNext">Continuer →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NAVIGATEUR ============ -->
+<div id="browser" class="hidden">
+  <div id="tabbar">
+    <div class="logo-mini" title="Clipia Nova"></div>
+    <div id="tabs"></div>
+    <button id="newTab" class="icon" title="Nouvel onglet (Ctrl+T)">＋</button>
+  </div>
+  <div id="toolbar">
+    <button class="icon" id="back" title="Précédent">←</button>
+    <button class="icon" id="fwd" title="Suivant">→</button>
+    <button class="icon" id="reload" title="Recharger">⟳</button>
+    <button class="icon" id="home" title="Accueil">⌂</button>
+    <div id="omni"><span id="lock">✦</span><input id="url" placeholder="Rechercher ou saisir une adresse…" spellcheck="false"></div>
+    <button class="pill" id="btnStore">🛍 Store</button>
+    <button class="pill" id="btnMail">✉ Mails</button>
+    <button class="pill ai" id="btnAI">✦ Clipia IA</button>
+    <button class="icon" id="btnSettings" title="Réglages">⚙</button>
+  </div>
+  <div id="main">
+    <div id="views"></div>
+    <aside id="ai" class="closed">
+      <header>
+        <div><b>Clipia</b><small id="aiEngine"></small></div>
+        <div class="ai-tools">
+          <select id="aiMode"></select>
+          <button class="icon" id="aiVoice" title="Lecture vocale des réponses">🔈</button>
+          <button class="icon" id="aiClear" title="Nouvelle discussion">🗑</button>
+          <button class="icon" id="aiClose">✕</button>
+        </div>
+      </header>
+      <div class="quick">
+        <button data-q="sum">📝 Résumer la page</button>
+        <button data-q="tr">🌍 Traduire en français</button>
+        <button data-q="exp">💡 Expliquer simplement</button>
+        <button data-q="clip">🎬 Idées de clip</button>
+        <button data-q="post">📣 Rédiger un post</button>
+      </div>
+      <div id="chat"></div>
+      <form id="ask"><textarea id="askIn" rows="2" placeholder="Parlez à Clipia…" spellcheck="true" lang="fr"></textarea><button class="primary">➤</button></form>
+    </aside>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

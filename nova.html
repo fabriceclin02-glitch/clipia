@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clipia Nova — le navigateur intelligent qui protège ses utilisateurs</title>
+<meta name="description" content="Clipia Nova : navigateur avec IA intégrée (Claude, ChatGPT, Gemini, Mistral…), Store d'applications et bouclier anti-traqueurs. Gratuit pour Windows, Mac, Linux et Android.">
+<link rel="icon" href="nova/build/icon.png">
+<style>
+:root{--bg:#07061a;--panel:#151238;--line:#2a2560;--txt:#ecebff;--muted:#a19ccc;--ok:#34d399;--grad:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#d946ef)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.grad{background:var(--grad);-webkit-background-clip:text;color:transparent}
+header{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 6vw;position:relative;background:radial-gradient(circle at 50% 35%,#1e1866,transparent 60%)}
+#sp{width:min(360px,70vw);height:min(360px,70vw)}
+h1{font-size:clamp(2.4rem,7vw,4.6rem);letter-spacing:.2em;font-weight:900;margin-top:.5rem}
+.tag{color:var(--muted);font-size:clamp(1rem,2.2vw,1.3rem);max-width:44rem;margin:1rem auto 0;line-height:1.6}
+.cta{display:inline-block;margin-top:2rem;padding:1rem 2rem;border-radius:999px;background:var(--grad);color:#fff;font-weight:800;box-shadow:0 14px 40px -14px #8b5cf6}
+.safe{display:inline-block;margin-top:1.2rem;padding:.45rem 1rem;border-radius:999px;background:#34d39915;border:1px solid #34d39955;color:var(--ok);font-size:.9rem}
+section{padding:5rem 6vw;max-width:1200px;margin:0 auto}
+h2{font-size:clamp(1.8rem,4vw,2.6rem);text-align:center;margin-bottom:.6rem}
+.sub{color:var(--muted);text-align:center;max-width:40rem;margin:0 auto 2.5rem;line-height:1.6}
+.dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.os{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:1.6rem;display:flex;flex-direction:column;gap:.8rem;transition:.3s}
+.os:hover{border-color:#8b5cf6;transform:translateY(-5px)}
+.os .ic{font-size:2.4rem}
+.os h3{font-size:1.35rem}
+.os p{color:var(--muted);font-size:.9rem;line-height:1.5;flex:1}
+.btn{display:block;text-align:center;padding:.85rem;border-radius:14px;background:var(--grad);color:#fff;font-weight:700}
+.btn.alt{background:none;border:1px solid var(--line);color:var(--txt)}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem}
+.f{background:#ffffff06;border:1px solid var(--line);border-radius:20px;padding:1.4rem}
+.f b{display:block;font-size:1.1rem;margin:.5rem 0 .3rem}.f span{color:var(--muted);line-height:1.5;font-size:.95rem}
+.engines{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-top:1.5rem}
+.engines span{padding:.45rem 1rem;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+details{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1rem 1.3rem;margin-bottom:.7rem}
+summary{cursor:pointer;font-weight:700}
+details p,details li{color:var(--muted);line-height:1.6;margin-top:.6rem}
+details ol{padding-left:1.2rem}
+footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;color:var(--muted);font-size:.9rem;line-height:1.8}
+</style>
+</head>
+<body>
+<header>
+  <canvas id="sp"></canvas>
+  <h1>CLIPIA <span class="grad">NOVA</span></h1>
+  <p class="tag">Le nouveau navigateur intelligent qui travaille <b>pour vous</b>, pas sur vous. L'IA de votre choix intégrée, un Store d'applications, et un bouclier qui protège votre vie privée.</p>
+  <a class="cta" href="#telecharger">Télécharger gratuitement</a>
+  <span class="safe">🛡 Aucune collecte de vos données · Traqueurs bloqués · Clés chiffrées</span>
+</header>
+
+<section id="telecharger">
+  <h2>Choisissez votre <span class="grad">appareil</span></h2>
+  <p class="sub">Gratuit. Version 1.0 : dites-nous ce qui marche et ce qui coince.</p>
+  <div class="dl">
+    <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11. Installation classique, ou version portable sans installation (clé USB).</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
+    <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS, puces Apple (M1, M2…) et Intel.</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Mac.dmg">Télécharger (.dmg)</a></div>
+    <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>Toutes distributions, format AppImage : un seul fichier, rien à installer.</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Linux.AppImage">Télécharger (.AppImage)</a></div>
+    <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Navigateur mobile avec Clipia IA, Store et bouclier.</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
+  </div>
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v1.0.0" style="text-decoration:underline">page de la version 1.0.0</a></p>
+</section>
+
+<section>
+  <h2>Un navigateur, <span class="grad">tous vos outils</span></h2>
+  <p class="sub">Au démarrage, Clipia vous accueille et vous guide pas à pas pour tout configurer.</p>
+  <div class="feat">
+    <div class="f">✦<b>Clipia IA intégrée</b><span>Résumer, traduire ou expliquer la page ouverte, écrire un post, trouver des idées de clip. Plusieurs styles : ami, entrepreneur, créateur…</span></div>
+    <div class="f">🔑<b>L'IA de votre choix</b><span>Branchez vos propres clés : Clipia Nova affiche tous les modèles accessibles avec votre compte.</span></div>
+    <div class="f">🛍<b>Clipia Store</b><span>Installez vos applis préférées sur l'accueil en un clic. Publication gratuite pour les développeurs.</span></div>
+    <div class="f">✉<b>Toutes vos messageries</b><span>Gmail, Outlook, Yahoo, iCloud, Proton, Orange, SFR, Free, La Poste : ouvertes d'un clic.</span></div>
+  </div>
+  <div class="engines"><span>Claude</span><span>ChatGPT</span><span>Gemini</span><span>Mistral</span><span>DeepSeek</span><span>Groq</span><span>Grok</span><span>GLM</span><span>OpenRouter</span><span>Ollama (local)</span></div>
+</section>
+
+<section>
+  <h2>La sécurité <span class="grad">d'abord</span></h2>
+  <p class="sub">Clipia Nova ne stocke aucune donnée de ses utilisateurs sur un serveur. Il n'existe donc aucun fichier central à pirater.</p>
+  <div class="feat">
+    <div class="f">🚫<b>Traqueurs bloqués</b><span>Les mouchards publicitaires qui vous suivent de site en site sont stoppés.</span></div>
+    <div class="f">🔒<b>HTTPS automatique</b><span>Les sites s'ouvrent en version chiffrée dès que possible.</span></div>
+    <div class="f">🔑<b>Clés chiffrées</b><span>Vos clés IA restent sur votre appareil, protégées par le coffre-fort du système.</span></div>
+    <div class="f">🎥<b>Vous décidez</b><span>Caméra, micro, position : jamais d'accès sans votre accord.</span></div>
+    <div class="f">🙈<b>Zéro collecte</b><span>Votre navigation, vos mails et vos mots de passe ne sont envoyés à personne.</span></div>
+    <div class="f">🧹<b>Effacement en un clic</b><span>Historique, cookies et cache supprimés quand vous le voulez.</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Installation</h2>
+  <p class="sub">Version 1.0 non encore signée : votre système peut afficher un avertissement la première fois.</p>
+  <details><summary>🪟 Windows</summary><ol><li>Ouvrez le fichier téléchargé.</li><li>Si « Windows a protégé votre ordinateur » s'affiche : cliquez sur <b>Informations complémentaires</b>, puis <b>Exécuter quand même</b>.</li><li>Suivez l'installation. Clipia Nova démarre avec son animation.</li></ol></details>
+  <details><summary>🍎 Mac</summary><ol><li>Ouvrez le .dmg et glissez Clipia Nova dans Applications.</li><li>La première fois : <b>clic droit</b> sur l'application, puis <b>Ouvrir</b>, puis <b>Ouvrir</b> à nouveau.</li><li>Si macOS refuse encore : Réglages Système → Confidentialité et sécurité → <b>Ouvrir quand même</b>.</li></ol></details>
+  <details><summary>🐧 Linux</summary><ol><li>Clic droit sur le fichier → Propriétés → cochez <b>Autoriser l'exécution</b>.</li><li>Ou dans un terminal : <code>chmod +x Clipia-Nova-Linux.AppImage && ./Clipia-Nova-Linux.AppImage</code></li></ol></details>
+  <details><summary>🤖 Android</summary><ol><li>Téléchargez le fichier .apk et ouvrez-le.</li><li>Autorisez l'installation depuis votre navigateur si Android le demande.</li><li>Touchez <b>Installer</b>.</li></ol></details>
+  <details><summary>🔑 Comment obtenir une clé IA ?</summary><p>Un abonnement grand public (ChatGPT Plus, Claude Pro, Gemini Advanced…) ne fournit pas de clé. Il faut créer une <b>clé API</b> sur la console développeur du fournisseur : l'assistant de Clipia Nova vous y emmène en un clic. Gemini, Mistral, Groq et OpenRouter proposent une offre gratuite ; Ollama fonctionne sur votre ordinateur, sans clé.</p></details>
+</section>
+
+<footer>Clipia Nova · CLENDAX<br>Conçu par Clin Fabrice — Flize (Ardennes) · <a href="mailto:fabriceclin02@gmail.com">fabriceclin02@gmail.com</a> · <a href="index.html">Découvrir Clipia</a></footer>
+
+<script>
+(function(){const cv=document.getElementById('sp'),ctx=cv.getContext('2d'),N=1000,g=Math.PI*(3-Math.sqrt(5)),pts=[];
+for(let i=0;i<N;i++){const y=1-i/(N-1)*2,r=Math.sqrt(1-y*y);pts.push([Math.cos(g*i)*r,y,Math.sin(g*i)*r])}
+let a=0;const t0=performance.now();
+(function f(now){const d=devicePixelRatio||1,W=cv.clientWidth*d,H=cv.clientHeight*d;if(cv.width!==W){cv.width=W;cv.height=H}
+ctx.clearRect(0,0,W,H);const t=(now-t0)/1000;a+=.007;const b=Math.sin(t*.4)*.35,R=Math.min(W,H)*.42*(1+Math.sin(t*1.6)*.025);
+const ca=Math.cos(a),sa=Math.sin(a),cb=Math.cos(b),sb=Math.sin(b);
+for(const[x0,y0,z0]of pts){let x=x0*ca-z0*sa,z=x0*sa+z0*ca,y=y0*cb-z*sb;z=y0*sb+z*cb;const dd=(z+1.6)/2.6;
+ctx.fillStyle=`hsla(${215+(y0+1)*45},90%,${55+dd*20}%,${.15+dd*.85})`;ctx.beginPath();ctx.arc(W/2+x*R,H/2+y*R,(.6+dd*1.8)*d,0,7);ctx.fill()}
+requestAnimationFrame(f)})(performance.now())})();
+</script>
+</body>
+</html>

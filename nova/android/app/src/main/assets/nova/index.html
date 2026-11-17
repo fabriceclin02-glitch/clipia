@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clipia Nova</title>
+<style>
+:root{--bg:#07061a;--panel:#151238;--line:#2a2560;--violet:#8b5cf6;--txt:#ecebff;--muted:#a19ccc;--ok:#34d399;--warn:#fbbf24;--grad:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#d946ef)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,Roboto,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:76px}
+button{font:inherit;color:inherit;border:none;background:none}
+input,select,textarea{font:inherit;color:var(--txt)}
+.hidden{display:none!important}
+.primary{background:var(--grad);color:#fff;padding:.85rem 1.3rem;border-radius:14px;font-weight:700;width:100%}
+.ghost{color:var(--muted);padding:.85rem}
+#splash{position:fixed;inset:0;z-index:99;background:radial-gradient(circle at 50% 40%,#1a1450,#05040f 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .7s}
+#splash.out{opacity:0;pointer-events:none}
+#splash canvas{width:80vw;height:80vw;max-width:420px;max-height:420px}
+.brand{font-size:1.9rem;font-weight:800;letter-spacing:.3em;margin-top:1rem}
+.brand span,.grad{background:var(--grad);-webkit-background-clip:text;color:transparent}
+.sub{color:var(--muted);letter-spacing:.2em;font-size:.75rem;margin-top:.4rem}
+section{padding:1.2rem}
+.page-title{font-size:1.6rem;font-weight:800;margin:.4rem 0 1rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:1.1rem;margin-bottom:1rem}
+.say{background:#1b174a;border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem;line-height:1.55;margin-bottom:1rem;font-size:.95rem}
+.field{margin-top:.9rem}.field label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:.3rem}
+.field input,.field select,.field textarea{width:100%;background:#0b0926;border:1px solid var(--line);border-radius:12px;padding:.8rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.opt{border:1px solid var(--line);border-radius:14px;padding:.8rem;text-align:left;background:#ffffff05}
+.opt.on{border-color:var(--violet);background:#8b5cf622}
+.opt b{display:block}.opt small{color:var(--muted);font-size:.78rem}
+.ok{color:var(--ok)}.bad{color:#f87171}
+.dots{display:flex;gap:.35rem;justify-content:center;margin:.8rem 0 1.2rem}.dots i{width:22px;height:4px;border-radius:4px;background:var(--line)}.dots i.on{background:var(--grad)}
+.nav-wz{display:flex;gap:.6rem;margin-top:1.4rem}
+.hero{text-align:center;padding-top:1rem}
+.hero canvas{width:130px;height:130px}
+.search{display:flex;gap:.4rem;background:#0e0c2c;border:1px solid var(--line);border-radius:999px;padding:.35rem .35rem .35rem 1rem;margin-top:1.2rem}
+.search input{flex:1;background:none;border:none;outline:none;min-width:0}
+.search button{background:var(--grad);border-radius:999px;padding:.6rem 1rem;color:#fff;font-weight:700}
+.badge{display:inline-block;margin-top:1rem;padding:.4rem .9rem;border-radius:999px;background:#34d39915;border:1px solid #34d39955;color:var(--ok);font-size:.8rem}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:1.4rem}
+.tile{display:flex;flex-direction:column;align-items:center;gap:.35rem}
+.tile .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem;background:#1a1745;border:1px solid var(--line)}
+.tile small{font-size:.72rem;color:var(--muted);text-align:center}
+h3.sec{font-size:.8rem;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:1.6rem 0 .7rem}
+.hist button{display:block;width:100%;text-align:left;padding:.55rem .2rem;color:var(--muted);font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cats::-webkit-scrollbar,.quick::-webkit-scrollbar{display:none}
+.cats{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.4rem;margin-bottom:.8rem}
+.cats button{white-space:nowrap;padding:.45rem .9rem;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-size:.85rem}
+.cats button.on{background:var(--grad);color:#fff;border-color:transparent}
+.app{display:flex;gap:.8rem;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:.8rem;margin-bottom:.6rem}
+.app .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;background:#1f1b52;flex:none}
+.app .t{flex:1;min-width:0}.app b{display:block}.app small{color:var(--muted);font-size:.78rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app .in{padding:.5rem .8rem;border-radius:10px;font-weight:700;font-size:.82rem;background:var(--grad);color:#fff}
+.app .in.done{background:#34d39922;color:var(--ok)}
+#chat{display:flex;flex-direction:column;gap:.7rem;margin-top:.8rem}
+.msg{padding:.75rem .95rem;border-radius:16px;line-height:1.5;font-size:.93rem;white-space:pre-wrap;max-width:90%}
+.msg.u{align-self:flex-end;background:#3b82f62a;border:1px solid #3b82f655}
+.msg.a{align-self:flex-start;background:#1a1745;border:1px solid var(--line)}
+.msg.e{background:#7f1d1d40;border:1px solid #f8717155;color:#fecaca}
+.msg.t{color:var(--muted);font-style:italic}
+.quick{display:flex;gap:.4rem;overflow-x:auto;padding-bottom:.3rem}
+.quick button{white-space:nowrap;font-size:.8rem;padding:.4rem .75rem;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+#askBar{position:fixed;left:0;right:0;bottom:64px;display:flex;gap:.4rem;padding:.6rem;background:#0c0a26;border-top:1px solid var(--line)}
+#askBar textarea{flex:1;background:#0a0824;border:1px solid var(--line);border-radius:14px;padding:.6rem;resize:none}
+#askBar button{background:var(--grad);color:#fff;border-radius:14px;padding:0 1rem;font-weight:700}
+#tabsBar{position:fixed;left:0;right:0;bottom:0;height:64px;display:grid;grid-template-columns:repeat(4,1fr);background:#0c0a26;border-top:1px solid var(--line)}
+#tabsBar button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15rem;font-size:.72rem;color:var(--muted)}
+#tabsBar button b{font-size:1.25rem}
+#tabsBar button.on{color:#c4b5fd}
+.row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.btn2{padding:.6rem .9rem;border-radius:10px;border:1px solid var(--line);font-weight:600;font-size:.88rem}
+label.sw{display:flex;gap:.6rem;align-items:center;margin-top:.7rem}
+#toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,150px);background:#1a1745;border:1px solid var(--violet);padding:.7rem 1.2rem;border-radius:999px;transition:.3s;z-index:100;font-size:.9rem;white-space:nowrap}
+#toast.on{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<div id="splash"><canvas id="sp"></canvas><div class="brand">CLIPIA <span>NOVA</span></div><div class="sub">LE NAVIGATEUR INTELLIGENT</div></div>
+
+<section id="wizard" class="hidden"><div class="dots" id="wzDots"></div><div id="wzBody"></div>
+  <div class="nav-wz"><button class="ghost" id="wzBack">← Retour</button><button class="primary" id="wzNext">Continuer →</button></div></section>
+
+<section id="v-home" class="view hidden"></section>
+<section id="v-store" class="view hidden"></section>
+<section id="v-ai" class="view hidden" style="padding-bottom:140px">
+  <div class="row" style="justify-content:space-between"><div><div class="page-title grad" style="margin:0">Clipia</div><small id="aiEngine" style="color:var(--muted)"></small></div>
+  <div class="row"><select id="aiMode" style="background:#1a1745;border:1px solid var(--line);border-radius:10px;padding:.4rem"></select><button id="aiVoice" class="btn2">🔈</button><button id="aiClear" class="btn2">🗑</button></div></div>
+  <div class="quick" style="margin-top:.8rem"><button data-q="clip">🎬 Idées de clip</button><button data-q="post">📣 Post réseaux</button><button data-q="plan">💼 Plan d'action</button><button data-q="idee">🚀 Idée de projet</button></div>
+  <div id="chat"></div>
+</section>
+<section id="v-settings" class="view hidden"></section>
+
+<div id="askBar" class="hidden"><textarea id="askIn" rows="2" placeholder="Parlez à Clipia…" spellcheck="true" lang="fr"></textarea><button id="askGo">➤</button></div>
+<nav id="tabsBar" class="hidden">
+  <button data-v="home"><b>⌂</b>Accueil</button>
+  <button data-v="store"><b>🛍</b>Store</button>
+  <button data-v="ai"><b>✦</b>Clipia IA</button>
+  <button data-v="settings"><b>⚙</b>Réglages</button>
+</nav>
+<div id="toast"></div>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

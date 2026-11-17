@@ -1,0 +1,32 @@
+{
+  "name": "clipia-nova",
+  "productName": "Clipia Nova",
+  "version": "1.0.0",
+  "description": "Clipia Nova — le navigateur intelligent CLENDAX qui protège ses utilisateurs",
+  "author": { "name": "Clin Fabrice — CLENDAX", "email": "fabriceclin02@gmail.com" },
+  "homepage": "https://fabriceclin02-glitch.github.io/clipia/nova.html",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win nsis portable",
+    "dist:mac": "electron-builder --mac dmg --universal",
+    "dist:linux": "electron-builder --linux AppImage"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.clendax.clipianova",
+    "productName": "Clipia Nova",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "preload.js", "renderer/**/*"],
+    "icon": "build/icon.png",
+    "publish": null,
+    "win": { "target": ["nsis", "portable"] },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true, "shortcutName": "Clipia Nova", "artifactName": "Clipia-Nova-Windows-Installation.${ext}" },
+    "portable": { "artifactName": "Clipia-Nova-Windows-Portable.${ext}" },
+    "mac": { "target": "dmg", "category": "public.app-category.productivity", "identity": null, "artifactName": "Clipia-Nova-Mac.${ext}" },
+    "linux": { "target": "AppImage", "category": "Network", "artifactName": "Clipia-Nova-Linux.${ext}" }
+  }
+}

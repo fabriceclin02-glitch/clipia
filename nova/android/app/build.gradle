@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Signature : même principe que l'APK Clipia (clé fournie par les secrets GitHub,
+// sinon clé temporaire créée par l'atelier de compilation).
+def fichierCle = System.getenv("CLIPIA_KEYSTORE")
+def mdpMagasin = System.getenv("CLIPIA_KEYSTORE_MDP")
+def aliasCle   = System.getenv("CLIPIA_KEY_ALIAS")
+def mdpCle     = System.getenv("CLIPIA_KEY_MDP")
+def signatureFournie = fichierCle != null && !fichierCle.isEmpty() && file(fichierCle).exists()
+
+android {
+    namespace 'com.clendax.clipianova'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.clendax.clipianova"
+        minSdk 24
+        targetSdk 34
+        versionCode 10000
+        versionName "1.0.0"
+    }
+
+    if (signatureFournie) {
+        signingConfigs {
+            nova {
+                storeFile file(fichierCle)
+                storePassword mdpMagasin
+                keyAlias aliasCle
+                keyPassword mdpCle
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            if (signatureFournie) signingConfig signingConfigs.nova
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

@@ -1,0 +1,131 @@
+name: Construire Clipia Nova (Windows, Mac, Linux, Android)
+# Compile le navigateur Clipia Nova pour les 4 plateformes et publie une Release « nova-vX.Y.Z ».
+# Se déclenche quand le dossier nova/ change, ou à la main (onglet Actions).
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'nova/**'
+      - '.github/workflows/nova.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nova
+  cancel-in-progress: true
+
+jobs:
+  bureau:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            cmd: npx electron-builder --win nsis portable --publish never
+          - os: macos-latest
+            cmd: npx electron-builder --mac dmg --universal --publish never
+          - os: ubuntu-latest
+            cmd: npx electron-builder --linux AppImage --publish never
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: nova
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: nova
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm install --no-audit --no-fund
+      - run: ${{ matrix.cmd }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nova-${{ matrix.os }}
+          path: |
+            nova/dist/Clipia-Nova-*.exe
+            nova/dist/Clipia-Nova-*.dmg
+            nova/dist/Clipia-Nova-*.AppImage
+          if-no-files-found: error
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: nova
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - name: SDK Android
+        run: |
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1 || true
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Clé de signature
+        env:
+          CLE_B64:   ${{ secrets.CLIPIA_KEYSTORE_B64 }}
+          CLE_MDP:   ${{ secrets.CLIPIA_KEYSTORE_MDP }}
+          CLE_ALIAS: ${{ secrets.CLIPIA_KEY_ALIAS }}
+          CLE_MDP2:  ${{ secrets.CLIPIA_KEY_MDP }}
+        run: |
+          set -e
+          CHEMIN="$RUNNER_TEMP/nova.keystore"
+          if [ -n "$CLE_B64" ]; then
+            printf '%s' "$CLE_B64" | base64 -d > "$CHEMIN"
+            ALIAS="${CLE_ALIAS:-clipia}"; MDP="$CLE_MDP"; MDP_CLE="${CLE_MDP2:-$CLE_MDP}"
+          else
+            ALIAS="nova"; MDP=$(openssl rand -base64 24 | tr -d '\n'); MDP_CLE="$MDP"
+            keytool -genkeypair -keystore "$CHEMIN" -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 10950 \
+              -storepass "$MDP" -keypass "$MDP" -dname "CN=Clipia Nova, OU=CLENDAX, O=Clin Fabrice, L=Flize, C=FR"
+            echo "::warning::Clé de signature temporaire (aucun secret CLIPIA_KEYSTORE_B64)."
+          fi
+          { echo "CLIPIA_KEYSTORE=$CHEMIN"; echo "CLIPIA_KEYSTORE_MDP=$MDP"; echo "CLIPIA_KEY_ALIAS=$ALIAS"; echo "CLIPIA_KEY_MDP=$MDP_CLE"; } >> "$GITHUB_ENV"
+      - name: Compiler l'APK
+        working-directory: nova/android
+        run: gradle assembleRelease --no-daemon --stacktrace
+      - name: Ranger l'APK
+        run: |
+          set -e
+          SRC=$(find nova/android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          mkdir -p out && cp "$SRC" out/Clipia-Nova-Android.apk
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          "$BT/apksigner" verify out/Clipia-Nova-Android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nova-android
+          path: out/Clipia-Nova-Android.apk
+
+  publier:
+    needs: [bureau, android]
+    if: always() && (needs.bureau.result == 'success' || needs.android.result == 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: nova
+      - uses: actions/download-artifact@v4
+        with: { path: art, merge-multiple: true }
+      - name: Release
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          set -e
+          V=$(node -p "require('./nova/package.json').version")
+          TAG="nova-v$V"
+          ls -la art
+          (cd art && sha256sum * > SHA256SUMS-Clipia-Nova.txt)
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" art/* --clobber
+          else
+            gh release create "$TAG" art/* --latest=false --title "Clipia Nova $V" \
+              --notes "Clipia Nova $V — le navigateur intelligent CLENDAX qui protège ses utilisateurs. Windows (installation ou portable), Mac, Linux et Android. Page de téléchargement : https://fabriceclin02-glitch.github.io/clipia/nova.html"
+          fi
