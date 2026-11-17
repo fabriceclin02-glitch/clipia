@@ -307,7 +307,7 @@ function activate(id) {
   { const t0 = tabs.find(t => t.id === id); if (t0) { t0.last = Date.now(); if (t0.sleeping) wake(t0); } }
   tabs.forEach(t => t.el && t.el.classList.toggle('on', t.id === id));
   const t = cur();
-  $('#url').value = isWeb(t) ? t.url : (t.kind === 'tor' ? '' : 'nova://' + ({ home: 'accueil', store: 'store', settings: 'reglages', history: 'historique' }[t.kind] || ''));
+  $('#url').value = isWeb(t) ? t.url : (t.kind === 'tor' ? '' : 'nova://' + ({ home: 'accueil', store: 'store', settings: 'reglages', history: 'historique', repair: 'depannage' }[t.kind] || ''));
   $('#url').placeholder = t.kind === 'tor' ? '🧅 Adresse .onion ou recherche via Tor…' : 'Rechercher, saisir une adresse ou un .onion…';
   document.body.classList.toggle('in-tor', t.kind === 'tor');
   $('#torBar').classList.toggle('hidden', t.kind !== 'tor' || torState.state === 'ready');
@@ -324,7 +324,7 @@ function closeTab(id) {
   if (active === id) activate(tabs[Math.max(0, i - 1)].id); else drawTabs();
 }
 function drawTabs() {
-  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
+  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.kind === 'repair' ? '🛠 Dépannage' : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
   $$('#tabs .tab').forEach(e => {
     e.onclick = ev => { if (ev.target.dataset.x) closeTab(+ev.target.dataset.x); else activate(+e.dataset.id); };
     e.onauxclick = ev => { if (ev.button === 1) closeTab(+e.dataset.id); };
@@ -333,7 +333,7 @@ function drawTabs() {
 function navigate(input) {
   const s = (input || '').trim(); if (!s) return;
   const t = cur();
-  if (/^nova:\/\//.test(s)) return toInternal(t, s.includes('store') ? 'store' : s.includes('reglages') ? 'settings' : s.includes('historique') ? 'history' : 'home');
+  if (/^nova:\/\//.test(s)) return toInternal(t, s.includes('store') ? 'store' : s.includes('reglages') ? 'settings' : s.includes('historique') ? 'history' : s.includes('depannage') ? 'repair' : 'home');
   let url;
   if (/^https?:\/\//i.test(s)) url = s;
   else if (/^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/.test(s) && !s.includes(' ')) url = (/\.onion(\/|:|$)/.test(s) ? 'http://' : 'https://') + s;
@@ -437,6 +437,7 @@ function handleKey({ key, ctrl, shift, alt }) {
   if (shift) {
     if (k === 'n') { newTab('tor'); return true; }
     if (k === 'e') { toggleShare(); return true; }
+    if (k === 'd') { openInternal('repair'); return true; }
     if (k === 'x') { screenshot(); return true; }
     if (k === 'p') { pip(); return true; }
     if (k === 't') { const u = closed.pop(); if (u) newTab('web', u); return true; }
@@ -475,7 +476,7 @@ function toggleKeys(force) { const k = $('#keys'); const show = force ?? k.class
 
 /* ---------- Pages internes ---------- */
 function renderInternal(t) {
-  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor })[t.kind]?.(t.kind === 'tor' ? t : t.el);
+  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor, repair: pageRepair })[t.kind]?.(t.kind === 'tor' ? t : t.el);
 }
 
 function pageHome(el) {
@@ -578,7 +579,7 @@ function pageSettings(el) {
       <div class="field"><label>Mon style personnalisé</label><textarea id="sPerso" rows="2">${esc(cfg.customPrompt)}</textarea></div></div>
     <div class="card"><h2>⚡ Performances</h2><label class="row" style="margin-top:.6rem"><input type="checkbox" id="slp" ${cfg.tabSleep ? 'checked' : ''}> Mettre en veille les onglets inutilisés depuis <input id="slpMin" type="number" min="2" max="120" value="${cfg.sleepMin}" style="width:70px;background:#0b0926;border:1px solid var(--line);border-radius:8px;padding:.3rem"> min (libère la mémoire, la page se recharge quand vous y revenez)</label></div>
     <div class="card"><h2>⌨ Clavier</h2><p class="note">Plus de 30 raccourcis, comme dans l'application Clipia.</p><button class="btn2" id="sKeys" style="margin-top:.6rem">Voir les raccourcis (F1)</button></div>
-    <div class="card"><h2>À propos</h2><p class="note">Clipia Nova 2.1 — moteur Chromium · conçu par Clin Fabrice, CLENDAX (Flize, Ardennes).</p>
+    <div class="card"><h2>À propos</h2><p class="note">Clipia Nova 2.2 — moteur Chromium · conçu par Clin Fabrice, CLENDAX (Flize, Ardennes).</p>
       <button class="btn2" id="rewz" style="margin-top:.8rem">Relancer l'assistant de configuration</button></div>
   </div></div>`;
   let sel = cfg.provider;
@@ -688,6 +689,7 @@ async function command(text) {
   if (/^(?:ferme|fermer) (?:l'|cet |l’)?onglet/.test(low)) { closeTab(active); return 'Onglet fermé.'; }
   if (/^(?:tais-toi|chut|stop|arrête de parler)/.test(low)) { Voice.stop(); return ''; }
   if (/^(?:mode lecture|lis(?:-moi)? (?:la|cette) page)/.test(low)) { openReader(/^lis/.test(low)); return null; }
+  if (/(r[ée]pare|d[ée]panne|d[ée]pannage|(pc|ordi|ordinateur|windows|mac)\b.*\b(lent|rame|plante|bug|bloqu|probl[eè]me|marche pas|ne fonctionne)|(internet|wifi|connexion)\b.*\b(marche pas|coup|lent|probl))/.test(low)) { repairState.problem = t; openInternal('repair'); setTimeout(() => runRepair(), 300); return 'J\'analyse votre ordinateur. Je vous propose ensuite des réparations : rien ne sera fait sans votre accord.'; }
   if (/^(?:fais une |prends une )?capture/.test(low)) { screenshot(); return 'Capture enregistrée.'; }
   if (/^partage/.test(low)) { toggleShare(true); return 'Où voulez-vous partager ?'; }
   if (/^(?:quelle heure|il est quelle heure)/.test(low)) return 'Il est ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.';
@@ -762,6 +764,7 @@ function initTools() {
   $('#btnShare').onclick = (e) => { e.stopPropagation(); toggleShare(); };
   $('#btnReader').onclick = () => openReader();
   $('#btnShot').onclick = screenshot;
+  $('#btnFix').onclick = () => openInternal('repair');
   document.addEventListener('click', e => { if (!e.target.closest('#shareMenu')) $('#shareMenu').classList.add('hidden'); });
   let fs = 1.15;
   $('#rdBigger').onclick = () => { fs = Math.min(1.8, fs + .1); $('#rdBody').style.fontSize = fs + 'rem'; };
@@ -818,3 +821,93 @@ function sleepTabs() {
   drawTabs();
 }
 function wake(t) { t.sleeping = false; const u = t.url; t.el.remove(); t.el = null; makeWebview(t, u); }
+
+
+/* =========================================================
+   6. DÉPANNAGE DE L'ORDINATEUR (diagnostic + réparations avec accord)
+   ========================================================= */
+const repairState = { problem: '', diag: null, actions: [], text: '', busy: false, quick: null, convo: [] };
+const bar = (pct, warn = 80) => `<div class="mbar"><i style="width:${Math.min(100, pct)}%;background:${pct >= warn ? '#f87171' : pct >= warn - 20 ? '#fbbf24' : '#34d399'}"></i></div>`;
+async function pageRepair(el) {
+  if (!repairState.quick) repairState.quick = await window.nova.sysQuick();
+  const d = repairState.diag, Q = repairState.quick;
+  el.innerHTML = `<div class="page"><div class="settings" style="max-width:980px">
+    <h1>🛠 Dépannage par Clipia</h1>
+    <p class="note" style="font-size:1rem">Clipia analyse votre ordinateur, explique ce qui ne va pas et propose des réparations. <b>Rien n'est exécuté sans votre accord</b> : chaque commande est affichée, et les commandes dangereuses sont bloquées par le bouclier.</p>
+    <div class="card"><h2>Quel est le problème ?</h2>
+      <textarea id="rpIn" rows="2" placeholder="Ex. : mon PC est très lent depuis ce matin, internet coupe souvent, le son ne marche plus…" style="width:100%;margin-top:.6rem;background:#0b0926;border:1px solid var(--line);border-radius:12px;padding:.8rem">${esc(repairState.problem)}</textarea>
+      <div class="row" style="margin-top:.8rem"><button class="primary" id="rpGo">${repairState.busy ? '⏳ Analyse en cours…' : '🔍 Analyser mon ordinateur'}</button><button class="btn2" id="rpTalk">🎤 Le dire à Clipia</button></div></div>
+    ${d ? `<div class="card"><h2>📊 État de l'ordinateur</h2><p class="note">${esc(d.systeme)} · ${esc(d.processeur)} · allumé depuis ${esc(d.allumeDepuis)}</p>
+      <div class="diag">
+        <div><b>Processeur</b><span>${d.cpuPct} %</span>${bar(d.cpuPct)}</div>
+        <div><b>Mémoire</b><span>${d.ramPct} % · ${d.ramLibreGo} Go libres / ${d.ramTotGo}</span>${bar(d.ramPct, 85)}</div>
+        ${d.disques.map(x => { const pct = Math.round((1 - x.libreGo / x.totGo) * 100); return `<div><b>Disque ${esc(x.nom)}</b><span>${x.libreGo} Go libres / ${x.totGo}</span>${bar(pct, 90)}</div>`; }).join('')}
+        <div><b>Internet</b><span>${d.reseau.internet ? '✓ connecté' + (d.reseau.latenceMs ? ' · ' + d.reseau.latenceMs + ' ms' : '') : '✕ pas d\'accès'}${d.reseau.dns ? '' : ' · DNS en panne'}</span></div>
+        <div><b>Fichiers temporaires</b><span>${d.tempMo >= 1024 ? (d.tempMo / 1024).toFixed(1) + ' Go' : d.tempMo + ' Mo'}</span></div>
+        ${d.derniereMaj ? `<div><b>Dernière mise à jour Windows</b><span>${esc(d.derniereMaj)}</span></div>` : ''}
+      </div>
+      <h3 class="sec" style="margin:1.2rem 0 .5rem">Programmes les plus gourmands</h3>
+      <div class="procs">${d.processus.map(p => `<span>${esc(p.nom)} <small>${p.memMo} Mo</small></span>`).join('')}</div>
+      ${d.demarrage && d.demarrage.length ? `<h3 class="sec" style="margin:1.2rem 0 .5rem">Lancés au démarrage</h3><div class="procs">${d.demarrage.map(n => `<span>${esc(n)}</span>`).join('')}</div>` : ''}
+    </div>` : ''}
+    ${repairState.text || repairState.actions.length ? `<div class="card"><h2>✦ Le diagnostic de Clipia</h2><div class="rp-text">${esc(repairState.text)}</div>
+      <div class="acts">${repairState.actions.map((a, i) => actCard(a, 'ai' + i)).join('') || ''}</div>
+      ${repairState.actions.some(a => a.done) ? '<button class="btn2" id="rpFollow" style="margin-top:1rem">✦ Clipia, analyse les résultats</button>' : ''}</div>` : ''}
+    <div class="card"><h2>⚡ Réparations rapides <small style="color:var(--muted);font-weight:400">(${esc(Q.shell)})</small></h2>
+      <div class="acts">${Q.list.map((a, i) => actCard(a, 'q' + i)).join('')}</div></div>
+    <p class="note">Historique des commandes : fichier « depannage.log » dans le dossier de Clipia Nova. Pour un problème matériel (écran, batterie, disque qui fait du bruit), Clipia vous conseillera un réparateur.</p>
+  </div></div>`;
+  $('#rpGo', el).onclick = () => { repairState.problem = $('#rpIn', el).value.trim(); runRepair(); };
+  $('#rpTalk', el).onclick = () => { toggleCompanion(true); Voice.listenOnce(); };
+  const f = $('#rpFollow', el); if (f) f.onclick = () => askRepair(true);
+  $$('[data-act]', el).forEach(b => b.onclick = () => actClick(b));
+}
+function actCard(a, key) {
+  return `<div class="act ${a.done ? (a.result && a.result.code === 0 ? 'ok' : 'ko') : ''}"><div class="act-h"><b>${esc(a.titre)}</b>${a.admin ? '<span class="tagx adm">administrateur</span>' : ''}<span class="tagx r-${esc(a.risque || 'faible')}">risque ${esc(a.risque || 'faible')}</span>${a.long ? '<span class="tagx">long</span>' : ''}</div>
+    <p>${esc(a.pourquoi || '')}</p><code>${esc(a.cmd)}</code>
+    ${a.result ? `<pre>${esc(((a.result.out || '') + (a.result.err ? '\n' + a.result.err : '')).trim() || (a.result.code === 0 ? 'Terminé.' : 'Échec (code ' + a.result.code + ')'))}</pre>` : ''}
+    <div class="row">${a.running ? '<span class="note">⏳ En cours… ' + (a.admin ? '(acceptez la fenêtre administrateur)' : '') + '</span>' : a.done ? `<button class="btn2" data-act="${key}" data-mode="again">↻ Relancer</button>` : `<button class="primary" data-act="${key}">▶ Exécuter</button>`}</div></div>`;
+}
+function actOf(key) { return key[0] === 'q' ? repairState.quick.list[+key.slice(1)] : repairState.actions[+key.slice(2)]; }
+async function actClick(b) {
+  const a = actOf(b.dataset.act);
+  if (await window.nova.sysBlocked(a.cmd)) { toast('⛔ Commande bloquée par le bouclier'); return; }
+  if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = a.admin ? '✓ Confirmer (droits administrateur)' : '✓ Confirmer l\'exécution'; b.classList.add('warn'); setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.textContent = '▶ Exécuter'; b.classList.remove('warn'); } }, 6000); return; }
+  a.running = true; rerenderRepair();
+  a.result = await window.nova.sysRun({ cmd: a.cmd, admin: !!a.admin });
+  a.running = false; a.done = true; rerenderRepair();
+  toast(a.result.blocked ? '⛔ Bloqué par le bouclier' : a.result.code === 0 ? '✓ ' + a.titre : '✕ ' + a.titre + ' : voir le détail');
+}
+function rerenderRepair() { tabs.filter(t => t.kind === 'repair').forEach(t => pageRepair(t.el)); }
+async function runRepair() {
+  if (repairState.busy) return;
+  repairState.busy = true; rerenderRepair(); setOrb('thinking');
+  repairState.diag = await window.nova.sysDiag();
+  repairState.busy = false; rerenderRepair();
+  await askRepair(false);
+}
+async function askRepair(followUp) {
+  const p = D.providers[cfg.provider];
+  if (!hasKey(cfg.provider)) { repairState.text = `Pour que je vous propose des réparations, ajoutez une clé ${p.name} dans ⚙ Réglages. En attendant, les réparations rapides ci-dessous fonctionnent sans IA.`; rerenderRepair(); return; }
+  repairState.text = 'Clipia réfléchit…'; rerenderRepair(); setOrb('thinking');
+  const Q = repairState.quick;
+  const system = `Tu es Clipia, une technicienne informatique bienveillante intégrée au navigateur Clipia Nova. Système de l'utilisateur : ${Q.platform} ; les commandes s'exécutent dans ${Q.shell}. ` +
+    `Réponds en français simple : d'abord le diagnostic en 3 à 6 phrases, puis au plus 4 actions dans un bloc \`\`\`actions contenant un tableau JSON [{"titre":"…","pourquoi":"…","cmd":"…","admin":false,"risque":"faible|moyen|élevé"}]. ` +
+    `Règles : commandes non destructives et réversibles autant que possible ; jamais de formatage, de suppression de fichiers personnels ou système, d'arrêt de l'ordinateur, ni de téléchargement suivi d'exécution ; une commande par action, sur une ligne ; admin:true seulement si nécessaire. Si rien n'est utile ou si c'est un problème matériel, renvoie [] et explique quoi faire.`;
+  const msg = followUp
+    ? 'Voici les résultats des actions exécutées :\n' + repairState.actions.concat(Q.list).filter(a => a.done).map(a => `- ${a.titre} (code ${a.result.code}) :\n${(a.result.out || '').slice(0, 1500)}\n${(a.result.err || '').slice(0, 500)}`).join('\n') + '\nQue faut-il faire maintenant ?'
+    : `Problème décrit : ${repairState.problem || '(aucun : fais un bilan de santé)'}\n\nDiagnostic automatique :\n${JSON.stringify(repairState.diag, null, 1)}`;
+  repairState.convo.push({ role: 'user', content: msg });
+  const r = await window.nova.aiChat({ provider: cfg.provider, apiKey: KEYS[cfg.provider], model: modelOf(cfg.provider), host: cfg.ollamaHost, system, messages: repairState.convo.slice(-8) });
+  setOrb('idle');
+  if (r.error) { repairState.text = '✕ ' + r.error; rerenderRepair(); return; }
+  repairState.convo.push({ role: 'assistant', content: r.text });
+  const m = r.text.match(/```actions\s*([\s\S]*?)```/);
+  let acts = [];
+  if (m) { try { acts = JSON.parse(m[1]); } catch {} }
+  repairState.text = r.text.replace(/```actions[\s\S]*?```/, '').trim();
+  const fresh = (Array.isArray(acts) ? acts : []).filter(a => a && a.cmd).slice(0, 4).map(a => ({ titre: String(a.titre || 'Action'), pourquoi: String(a.pourquoi || ''), cmd: String(a.cmd), admin: !!a.admin, risque: String(a.risque || 'faible') }));
+  repairState.actions = followUp ? repairState.actions.filter(a => a.done).concat(fresh) : fresh;
+  rerenderRepair();
+  if (cfg.voice) Voice.speak(repairState.text.slice(0, 600));
+}

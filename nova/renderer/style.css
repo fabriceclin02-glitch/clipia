@@ -293,3 +293,21 @@ kbd{background:#0b0926;border:1px solid var(--line);border-bottom-width:3px;bord
 #rdBody p{margin:0 0 1.1rem}
 #rdBody .li{margin-left:1rem}
 #rdBody blockquote{border-left:3px solid var(--violet);padding-left:1rem;color:#c7c3f2;font-style:italic;margin:1.2rem 0}
+
+/* ================= Nova 2.2 : dépannage ================= */
+.diag{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.8rem;margin-top:1rem}
+.diag>div{background:#0b0926;border:1px solid var(--line);border-radius:14px;padding:.8rem 1rem}
+.diag b{display:block;font-size:.85rem;color:#c4b5fd}.diag span{font-size:.95rem}
+.mbar{height:7px;border-radius:7px;background:#ffffff12;margin-top:.5rem;overflow:hidden}.mbar i{display:block;height:100%;border-radius:7px;transition:width .6s}
+.procs{display:flex;flex-wrap:wrap;gap:.4rem}.procs span{background:#0b0926;border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;font-size:.82rem}.procs small{color:var(--muted)}
+.rp-text{white-space:pre-wrap;line-height:1.6;margin:.6rem 0 1rem}
+.acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.8rem;margin-top:.8rem}
+.act{background:#0b0926;border:1px solid var(--line);border-radius:16px;padding:1rem;display:flex;flex-direction:column;gap:.5rem}
+.act.ok{border-color:#34d39977}.act.ko{border-color:#f8717177}
+.act-h{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}.act-h b{flex:1 1 100%}
+.act p{color:var(--muted);font-size:.88rem;line-height:1.45}
+.act code{display:block;background:#05040f;border:1px solid #1f1b4a;border-radius:10px;padding:.5rem .7rem;font-size:.78rem;color:#a5f3fc;white-space:pre-wrap;word-break:break-all}
+.act pre{background:#05040f;border-radius:10px;padding:.5rem .7rem;font-size:.75rem;max-height:180px;overflow:auto;white-space:pre-wrap;color:#d1d5db}
+.act .primary{padding:.55rem 1rem}.act .primary.warn{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.tagx{font-size:.7rem;padding:.12rem .5rem;border-radius:999px;background:#ffffff10;color:#c7c3f2}
+.tagx.adm{background:#f59e0b22;color:#fbbf24}.tagx.r-moyen{background:#fbbf2422;color:#fbbf24}.tagx.r-élevé{background:#ef444422;color:#fca5a5}.tagx.r-faible{background:#34d39922;color:#6ee7b7}

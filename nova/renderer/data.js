@@ -112,6 +112,6 @@ window.NOVA_DATA = {
     ['Navigation', [['Ctrl + L', 'Barre d\'adresse'], ['Alt + ← / →', 'Précédent / suivant'], ['F5 ou Ctrl + R', 'Recharger'], ['Alt + Origine', 'Accueil'], ['Ctrl + D', 'Ajouter aux favoris'], ['Ctrl + H', 'Historique et favoris']]],
     ['Page', [['Ctrl + F', 'Rechercher dans la page'], ['Ctrl + + / − / 0', 'Zoom avant / arrière / normal'], ['Ctrl + P', 'Imprimer'], ['F11', 'Plein écran']]],
     ['Clipia Nova', [['Ctrl + Maj + S', 'Store'], ['Ctrl + Maj + M', 'Mes mails'], ['Ctrl + ,', 'Réglages'], ['Ctrl + K', 'Demander à Clipia (palette)'], ['F1', 'Cette aide']]],
-    ['Réseaux et outils', [['Ctrl + B', 'Réseaux sociaux (Facebook, Instagram, TikTok…)'], ['Ctrl + Maj + E', 'Partager la page'], ['Alt + R', 'Mode lecture'], ['Ctrl + Maj + X', 'Capture de la page'], ['Ctrl + Maj + P', 'Vidéo en image dans l\'image']]]
+    ['Réseaux et outils', [['Ctrl + B', 'Réseaux sociaux (Facebook, Instagram, TikTok…)'], ['Ctrl + Maj + E', 'Partager la page'], ['Alt + R', 'Mode lecture'], ['Ctrl + Maj + X', 'Capture de la page'], ['Ctrl + Maj + P', 'Vidéo en image dans l\'image'], ['Ctrl + Maj + D', 'Dépannage de l\'ordinateur par Clipia']]]
   ]
 };

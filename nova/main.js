@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const net = require('net');
 const { spawn } = require('child_process');
+const sys = require('./system.js');
 
 let win;
 const DEMO = process.env.NOVA_DEMO === '1';   // mode démonstration (vidéo de présentation)
@@ -95,7 +96,8 @@ let demoIdx = 0;
 ipcMain.handle('ai:chat', async (_e, { provider, apiKey, model, system, messages, host }) => {
   if (DEMO) {
     await new Promise(r => setTimeout(r, 900));
-    const q = JSON.stringify(messages).toLowerCase();
+    const q = (JSON.stringify(messages) + (system || '')).toLowerCase();
+    if (q.includes('technicienne')) return { text: "Votre ordinateur rame surtout à cause de la mémoire presque pleine (91 %) et de 6,4 Go de fichiers temporaires. Le navigateur d'une autre marque ouvert en arrière-plan consomme à lui seul 2,1 Go. Internet fonctionne, mais le cache DNS semble encombré. Je vous propose trois réparations sans risque : rien ne sera fait sans votre accord.\n\n```actions\n[{\"titre\":\"Nettoyer les fichiers temporaires\",\"pourquoi\":\"Libère 6,4 Go et accélère le système.\",\"cmd\":\"Remove-Item \\\"$env:TEMP\\\\*\\\" -Recurse -Force -ErrorAction SilentlyContinue\",\"admin\":false,\"risque\":\"faible\"},{\"titre\":\"Vider le cache DNS\",\"pourquoi\":\"Les sites s'ouvriront de nouveau rapidement.\",\"cmd\":\"ipconfig /flushdns\",\"admin\":false,\"risque\":\"faible\"},{\"titre\":\"Réparer les fichiers système\",\"pourquoi\":\"Vérifie que Windows n'est pas abîmé.\",\"cmd\":\"sfc /scannow\",\"admin\":true,\"risque\":\"faible\"}]\n```" };
     if (q.includes('instagram')) return { text: "Nouveau son, nouvelle énergie 🎧🔥\nLe clip arrive très vite… Restez connectés ! ✨\n\n#clendax #nouveauclip #musique #ardennes #rapfrancais #clip #studio #creation #artiste #son #beat #music #france #instamusic #clipia" };
     if (q.includes('tiktok')) return { text: "🎬 Accroche (0-2 s) : « Ce son va tourner en boucle… »\n1. Gros plan casque, lumière violette\n2. Le beat tombe : cut sur la scène\n3. Texte à l'écran : « Nouveau clip vendredi »\n4. Regard caméra + logo CLENDAX\n🎵 Son : extrait du refrain\n#clendax #nouveauclip #fyp #musique" };
     return { text: DEMO_ANSWERS[demoIdx++ % DEMO_ANSWERS.length] };
@@ -226,6 +228,13 @@ ipcMain.handle('shield:set', (_e, s) => { Object.assign(shield, s); return shiel
 ipcMain.handle('privacy:clear', async () => {
   for (const ses of [session.fromPartition('persist:nova'), torSession]) { if (ses) { await ses.clearStorageData(); await ses.clearCache(); } }
   return true;
+});
+ipcMain.handle('sys:diag', () => sys.diagnose());
+ipcMain.handle('sys:quick', () => ({ list: sys.QUICK, shell: sys.shellName, platform: process.platform }));
+ipcMain.handle('sys:blocked', (_e, cmd) => sys.blocked(cmd));
+ipcMain.handle('sys:run', (e, a) => {
+  if (!win || e.sender !== win.webContents) return { code: 1, err: 'Refusé' };   // seule l'interface de Nova peut demander une réparation
+  return sys.execute(a, app.getPath('userData'));
 });
 ipcMain.handle('nova:show-file', (_e, p) => shell.showItemInFolder(p));
 ipcMain.handle('nova:save-png', (_e, { data, name }) => {
