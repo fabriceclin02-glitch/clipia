@@ -67,7 +67,7 @@ const STEPS = [stepWelcome, stepShield, stepAI, stepVoice, stepMail, stepStyle, 
 
 function startWizard() {
   $('#wizard').classList.remove('hidden');
-  if (!wzOrb) { wzOrb = new Orb($('#wzOrb'), { points: 600, interactive: true, scale: 0.42 }); wzOrb.onClick = () => Voice.speak(wzSay()); }
+  if (!wzOrb) { wzOrb = new Orb($('#wzOrb'), { points: 600, interactive: true, scale: 0.28 }); wzOrb.onClick = () => Voice.speak(wzSay()); }
   $('#wzDots').innerHTML = STEPS.map(() => '<i></i>').join('');
   $('#wzBack').onclick = () => { if (step > 0) { step--; renderStep(); } };
   $('#wzNext').onclick = async () => {
@@ -243,8 +243,8 @@ function startBrowser() {
   $('#browser').classList.remove('hidden');
   if (started) { updEngine(); $('#aiMode').value = cfg.mode; tabs.filter(t => !isWeb(t)).forEach(renderInternal); return; }
   started = true;
-  miniOrb = new Orb($('#miniOrb'), { points: 160, scale: 0.42 });
-  panelOrb = new Orb($('#panelOrb'), { points: 160, scale: 0.42 });
+  miniOrb = new Orb($('#miniOrb'), { points: 160, scale: 0.26 });
+  panelOrb = new Orb($('#panelOrb'), { points: 160, scale: 0.26 });
   newTab('home');
   $('#orbMini').onclick = () => toggleCompanion(true);
   $('#newTab').onclick = () => newTab('home');
@@ -497,7 +497,7 @@ function pageHome(el) {
     ${cfg.favorites.length ? `<h3 class="sec">Favoris</h3><div class="hist">${cfg.favorites.slice(0, 8).map(x => `<button data-url="${esc(x.url)}">★ ${esc(x.title)}</button>`).join('')}</div>` : ''}
     ${cfg.history.length ? `<h3 class="sec">Récemment visité</h3><div class="hist">${cfg.history.slice(0, 6).map(x => `<button data-url="${esc(x.url)}">🕘 ${esc(x.title)}</button>`).join('')}</div>` : ''}
   </div>`;
-  const o = new Orb($('.hs', el), { points: 700, interactive: true, scale: 0.42 }); o.onClick = () => { toggleCompanion(true); Voice.listenOnce(); };
+  const o = new Orb($('.hs', el), { points: 700, interactive: true, scale: 0.28 }); o.onClick = () => { toggleCompanion(true); Voice.listenOnce(); };
   const f = $('.search', el);
   $('select', f).onchange = e => { cfg.engine = e.target.value; save(); };
   f.onsubmit = e => { e.preventDefault(); navigate($('input', f).value); };
@@ -719,6 +719,16 @@ async function ask(text, { speak = false, shown = null, fromVoice = false } = {}
     if (direct) { bubble('a', direct); cpLine('a', direct); if (talk || cfg.voice) await Voice.speak(direct); }
     return;
   }
+  const offline = !navigator.onLine;
+  if (offline) {
+    // Hors connexion : IA locale (Ollama) si elle est installée, sinon réponses de base calculées sur l'appareil.
+    const loc = await window.nova.aiChat({ provider: 'ollama', model: modelOf('ollama'), host: cfg.ollamaHost, system: 'Tu es Clipia, assistante hors-ligne. Réponds en français, brièvement.', messages: [...convo.slice(-10), { role: 'user', content: text }] });
+    let ans;
+    if (!loc.error) ans = '📴 (hors connexion, IA locale) ' + loc.text;
+    else ans = offlineBasic(text);
+    convo.push({ role: 'user', content: text }, { role: 'assistant', content: ans });
+    bubble('a', ans); cpLine('a', ans); if (talk || cfg.voice) await Voice.speak(ans.replace(/^📴[^)]*\)\s*/, '')); return;
+  }
   if (!hasKey(cfg.provider)) {
     const m = `Aucune clé ${p.name} n'est configurée. Ouvrez ⚙ Réglages → Intelligence artificielle (2 minutes).`;
     bubble('e', m); cpLine('e', m); return;
@@ -738,6 +748,30 @@ async function ask(text, { speak = false, shown = null, fromVoice = false } = {}
   if (talk || cfg.voice) await Voice.speak(r.text); else Voice.onState(Voice.handsFree ? 'listening' : 'idle');
 }
 
+
+/* Réponses de base sans internet ni IA locale : heure, date, calculs, mémoire, aide, dépannage. */
+function calcSafe(src) {
+  const tk = src.match(/\d+(?:\.\d+)?|\*\*|[-+*/()%]/g) || []; let i = 0;
+  const prim = () => { const t = tk[i++]; if (t === '(') { const v = add(); i++; return v; } if (t === '-') return -prim(); if (t === '+') return prim(); return parseFloat(t); };
+  const pw = () => { let v = prim(); while (tk[i] === '**') { i++; v = Math.pow(v, prim()); } return v; };
+  const mul = () => { let v = pw(); while (['*', '/', '%'].includes(tk[i])) { const o = tk[i++], r = pw(); v = o === '*' ? v * r : o === '/' ? v / r : v % r; } return v; };
+  const add = () => { let v = mul(); while (tk[i] === '+' || tk[i] === '-') { const o = tk[i++], r = mul(); v = o === '+' ? v + r : v - r; } return v; };
+  const r = add(); if (!isFinite(r)) throw new Error('calc'); return +r.toFixed(10);
+}
+function offlineBasic(q) {
+  const l = q.toLowerCase(), now = new Date();
+  if (/heure/.test(l)) return '📴 Il est ' + now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.';
+  if (/(date|jour|quel jour)/.test(l)) return '📴 Nous sommes le ' + now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + '.';
+  const calc = q.replace(/,/g, '.').match(/^[\s\d+\-*/().x×÷%^]+$/) || (l.match(/combien (?:font|fait|vaut)\s+([\d\s+\-*/().x×÷,]+)/) || [])[1];
+  if (calc) { try { const e = String(Array.isArray(calc) ? q : calc).replace(/,/g, '.').replace(/[x×]/g, '*').replace(/÷/g, '/').replace(/\^/g, '**'); if (/^[\d\s+\-*/().%]+$/.test(e)) return '📴 ' + e.trim() + ' = ' + calcSafe(e); } catch {} }
+  if (/(dépann|répar|ordinateur|pc |lent|bug)/.test(l)) { setTimeout(() => openInternal('repair'), 600); return '📴 Le dépannage fonctionne sans internet : j\'ouvre le diagnostic de votre ordinateur.'; }
+  if (/(raccourci|aide|que sais)/.test(l)) return '📴 Hors connexion : F1 affiche les raccourcis, Ctrl+Maj+D lance le dépannage, et je peux donner l\'heure, la date, faire des calculs et relire ce que vous m\'avez demandé de retenir.';
+  const hit = cfg.memory.find(m => l.split(/\W+/).some(w => w.length > 3 && m.toLowerCase().includes(w)));
+  if (hit) return '📴 D\'après ce que vous m\'avez demandé de retenir : ' + hit;
+  return '📴 Pas de connexion, et l\'IA locale n\'est pas installée : je ne peux répondre qu\'aux questions simples (heure, date, calculs, dépannage). Pour une IA complète sans internet, installez Ollama (Réglages ▸ Intelligence artificielle ▸ Ollama) : elle tournera sur votre ordinateur.';
+}
+addEventListener('offline', () => { toast('📴 Hors connexion — Clipia reste disponible (IA locale ou réponses de base)'); document.title = '📴 Clipia Nova'; });
+addEventListener('online', () => { toast('✓ Connexion rétablie'); document.title = 'Clipia Nova'; });
 
 /* =========================================================
    5. RÉSEAUX SOCIAUX INTÉGRÉS (pas des extensions : les sites officiels, dans un panneau)
