@@ -11,7 +11,7 @@ const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 
   mails: [], installed: ['communaute', 'clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps'], history: [], favorites: [], devApps: [],
   voice: true, voiceName: '', voiceRate: 1.02, sttEngine: 'groq', memory: [], ollamaHost: '',
   tabSleep: true, sleepMin: 10,
-  shield: { trackers: true, https: true } };
+  shield: { trackers: true, https: true }, net: { doh: 'cloudflare', proxy: '' } };
 let cfg = load();
 let KEYS = {};
 let DEMO = false;
@@ -50,7 +50,7 @@ if (/demo=1/.test(location.search)) document.documentElement.classList.add('demo
   try { DEMO = await window.nova.isDemo(); } catch {}
   try { KEYS = await window.nova.getKeys(); } catch { KEYS = {}; }
   if (DEMO) { localStorage.removeItem('nova.cfg'); cfg = load(); }
-  try { await window.nova.setShield(cfg.shield); } catch {}
+  try { await window.nova.setShield(cfg.shield); await window.nova.setNet(cfg.net || { doh: 'cloudflare', proxy: '' }); } catch {}
   setTimeout(() => o.setState('speaking'), 1200);
   setTimeout(() => {
     $('#splash').classList.add('out');
@@ -492,6 +492,8 @@ function pageHome(el) {
     <h3 class="sec">Mes applications</h3>
     <div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><span class="rm" data-rm="${a.id}">✕</span><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}
       <div class="tile" data-store="1"><div class="ic">＋</div><small>Ajouter</small></div></div>
+    <h3 class="sec">🧰 Boîte à outils indispensable <span class="tag">NOUVEAU</span></h3>
+    <div class="toolbox">${D.toolbox.map(([t, ids]) => `<div class="tb"><h4>${t}</h4><div class="tbr">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button class="tbt" data-url="${esc(x.url)}" title="${esc(x.name)} — ${esc(x.desc)}"><span>${x.ic}</span><small>${esc(x.name)}</small></button>`).join('')}<button class="tbt more" data-cat="${esc(t.split(' ').slice(1).join(' ').split(' &')[0])}"><span>＋</span><small>Tout voir</small></button></div></div>`).join('')}</div>
     ${cfg.favorites.length ? `<h3 class="sec">Favoris</h3><div class="hist">${cfg.favorites.slice(0, 8).map(x => `<button data-url="${esc(x.url)}">★ ${esc(x.title)}</button>`).join('')}</div>` : ''}
     ${cfg.history.length ? `<h3 class="sec">Récemment visité</h3><div class="hist">${cfg.history.slice(0, 6).map(x => `<button data-url="${esc(x.url)}">🕘 ${esc(x.title)}</button>`).join('')}</div>` : ''}
   </div>`;
@@ -504,6 +506,7 @@ function pageHome(el) {
   $('#hTor', el).onclick = () => newTab('tor');
   $('#hCom', el).onclick = () => openSocial('communaute');
   $$('[data-url]', el).forEach(x => x.onclick = e => { if (e.target.dataset.rm) return; navigate(x.dataset.url); });
+  $$('[data-cat]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const m = { 'Réseaux': 'Réseaux', 'Création': 'Création', 'Vidéo': 'Vidéo', 'Musique': 'Musique', 'Hébergement': 'Hébergement', 'Business': 'Business' }; storeCat = m[b.dataset.cat] || 'Tout'; newTab('store'); });
   $$('[data-rm]', el).forEach(x => x.onclick = () => { cfg.installed = cfg.installed.filter(i => i !== x.dataset.rm); save(); pageHome(el); });
   $('[data-store]', el).onclick = () => openInternal('store');
 }
@@ -523,8 +526,8 @@ function pageHistory(el) {
 let storeCat = 'Tout';
 function pageStore(el) {
   const all = [...D.store, ...cfg.devApps];
-  const cats = ['Tout', ...new Set(all.map(a => a.cat))];
-  const list = all.filter(a => storeCat === 'Tout' || a.cat === storeCat);
+  const cats = ['Tout', '⭐ Indispensables', ...new Set(all.map(a => a.cat))];
+  const list = all.filter(a => storeCat === 'Tout' || (storeCat === '⭐ Indispensables' ? a.tool : a.cat === storeCat));
   el.innerHTML = `<div class="page">
     <div class="store-head"><div><h1>Clipia <span>Store</span></h1><p style="color:var(--muted)">Des applications web, pas de plugins : rien ne s'installe dans votre navigateur.</p></div>
     <input id="sq" placeholder="🔍 Rechercher une application"></div>
@@ -555,7 +558,7 @@ function pageStore(el) {
 }
 function appCard(a) {
   const on = cfg.installed.includes(a.id);
-  return `<div class="app"><div class="top"><div class="ic">${a.ic}</div><div><b>${esc(a.name)}${a.star ? '<span class="tag">CLENDAX</span>' : ''}</b><small>${esc(a.by)}</small></div></div>
+  return `<div class="app"><div class="top"><div class="ic">${a.ic}</div><div><b>${esc(a.name)}${a.star ? '<span class="tag">CLENDAX</span>' : ''}${a.tool ? '<span class="tag hot">INDISPENSABLE</span>' : ''}</b><small>${esc(a.by)}</small></div></div>
     <p>${esc(a.desc)}</p><div class="act"><button data-open="${esc(a.url)}">Ouvrir</button><button class="inst ${on ? 'done' : ''}" data-inst="${a.id}">${on ? '✓ Installée' : 'Installer'}</button></div></div>`;
 }
 
@@ -575,6 +578,14 @@ function pageSettings(el) {
       <label class="row" style="margin-top:.5rem"><input type="checkbox" id="shH" ${cfg.shield.https ? 'checked' : ''}> Ouvrir les sites en HTTPS automatiquement</label>
       <p class="note">🧅 Tor : ${torState.state === 'ready' ? 'connecté' : 'arrêté'} — Ctrl+Maj+N ouvre un onglet Tor. Les adresses .onion ne sortent jamais hors de Tor.</p>
       <div class="row" style="margin-top:1rem"><button class="btn2" id="clr">🧹 Effacer cookies, cache et historique</button><button class="btn2" id="wipe">🔑 Supprimer toutes mes clés</button></div></div>
+    <div class="card"><h2>🔐 Réseau sécurisé et VPN <span class="tag hot">GRATUIT</span></h2>
+      <p class="note">Cachez votre activité à votre fournisseur d'accès et changez de pays. Clipia Nova ne ralentit rien et ne revend rien : ces réglages restent sur votre machine.</p>
+      <div class="field"><label>🔒 DNS chiffré (empêche votre opérateur de voir les sites visités)</label><select id="netDoh"><option value="cloudflare">Cloudflare (rapide) — recommandé</option><option value="quad9">Quad9 (bloque les sites dangereux)</option><option value="google">Google</option><option value="">Désactivé</option></select></div>
+      <div class="field"><label>🌍 Proxy ou VPN (facultatif) — ex. socks5://127.0.0.1:1080</label><input id="netProxy" placeholder="socks5://adresse:port" value="${esc((cfg.net || {}).proxy || '')}"></div>
+      <div class="row" style="margin-top:.8rem;gap:.5rem;flex-wrap:wrap"><button class="primary" id="netSave">Appliquer</button>
+        <button class="btn2" data-vpn="https://protonvpn.com/free-vpn">🛡 Proton VPN — gratuit, sans limite de données</button>
+        <button class="btn2" data-vpn="https://one.one.one.one">☁️ Cloudflare WARP — gratuit</button></div>
+      <p class="note">Honnêteté : le DNS chiffré protège vos requêtes, pas votre adresse IP. Pour changer d'adresse IP et de pays, installez un VPN gratuit de confiance (boutons ci-dessus), lancez-le, puis tout Nova passe automatiquement par lui. Évitez les « VPN gratuits » inconnus : certains revendent vos données. Pour l'anonymat maximal, utilisez l'onglet Tor 🧅.</p></div>
     <div class="card"><h2>🎭 Style de Clipia</h2><div class="row" style="margin-top:.6rem"><select id="sMode">${Object.entries(D.modes).map(([id, m]) => `<option value="${id}" ${id === cfg.mode ? 'selected' : ''}>${m.label}</option>`).join('')}</select></div>
       <div class="field"><label>Mon style personnalisé</label><textarea id="sPerso" rows="2">${esc(cfg.customPrompt)}</textarea></div></div>
     <div class="card"><h2>⚡ Performances</h2><label class="row" style="margin-top:.6rem"><input type="checkbox" id="slp" ${cfg.tabSleep ? 'checked' : ''}> Mettre en veille les onglets inutilisés depuis <input id="slpMin" type="number" min="2" max="120" value="${cfg.sleepMin}" style="width:70px;background:#0b0926;border:1px solid var(--line);border-radius:8px;padding:.3rem"> min (libère la mémoire, la page se recharge quand vous y revenez)</label></div>
@@ -590,6 +601,9 @@ function pageSettings(el) {
   $('#memAdd', el).onclick = () => { const v = $('#memIn', el).value.trim(); if (v) { cfg.memory.push(v); save(); pageSettings(el); } };
   $$('[data-m]', el).forEach(b => b.onclick = () => { toggleMail(b.dataset.m); pageSettings(el); });
   const sh = async () => { cfg.shield = { trackers: $('#shT', el).checked, https: $('#shH', el).checked }; save(); await window.nova.setShield(cfg.shield); toast('Bouclier mis à jour'); };
+  $('#netDoh', el).value = (cfg.net || {}).doh ?? 'cloudflare';
+  $('#netSave', el).onclick = async () => { cfg.net = { doh: $('#netDoh', el).value, proxy: $('#netProxy', el).value.trim() }; save(); const r = await window.nova.setNet(cfg.net); toast(r.ok ? '✓ Réseau mis à jour' + (r.proxy ? ' (proxy actif)' : '') : 'Erreur : ' + r.error); };
+  $$('[data-vpn]', el).forEach(b => b.onclick = () => newTab('web', b.dataset.vpn));
   $('#shT', el).onchange = sh; $('#shH', el).onchange = sh;
   $('#clr', el).onclick = async () => { await window.nova.clearPrivacy(); cfg.history = []; save(); toast('✓ Données de navigation effacées'); };
   $('#wipe', el).onclick = async () => { await window.nova.wipeKeys(); KEYS = {}; toast('✓ Clés supprimées'); pageSettings(el); };

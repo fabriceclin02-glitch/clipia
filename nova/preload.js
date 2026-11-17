@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('nova', {
   getKeys: () => ipcRenderer.invoke('keys:get'),
   setKeys: (k) => ipcRenderer.invoke('keys:set', k),
   wipeKeys: () => ipcRenderer.invoke('keys:wipe'),
+  setNet: (n) => ipcRenderer.invoke('net:set', n),
   setShield: (s) => ipcRenderer.invoke('shield:set', s),
   clearPrivacy: () => ipcRenderer.invoke('privacy:clear'),
   openExternal: (url) => ipcRenderer.invoke('nova:open-external', url),

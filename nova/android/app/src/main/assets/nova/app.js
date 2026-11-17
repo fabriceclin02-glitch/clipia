@@ -168,6 +168,7 @@ function renderHome() {
     <form class="search" id="sf"><input placeholder="Rechercher sur le web…"><button>🔍</button></form>
     <button id="askAi" style="color:#c4b5fd;margin-top:.8rem;font-size:.9rem">✦ ou demander à Clipia</button><br>
     <span class="badge">🛡 Bouclier actif · ${A ? A.blocked() : 0} traqueur(s) bloqué(s)</span></div>
+    ${D.toolbox ? `<h3 class="sec">🧰 Boîte à outils indispensable</h3>` + D.toolbox.map(([t, ids]) => `<h4 style="margin:.9rem 0 .4rem;font-size:.95rem">${t}</h4><div class="soc">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button data-url="${x.url}" title="${x.name}"><span style="background:#1f1b52">${x.ic}</span><small>${x.name}</small></button>`).join('')}</div>`).join('') : ''}
     <h3 class="sec">Réseaux</h3><div class="soc">${D.socials.map(x => `<button data-url="${x.url}" title="${x.name}"><span style="background:${x.color}">${x.ic}</span><small>${x.name.replace('Clipia ', '')}</small></button>`).join('')}</div>
     ${cfg.mails.length ? `<h3 class="sec">Mes mails</h3><div class="tiles">${cfg.mails.map(id => D.mails.find(m => m.id === id)).map(m => `<div class="tile" data-url="${m.url}"><div class="ic">${m.ic}</div><small>${m.name}</small></div>`).join('')}</div>` : ''}
     <h3 class="sec">Mes applications</h3><div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}<div class="tile" id="addApp"><div class="ic">＋</div><small>Ajouter</small></div></div>

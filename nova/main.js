@@ -224,6 +224,20 @@ function protect(ses, { tor = false } = {}) {
     item.once('done', (_e2, state) => { if (win) win.webContents.send('nova:download', { name: item.getFilename(), state, path: item.getSavePath() }); });
   });
 }
+// Réseau : DNS chiffré (DoH) + proxy / VPN au choix, pour les onglets normaux (jamais pour Tor).
+ipcMain.handle('net:set', async (_e, n) => {
+  try {
+    const dns = { cloudflare: 'https://cloudflare-dns.com/dns-query', quad9: 'https://dns.quad9.net/dns-query', google: 'https://dns.google/dns-query' }[n.doh];
+    app.configureHostResolver(dns ? { secureDnsMode: 'secure', secureDnsServers: [dns] } : { secureDnsMode: 'automatic' });
+    const ses = session.fromPartition('persist:nova');
+    const p = (n.proxy || '').trim();
+    const okP = p && /^(socks5|socks4|http|https):\/\/[\w.\-]+:\d{2,5}$/i.test(p);
+    if (okP) await ses.setProxy({ proxyRules: p, proxyBypassRules: '<local>' });
+    else await ses.setProxy({ mode: 'system' });
+    if (p && !okP) return { ok: false, error: 'Adresse invalide (ex. socks5://127.0.0.1:1080)' };
+    return { ok: true, proxy: !!okP, doh: n.doh || 'auto' };
+  } catch (e) { return { ok: false, error: e.message }; }
+});
 ipcMain.handle('shield:set', (_e, s) => { Object.assign(shield, s); return shield; });
 ipcMain.handle('privacy:clear', async () => {
   for (const ses of [session.fromPartition('persist:nova'), torSession]) { if (ses) { await ses.clearStorageData(); await ses.clearCache(); } }
