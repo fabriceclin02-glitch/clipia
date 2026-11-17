@@ -1,0 +1,3 @@
+Ce dossier reçoit automatiquement le Tor Expert Bundle officiel (torproject.org)
+au moment de la compilation sur GitHub (voir .github/workflows/nova.yml).
+Sans lui, Clipia Nova utilise un Tor déjà présent (Tor Browser ouvert ou service tor).

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clipia Nova — le navigateur intelligent qui protège ses utilisateurs</title>
+<title>Clipia Nova — le navigateur compagnon qui protège ses utilisateurs</title>
 <meta name="description" content="Clipia Nova : navigateur avec IA intégrée (Claude, ChatGPT, Gemini, Mistral…), Store d'applications et bouclier anti-traqueurs. Gratuit pour Windows, Mac, Linux et Android.">
 <link rel="icon" href="nova/build/icon.png">
 <style>
@@ -16,6 +16,7 @@ header{min-height:92vh;display:flex;flex-direction:column;align-items:center;jus
 #sp{width:min(360px,70vw);height:min(360px,70vw)}
 h1{font-size:clamp(2.4rem,7vw,4.6rem);letter-spacing:.2em;font-weight:900;margin-top:.5rem}
 .tag{color:var(--muted);font-size:clamp(1rem,2.2vw,1.3rem);max-width:44rem;margin:1rem auto 0;line-height:1.6}
+.hero-vid{display:block;width:min(900px,92vw);margin:2rem auto 0;border-radius:20px;border:1px solid var(--line);box-shadow:0 30px 80px -30px #8b5cf6}
 .cta{display:inline-block;margin-top:2rem;padding:1rem 2rem;border-radius:999px;background:var(--grad);color:#fff;font-weight:800;box-shadow:0 14px 40px -14px #8b5cf6}
 .safe{display:inline-block;margin-top:1.2rem;padding:.45rem 1rem;border-radius:999px;background:#34d39915;border:1px solid #34d39955;color:var(--ok);font-size:.9rem}
 section{padding:5rem 6vw;max-width:1200px;margin:0 auto}
@@ -45,32 +46,39 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
 <header>
   <canvas id="sp"></canvas>
   <h1>CLIPIA <span class="grad">NOVA</span></h1>
-  <p class="tag">Le nouveau navigateur intelligent qui travaille <b>pour vous</b>, pas sur vous. L'IA de votre choix intégrée, un Store d'applications, et un bouclier qui protège votre vie privée.</p>
+  <p class="tag">Le navigateur compagnon : Clipia vous écoute, vous parle et vous répond, sur toutes vos machines. Il travaille <b>pour vous</b>, pas sur vous : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
   <a class="cta" href="#telecharger">Télécharger gratuitement</a>
-  <span class="safe">🛡 Aucune collecte de vos données · Traqueurs bloqués · Clés chiffrées</span>
+  <span class="safe">🛡 Aucune collecte · Traqueurs bloqués · Mode Tor .onion · Zéro plugin tiers</span>
+  <video class="hero-vid" controls preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4"></video>
 </header>
 
 <section id="telecharger">
   <h2>Choisissez votre <span class="grad">appareil</span></h2>
-  <p class="sub">Gratuit. Version 1.0 : dites-nous ce qui marche et ce qui coince.</p>
+  <p class="sub">Gratuit · version 2.0 · Windows, Mac, Linux et Android.</p>
   <div class="dl">
-    <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11. Installation classique, ou version portable sans installation (clé USB).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
-    <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS, puces Apple (M1, M2…) et Intel.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Mac.dmg">Télécharger (.dmg)</a></div>
-    <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>Toutes distributions, format AppImage : un seul fichier, rien à installer.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Linux.AppImage">Télécharger (.AppImage)</a></div>
-    <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Navigateur mobile avec Clipia IA, Store et bouclier.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v1.0.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
+    <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11 (y compris PC ARM). Installation classique, ou version portable sans installation (clé USB).</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
+    <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS 11 et plus. Choisissez selon votre processeur (menu  → À propos de ce Mac).</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
+    <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>AppImage (toutes distributions) ou paquet .deb (Ubuntu, Debian, Mint). PC classiques et ARM (Raspberry Pi 4/5).</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
+    <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Clipia vous écoute et vous parle, Store, bouclier, .onion via Tor Browser.</p>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
   </div>
-  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v1.0.0" style="text-decoration:underline">page de la version 1.0.0</a></p>
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : pas encore disponible (Apple impose sa propre boutique). Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.0.0" style="text-decoration:underline">page de la version 2.0.0</a></p>
 </section>
 
 <section>
   <h2>Un navigateur, <span class="grad">tous vos outils</span></h2>
   <p class="sub">Au démarrage, Clipia vous accueille et vous guide pas à pas pour tout configurer.</p>
   <div class="feat">
+    <div class="f">🔮<b>Un vrai compagnon</b><span>Ctrl + Espace : la sphère 3D s'ouvre, vous écoute et vous répond à voix haute. En mains libres, dites « Clipia… ». Elle retient ce que vous lui confiez.</span></div>
+    <div class="f">🧅<b>Mode Tor .onion</b><span>Ctrl + Maj + N : un onglet isolé qui passe par le réseau Tor. Rien n'est écrit sur le disque.</span></div>
+    <div class="f">⌨<b>Plus de 30 raccourcis</b><span>Comme dans l'application Clipia : onglets, zoom, recherche dans la page, favoris, voix… F1 les affiche tous.</span></div>
     <div class="f">✦<b>Clipia IA intégrée</b><span>Résumer, traduire ou expliquer la page ouverte, écrire un post, trouver des idées de clip. Plusieurs styles : ami, entrepreneur, créateur…</span></div>
     <div class="f">🔑<b>L'IA de votre choix</b><span>Branchez vos propres clés : Clipia Nova affiche tous les modèles accessibles avec votre compte.</span></div>
     <div class="f">🛍<b>Clipia Store</b><span>Installez vos applis préférées sur l'accueil en un clic. Publication gratuite pour les développeurs.</span></div>
@@ -88,16 +96,17 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
     <div class="f">🔑<b>Clés chiffrées</b><span>Vos clés IA restent sur votre appareil, protégées par le coffre-fort du système.</span></div>
     <div class="f">🎥<b>Vous décidez</b><span>Caméra, micro, position : jamais d'accès sans votre accord.</span></div>
     <div class="f">🙈<b>Zéro collecte</b><span>Votre navigation, vos mails et vos mots de passe ne sont envoyés à personne.</span></div>
+    <div class="f">🧩<b>Zéro plugin tiers</b><span>Tout est intégré : aucune extension inconnue ne lit vos pages ni vos mots de passe.</span></div>
     <div class="f">🧹<b>Effacement en un clic</b><span>Historique, cookies et cache supprimés quand vous le voulez.</span></div>
   </div>
 </section>
 
 <section>
   <h2>Installation</h2>
-  <p class="sub">Version 1.0 non encore signée : votre système peut afficher un avertissement la première fois.</p>
+  <p class="sub">Version non encore signée : votre système peut afficher un avertissement la première fois.</p>
   <details><summary>🪟 Windows</summary><ol><li>Ouvrez le fichier téléchargé.</li><li>Si « Windows a protégé votre ordinateur » s'affiche : cliquez sur <b>Informations complémentaires</b>, puis <b>Exécuter quand même</b>.</li><li>Suivez l'installation. Clipia Nova démarre avec son animation.</li></ol></details>
   <details><summary>🍎 Mac</summary><ol><li>Ouvrez le .dmg et glissez Clipia Nova dans Applications.</li><li>La première fois : <b>clic droit</b> sur l'application, puis <b>Ouvrir</b>, puis <b>Ouvrir</b> à nouveau.</li><li>Si macOS refuse encore : Réglages Système → Confidentialité et sécurité → <b>Ouvrir quand même</b>.</li></ol></details>
-  <details><summary>🐧 Linux</summary><ol><li>Clic droit sur le fichier → Propriétés → cochez <b>Autoriser l'exécution</b>.</li><li>Ou dans un terminal : <code>chmod +x Clipia-Nova-Linux.AppImage && ./Clipia-Nova-Linux.AppImage</code></li></ol></details>
+  <details><summary>🐧 Linux</summary><ol><li>Paquet .deb : double-cliquez dessus pour l'installer.</li><li>Clic droit sur le fichier → Propriétés → cochez <b>Autoriser l'exécution</b>.</li><li>Ou dans un terminal : <code>chmod +x Clipia-Nova-Linux.AppImage && ./Clipia-Nova-Linux.AppImage</code></li></ol></details>
   <details><summary>🤖 Android</summary><ol><li>Téléchargez le fichier .apk et ouvrez-le.</li><li>Autorisez l'installation depuis votre navigateur si Android le demande.</li><li>Touchez <b>Installer</b>.</li></ol></details>
   <details><summary>🔑 Comment obtenir une clé IA ?</summary><p>Un abonnement grand public (ChatGPT Plus, Claude Pro, Gemini Advanced…) ne fournit pas de clé. Il faut créer une <b>clé API</b> sur la console développeur du fournisseur : l'assistant de Clipia Nova vous y emmène en un clic. Gemini, Mistral, Groq et OpenRouter proposent une offre gratuite ; Ollama fonctionne sur votre ordinateur, sans clé.</p></details>
 </section>

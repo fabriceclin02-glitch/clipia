@@ -5,6 +5,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
+import java.util.ArrayList;
+import java.util.Locale;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -61,6 +69,10 @@ public class MainActivity extends Activity {
     volatile int blocked = 0;
     final Handler ui = new Handler(Looper.getMainLooper());
     SharedPreferences prefs;
+    TextToSpeech tts;
+    boolean ttsReady = false;
+    SpeechRecognizer sr;
+    static final int REQ_MIC = 42;
 
     static final String[] TRACKERS = {
         "doubleclick.net", "google-analytics.com", "googletagmanager.com", "googlesyndication.com",
@@ -170,6 +182,18 @@ public class MainActivity extends Activity {
         web.setWebViewClient(new NovaClient());
         web.setWebChromeClient(new NovaChrome());
 
+        tts = new TextToSpeech(this, st -> ui.post(() -> {
+            if (st == TextToSpeech.SUCCESS && tts != null) {
+                tts.setLanguage(Locale.FRANCE);
+                ttsReady = true;
+                tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override public void onStart(String id) { js("speak-start", ""); }
+                    @Override public void onDone(String id) { js("speak-end", ""); }
+                    @Override public void onError(String id) { js("speak-end", ""); }
+                });
+            }
+        }));
+
         Intent it = getIntent();
         if (it != null && it.getData() != null) web.loadUrl(upgrade(it.getData().toString()));
         else web.loadUrl(HOME);
@@ -193,6 +217,7 @@ public class MainActivity extends Activity {
     void go(String input) {
         String q = input.trim();
         if (q.isEmpty()) return;
+        if (q.matches("^(https?://)?[a-z2-7]{16,56}\\.onion(/.*)?$")) { openTor(q.startsWith("http") ? q : "http://" + q); return; }
         String target;
         if (q.startsWith("https://") || q.startsWith("http://")) target = q;
         else if (q.matches("^[\\w-]+(\\.[\\w-]+)+(:\\d+)?(/\\S*)?$")) target = "https://" + q;
@@ -224,10 +249,89 @@ public class MainActivity extends Activity {
         return false;
     }
 
+    /** Envoie un événement vocal à l'interface Clipia (pages internes uniquement). */
+    void js(final String type, final String value) {
+        ui.post(() -> { if (currentUrl.startsWith(HOME)) web.evaluateJavascript("window.novaVoice && novaVoice(" + JSONObject.quote(type) + "," + JSONObject.quote(value) + ")", null); });
+    }
+
+    /** Les sites .onion s'ouvrent dans le Tor Browser officiel (ou via Orbot). */
+    void openTor(String u) {
+        String[] pkgs = { "org.torproject.torbrowser", "org.torproject.torbrowser_alpha" };
+        for (String p : pkgs) {
+            try {
+                getPackageManager().getPackageInfo(p, 0);
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(u));
+                i.setPackage(p);
+                startActivity(i);
+                return;
+            } catch (Exception ignored) {}
+        }
+        new AlertDialog.Builder(this)
+            .setTitle("Sites .onion")
+            .setMessage("Sur Android, Clipia Nova ouvre les adresses .onion dans le Tor Browser officiel, qui protège votre anonymat. Il n'est pas encore installé.")
+            .setNegativeButton("Annuler", null)
+            .setPositiveButton("Installer Tor Browser", (d, w) -> {
+                try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=org.torproject.torbrowser"))); }
+                catch (Exception e) { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.torproject.org/download/#android"))); }
+            }).show();
+    }
+
+    void startListening() {
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{ android.Manifest.permission.RECORD_AUDIO }, REQ_MIC);
+            return;
+        }
+        if (!SpeechRecognizer.isRecognitionAvailable(this)) { js("error", "La reconnaissance vocale n'est pas disponible sur ce téléphone."); return; }
+        if (tts != null) tts.stop();
+        if (sr == null) {
+            sr = SpeechRecognizer.createSpeechRecognizer(this);
+            sr.setRecognitionListener(new RecognitionListener() {
+                @Override public void onReadyForSpeech(Bundle b) { js("listening", ""); }
+                @Override public void onBeginningOfSpeech() { js("listening-voice", ""); }
+                @Override public void onRmsChanged(float db) { js("level", String.valueOf(Math.max(0f, Math.min(1f, (db + 2f) / 12f)))); }
+                @Override public void onBufferReceived(byte[] b) {}
+                @Override public void onEndOfSpeech() { js("thinking", ""); }
+                @Override public void onError(int e) { js("nothing", String.valueOf(e)); }
+                @Override public void onResults(Bundle r) {
+                    ArrayList<String> l = r.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    js("heard", l != null && !l.isEmpty() ? l.get(0) : "");
+                }
+                @Override public void onPartialResults(Bundle r) {
+                    ArrayList<String> l = r.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                    if (l != null && !l.isEmpty()) js("partial", l.get(0));
+                }
+                @Override public void onEvent(int t, Bundle b) {}
+            });
+        }
+        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "fr-FR");
+        i.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        sr.startListening(i);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int code, String[] perms, int[] res) {
+        super.onRequestPermissionsResult(code, perms, res);
+        if (code == REQ_MIC) {
+            if (res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED) startListening();
+            else js("error", "Autorisez le micro pour parler à Clipia.");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null) tts.shutdown();
+        if (sr != null) sr.destroy();
+        super.onDestroy();
+    }
+
     class NovaClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
             String u = req.getUrl().toString();
+            String h = req.getUrl().getHost();
+            if (h != null && h.endsWith(".onion")) { openTor(u); return true; }
             if (u.startsWith("http://") && shieldOn("https")) { view.loadUrl(upgrade(u)); return true; }
             if (u.startsWith("https://") || u.startsWith("http://") || u.startsWith("file:///android_asset/")) return false;
             try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(u))); } catch (Exception ignored) {}
@@ -303,6 +407,16 @@ public class MainActivity extends Activity {
         @JavascriptInterface public String pageContext() { if (!trusted()) return ""; String p = pageContext; pageContext = ""; return p; }
         @JavascriptInterface public void shield(String key, boolean on) { if (trusted()) prefs.edit().putBoolean(key, on).apply(); }
         @JavascriptInterface public void engine(String engineUrl) { if (trusted()) prefs.edit().putString("engineUrl", engineUrl).apply(); }
+        @JavascriptInterface public void listen() { if (trusted()) ui.post(() -> startListening()); }
+        @JavascriptInterface public void stopListen() { if (trusted()) ui.post(() -> { if (sr != null) sr.cancel(); }); }
+        @JavascriptInterface public boolean speak(String text, float rate) {
+            if (!trusted() || !ttsReady) return false;
+            tts.setSpeechRate(rate <= 0 ? 1f : rate);
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "clipia");
+            return true;
+        }
+        @JavascriptInterface public void stopSpeak() { if (trusted() && tts != null) tts.stop(); }
+        @JavascriptInterface public void tor(String u) { if (trusted()) ui.post(() -> openTor(u)); }
         @JavascriptInterface public void open(String u) { if (trusted()) ui.post(() -> go(u)); }
         @JavascriptInterface public void openOutside(String u) {
             if (!trusted()) return;

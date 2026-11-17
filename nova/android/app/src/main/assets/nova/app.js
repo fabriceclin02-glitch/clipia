@@ -9,14 +9,14 @@ const store = {
   get(k, d) { try { const v = A ? A.get(k) : localStorage.getItem('nova.' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { const s = JSON.stringify(v); A ? A.set(k, s) : localStorage.setItem('nova.' + k, s); }
 };
-const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google', mails: [], installed: ['clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps', 'meteo'], voice: false, trackers: true, https: true };
+const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google', mails: [], installed: ['clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps', 'meteo'], voice: true, memory: [], trackers: true, https: true };
 let cfg = { ...DEF, ...store.get('cfg', {}) };
 let KEYS = store.get('keys', {});
 const save = () => store.set('cfg', cfg);
 const saveKeys = () => store.set('keys', KEYS);
 const modelOf = p => cfg.models[p] || D.providers[p].model;
 function toast(t) { const e = $('#toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => e.classList.remove('on'), 2400); }
-function open(url) { A ? A.open(url) : (location.href = url); }
+function open(url) { if (/\.onion(\/|$)/.test(url.replace(/^https?:\/\//, '').split('/')[0] + '/') && A) return A.tor(/^https?:/.test(url) ? url : 'http://' + url); A ? A.open(url) : (location.href = url); }
 
 /* ---------- Sphère 3D ---------- */
 function sphere(cv, n = 700, sp = 1) {
@@ -213,10 +213,38 @@ function renderSettings() {
 }
 
 /* ---------- Clipia IA ---------- */
-let convo = [], aiReady = false;
+let convo = [], aiReady = false, aiOrb = null, hands = false, lastTalk = 0;
+function orbState(st, txt) { if (window.Orb) Orb.setAll(st); const e = $('#aiState'); if (e && txt) e.textContent = txt; const m = $('#micBtn'); if (m) m.classList.toggle('on', st === 'listening'); }
+function listen() { if (!A) return toast('La voix fonctionne dans l\'application Android'); if (window.speechSynthesis) speechSynthesis.cancel(); A.stopSpeak(); A.listen(); }
+window.novaVoice = (type, v) => {
+  if (type === 'listening') orbState('listening', 'Je vous écoute…');
+  else if (type === 'listening-voice') orbState('listening', 'Je vous entends…');
+  else if (type === 'level') Orb.setAll(undefined, parseFloat(v));
+  else if (type === 'partial') { const e = $('#aiState'); if (e) e.textContent = '« ' + v + ' »'; }
+  else if (type === 'thinking') orbState('thinking', 'Je comprends…');
+  else if (type === 'heard') {
+    if (!v) { orbState('idle', 'Je n\'ai rien entendu'); if (hands) setTimeout(listen, 400); return; }
+    const wake = /\b(clipia|clipya|klipia|cli pia)\b[,!.\s]*/i;
+    if (!hands || wake.test(v) || Date.now() - lastTalk < 30000) { lastTalk = Date.now(); const cmd = v.replace(wake, '').trim(); send(cmd || 'Bonjour', null, true); }
+    else setTimeout(listen, 300);
+  }
+  else if (type === 'nothing') { orbState('idle', hands ? 'Mains libres : dites « Clipia… »' : 'Touchez la sphère ou 🎤 pour parler'); if (hands) setTimeout(listen, 500); }
+  else if (type === 'speak-start') orbState('speaking', 'Clipia parle…');
+  else if (type === 'speak-end') { lastTalk = Date.now(); Orb.setAll(undefined, 0); orbState('idle', hands ? 'Mains libres : dites « Clipia… »' : 'Touchez la sphère ou 🎤 pour parler'); if (hands) setTimeout(listen, 250); }
+  else if (type === 'error') { orbState('idle', v); toast(v); }
+};
+function say(text) {
+  const clean = String(text).replace(/```[\s\S]*?```/g, ' ').replace(/[*#_`>|]/g, '').slice(0, 2500);
+  if (A && A.speak(clean, 1.0)) return;
+  orbState('speaking'); const iv = setInterval(() => Orb.setAll(undefined, .4 + Math.random() * .6), 110);
+  setTimeout(() => { clearInterval(iv); window.novaVoice('speak-end', ''); }, Math.min(9000, 900 + clean.length * 55));
+}
 function updEngine() { const p = D.providers[cfg.provider]; $('#aiEngine').textContent = p.name + ' · ' + modelOf(cfg.provider); }
 function initAI() {
   if (aiReady) return; aiReady = true;
+  aiOrb = new Orb($('#aiOrb'), { points: 700, interactive: true, scale: 0.42 }); aiOrb.onClick = listen;
+  $('#micBtn').onclick = listen;
+  $('#handsBtn').onclick = () => { hands = !hands; $('#handsBtn').classList.toggle('on', hands); $('#handsBtn').textContent = hands ? '🖐 Mains libres : activé' : '🖐 Mains libres'; if (hands) { orbState('listening', 'Mains libres : dites « Clipia… »'); listen(); } else { A && A.stopListen(); orbState('idle', 'Touchez la sphère ou 🎤 pour parler'); } };
   $('#aiMode').innerHTML = Object.entries(D.modes).map(([id, m]) => `<option value="${id}">${m.label}</option>`).join('');
   $('#aiMode').value = cfg.mode; $('#aiMode').onchange = e => { cfg.mode = e.target.value; save(); };
   $('#aiVoice').textContent = cfg.voice ? '🔊' : '🔈';
@@ -246,17 +274,21 @@ function enterAI() {
     send(`${ask}\n\nTitre : ${pg.title}\nAdresse : ${pg.url}\nContenu :\n${pg.text}`, b.textContent + ' : ' + pg.title);
   });
 }
-async function send(text, shown) {
+async function send(text, shown, fromVoice) {
   if (view !== 'ai') show('ai');
   const p = D.providers[cfg.provider];
   bubble('u', shown || text);
   if (!p.noKey && !KEYS[cfg.provider]) { bubble('e', `Aucune clé ${p.name} configurée : ⚙ Réglages → Intelligence artificielle.`); return; }
   convo.push({ role: 'user', content: text });
-  const w = bubble('t', 'Clipia réfléchit…');
-  const sys = (cfg.mode === 'perso' && cfg.customPrompt ? 'Tu es Clipia. ' + cfg.customPrompt : D.modes[cfg.mode].prompt) + (cfg.name ? ` L'utilisateur s'appelle ${cfg.name}.` : '') + ' Tu es intégrée au navigateur Clipia Nova (CLENDAX) sur téléphone : réponds de façon concise.';
+  const low = text.toLowerCase().trim(); let mm;
+  if ((mm = low.match(/^(?:souviens-toi|souviens toi|retiens)(?: que)?\s+(.+)/))) { cfg.memory = [...(cfg.memory || []), mm[1]]; save(); const r = 'C\'est noté, je m\'en souviendrai. Tout reste sur ce téléphone.'; bubble('a', r); if (cfg.voice || fromVoice) say(r); return; }
+  if ((mm = low.match(/^(?:ouvre|va sur|lance)\s+(.+)/))) { const q = mm[1].trim(); const app = D.store.find(a => a.name.toLowerCase().startsWith(q)); if (app) { bubble('a', 'J\'ouvre ' + app.name + '.'); return open(app.url); } }
+  if ((mm = low.match(/^(?:cherche|recherche)\s+(.+)/))) { bubble('a', 'Je cherche : ' + mm[1]); return open(D.engines[cfg.engine].url + encodeURIComponent(mm[1])); }
+  const w = bubble('t', 'Clipia réfléchit…'); orbState('thinking', 'Je réfléchis…');
+  const sys = (cfg.mode === 'perso' && cfg.customPrompt ? 'Tu es Clipia. ' + cfg.customPrompt : D.modes[cfg.mode].prompt) + (cfg.name ? ` L'utilisateur s'appelle ${cfg.name}.` : '') + ((cfg.memory || []).length ? ' Ce que tu sais de l\'utilisateur : ' + cfg.memory.join(' ; ') + '.' : '') + ' Tu es intégrée au navigateur Clipia Nova (CLENDAX) sur téléphone : réponds de façon concise.';
   const r = await aiChat(cfg.provider, sys, convo.slice(-16));
   w.remove();
-  if (r.error) { convo.pop(); bubble('e', '✕ ' + r.error); return; }
+  if (r.error) { convo.pop(); bubble('e', '✕ ' + r.error); orbState('idle', 'Un souci est survenu'); return; }
   convo.push({ role: 'assistant', content: r.text }); bubble('a', r.text);
-  if (cfg.voice && window.speechSynthesis) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(r.text.replace(/[*#_`]/g, '').slice(0, 1500)); u.lang = 'fr-FR'; speechSynthesis.speak(u); }
+  if (cfg.voice || fromVoice) say(r.text); else orbState('idle', 'Touchez la sphère ou 🎤 pour parler');
 }

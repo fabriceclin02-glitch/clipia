@@ -75,4 +75,17 @@ window.NOVA_DATA = {
     { id: 'meteo', cat: 'Outils', ic: '⛅', name: 'Météo-France', by: 'Météo-France', desc: 'Prévisions officielles.', url: 'https://meteofrance.com' },
     { id: 'wiki', cat: 'Outils', ic: '📚', name: 'Wikipédia', by: 'Wikimedia', desc: "L'encyclopédie libre.", url: 'https://fr.wikipedia.org' }
   ]
+  ,
+  stt: {
+    groq:   { name: 'Groq Whisper (gratuit)', keyUrl: 'https://console.groq.com/keys' },
+    openai: { name: 'OpenAI Whisper', keyUrl: 'https://platform.openai.com/api-keys' }
+  },
+
+  shortcuts: [
+    ['Clipia', [['Ctrl + Espace', 'Ouvrir / fermer le compagnon Clipia'], ['Ctrl + M', 'Parler à Clipia (micro)'], ['Ctrl + Maj + H', 'Mains libres : dites « Clipia… »'], ['Ctrl + J', 'Panneau Clipia'], ['Ctrl + Maj + V', 'Clipia parle / se tait'], ['Échap', 'Couper la voix, fermer']]],
+    ['Onglets', [['Ctrl + T', 'Nouvel onglet'], ['Ctrl + Maj + N', 'Nouvel onglet Tor (.onion)'], ['Ctrl + W', 'Fermer l\'onglet'], ['Ctrl + Maj + T', 'Rouvrir l\'onglet fermé'], ['Ctrl + Tab', 'Onglet suivant'], ['Ctrl + Maj + Tab', 'Onglet précédent'], ['Ctrl + 1 … 9', 'Aller à l\'onglet n°']]],
+    ['Navigation', [['Ctrl + L', 'Barre d\'adresse'], ['Alt + ← / →', 'Précédent / suivant'], ['F5 ou Ctrl + R', 'Recharger'], ['Alt + Origine', 'Accueil'], ['Ctrl + D', 'Ajouter aux favoris'], ['Ctrl + H', 'Historique et favoris']]],
+    ['Page', [['Ctrl + F', 'Rechercher dans la page'], ['Ctrl + + / − / 0', 'Zoom avant / arrière / normal'], ['Ctrl + P', 'Imprimer'], ['F11', 'Plein écran']]],
+    ['Clipia Nova', [['Ctrl + Maj + S', 'Store'], ['Ctrl + Maj + M', 'Mes mails'], ['Ctrl + ,', 'Réglages'], ['Ctrl + K', 'Demander à Clipia (palette)'], ['F1', 'Cette aide']]]
+  ]
 };

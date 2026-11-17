@@ -23,16 +23,31 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
-            cmd: npx electron-builder --win nsis portable --publish never
-          - os: macos-latest
-            cmd: npx electron-builder --mac dmg --universal --publish never
-          - os: ubuntu-latest
-            cmd: npx electron-builder --linux AppImage --publish never
+          - nom: windows
+            os: windows-latest
+            tor: windows-x86_64
+            cmd: npx electron-builder --win nsis portable --x64 --publish never
+          - nom: mac-arm64
+            os: macos-latest
+            tor: macos-aarch64
+            cmd: npx electron-builder --mac dmg --arm64 --publish never
+          - nom: mac-x64
+            os: macos-latest
+            tor: macos-x86_64
+            cmd: npx electron-builder --mac dmg --x64 --publish never
+          - nom: linux-x64
+            os: ubuntu-latest
+            tor: linux-x86_64
+            cmd: npx electron-builder --linux AppImage deb --x64 --publish never
+          - nom: linux-arm64
+            os: ubuntu-latest
+            tor: ''
+            cmd: npx electron-builder --linux AppImage deb --arm64 --publish never
     runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: nova
+        shell: bash
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,17 +55,31 @@ jobs:
           sparse-checkout: nova
       - uses: actions/setup-node@v4
         with: { node-version: '20' }
+      - name: Tor Expert Bundle officiel
+        if: matrix.tor != ''
+        continue-on-error: true
+        run: |
+          set -e
+          V=$(curl -fsSL https://aus1.torproject.org/torbrowser/update_3/release/downloads.json | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).version))")
+          echo "Version Tor Browser : $V"
+          F="tor-expert-bundle-${{ matrix.tor }}-$V.tar.gz"
+          curl -fsSL -o tor.tgz "https://dist.torproject.org/torbrowser/$V/$F" || curl -fsSL -o tor.tgz "https://archive.torproject.org/tor-package-archive/torbrowser/$V/$F"
+          mkdir -p "tor/${{ matrix.tor }}"
+          tar -xzf tor.tgz -C "tor/${{ matrix.tor }}"
+          rm tor.tgz
+          ls -R "tor/${{ matrix.tor }}" | head -30
       - run: npm install --no-audit --no-fund
       - run: ${{ matrix.cmd }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
       - uses: actions/upload-artifact@v4
         with:
-          name: nova-${{ matrix.os }}
+          name: nova-${{ matrix.nom }}
           path: |
             nova/dist/Clipia-Nova-*.exe
             nova/dist/Clipia-Nova-*.dmg
             nova/dist/Clipia-Nova-*.AppImage
+            nova/dist/Clipia-Nova-*.deb
           if-no-files-found: error
 
   android:
@@ -127,5 +156,5 @@ jobs:
             gh release upload "$TAG" art/* --clobber
           else
             gh release create "$TAG" art/* --latest=false --title "Clipia Nova $V" \
-              --notes "Clipia Nova $V — le navigateur intelligent CLENDAX qui protège ses utilisateurs. Windows (installation ou portable), Mac, Linux et Android. Page de téléchargement : https://fabriceclin02-glitch.github.io/clipia/nova.html"
+              --notes "Clipia Nova $V — le navigateur compagnon CLENDAX : Clipia vous parle et vous écoute, mode Tor pour les sites .onion, aucun plugin tiers, vos données restent chez vous. Windows, Mac (Apple Silicon et Intel), Linux (AppImage et .deb, x64 et ARM) et Android. Page de téléchargement : https://fabriceclin02-glitch.github.io/clipia/nova.html"
           fi
