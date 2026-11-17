@@ -46,6 +46,9 @@
     <button class="icon" id="home" title="Accueil (Alt+Origine)">⌂</button>
     <div id="omni"><span id="lock">✦</span><input id="url" placeholder="Rechercher, saisir une adresse ou un .onion…" spellcheck="false"><button class="icon star" id="fav" title="Favori (Ctrl+D)">☆</button></div>
     <span id="zoomInfo" class="hidden"></span>
+    <button class="icon" id="btnShare" title="Partager (Ctrl+Maj+E)">⤴</button>
+    <button class="icon" id="btnReader" title="Mode lecture (Alt+R)">📖</button>
+    <button class="icon" id="btnShot" title="Capture (Ctrl+Maj+X)">📸</button>
     <button class="pill" id="btnStore" title="Ctrl+Maj+S">🛍 Store</button>
     <button class="pill" id="btnMail" title="Ctrl+Maj+M">✉ Mails</button>
     <button class="pill ai" id="btnAI" title="Ctrl+J">✦ Clipia</button>
@@ -55,6 +58,12 @@
   <div id="torBar" class="hidden"><span id="torTxt"></span><i id="torProg"></i></div>
   <div id="findBar" class="hidden"><input id="findIn" placeholder="Rechercher dans la page"><span id="findCount"></span><button class="icon" id="findPrev">↑</button><button class="icon" id="findNext">↓</button><button class="icon" id="findClose">✕</button></div>
   <div id="main">
+    <nav id="rail"></nav>
+    <aside id="social" class="closed">
+      <header><div class="soc-id"><span id="socIc"></span><b id="socName">Réseaux</b></div>
+        <div class="ai-tools"><button class="icon" id="socReload" title="Recharger">⟳</button><button class="icon" id="socTab" title="Ouvrir dans un onglet">⧉</button><button class="icon" id="socClose" title="Fermer (Ctrl+B)">✕</button></div></header>
+      <div id="socViews"></div>
+    </aside>
     <div id="views"></div>
     <aside id="ai" class="closed">
       <header>
@@ -72,6 +81,9 @@
         <button data-q="exp">💡 Expliquer</button>
         <button data-q="clip">🎬 Idées de clip</button>
         <button data-q="post">📣 Post</button>
+        <button data-q="ig">📸 Instagram</button>
+        <button data-q="tt">🎵 TikTok</button>
+        <button data-q="fb">📘 Facebook</button>
       </div>
       <div id="chat"></div>
       <form id="ask"><button type="button" class="icon mic" id="askMic" title="Dicter (Ctrl+M)">🎤</button><textarea id="askIn" rows="2" placeholder="Écrivez ou parlez à Clipia…" spellcheck="true" lang="fr"></textarea><button class="primary">➤</button></form>
@@ -95,6 +107,13 @@
 
 <!-- ============ RACCOURCIS CLAVIER ============ -->
 <div id="keys" class="hidden"><div class="keys-card"><h2>⌨ Raccourcis clavier</h2><div id="keysList"></div><p class="note">Appuyez sur F1 ou Échap pour fermer.</p></div></div>
+
+<div id="shareMenu" class="hidden"></div>
+
+<!-- ============ MODE LECTURE ============ -->
+<div id="reader" class="hidden"><div class="rd-bar"><b>📖 Mode lecture</b><span class="rd-sp"></span>
+  <button class="btn2" id="rdSmaller">A−</button><button class="btn2" id="rdBigger">A+</button><button class="btn2" id="rdSpeak">🔊 Lire à voix haute</button><button class="btn2" id="rdSum">✦ Résumer</button><button class="icon" id="rdClose">✕</button></div>
+  <article id="rdBody"></article></div>
 
 <div id="toast"></div>
 <script src="data.js"></script>

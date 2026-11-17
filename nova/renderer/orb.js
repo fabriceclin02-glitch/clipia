@@ -12,7 +12,7 @@
   class Orb {
     constructor(canvas, opt = {}) {
       this.c = canvas; this.ctx = canvas.getContext('2d');
-      this.n = opt.points || 900; this.full = !!opt.full; this.scale = opt.scale || 0.4; this.cyf = opt.cy || 0.5;
+      this.n = Math.round((opt.points || 900) * (/demo=1/.test(location.search) ? 0.3 : 1)); this.full = !!opt.full; this.scale = opt.scale || 0.4; this.cyf = opt.cy || 0.5;
       this.state = 'idle'; this.level = 0; this.lv = 0; this.ax = 0.3; this.ay = 0; this.vx = 0; this.vy = 0.006;
       this.mx = 0; this.my = 0; this.cur = { ...PALETTE.idle }; this.alive = true; this.t0 = performance.now();
       const g = Math.PI * (3 - Math.sqrt(5)); this.pts = [];

@@ -1,7 +1,7 @@
 {
   "name": "clipia-nova",
   "productName": "Clipia Nova",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Clipia Nova — le navigateur compagnon CLENDAX : IA vocale, mode Tor, sécurité d'abord",
   "author": { "name": "Clin Fabrice — CLENDAX", "email": "fabriceclin02@gmail.com" },
   "homepage": "https://fabriceclin02-glitch.github.io/clipia/nova.html",

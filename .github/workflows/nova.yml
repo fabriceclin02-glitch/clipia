@@ -28,7 +28,7 @@ jobs:
             tor: windows-x86_64
             cmd: npx electron-builder --win nsis portable --x64 --publish never
           - nom: mac
-            os: macos-13
+            os: macos-latest
             tor: macos-aarch64 macos-x86_64
             cmd: npx electron-builder --mac dmg --arm64 --x64 --publish never
           - nom: linux-x64

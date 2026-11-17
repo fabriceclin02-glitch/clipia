@@ -8,8 +8,9 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<'
 
 /* ---------- Configuration (clés à part, chiffrées par le système) ---------- */
 const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google',
-  mails: [], installed: ['clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps'], history: [], favorites: [], devApps: [],
+  mails: [], installed: ['communaute', 'clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps'], history: [], favorites: [], devApps: [],
   voice: true, voiceName: '', voiceRate: 1.02, sttEngine: 'groq', memory: [], ollamaHost: '',
+  tabSleep: true, sleepMin: 10,
   shield: { trackers: true, https: true } };
 let cfg = load();
 let KEYS = {};
@@ -42,6 +43,7 @@ function setOrb(s) { Orb.setAll(s); }
 /* =========================================================
    1. DÉMARRAGE
    ========================================================= */
+if (/demo=1/.test(location.search)) document.documentElement.classList.add('demo-lite');
 (async function boot() {
   const o = new Orb($('#splashOrb'), { points: 1500, full: true, scale: 0.2, cy: 0.4 });
   o.vy = 0.03;
@@ -266,7 +268,8 @@ function startBrowser() {
   window.nova.onTor(torUpdate);
   window.nova.onKey(k => handleKey(k));
   document.addEventListener('keydown', e => { if (handleKey({ key: e.key, code: e.code, ctrl: e.ctrlKey || e.metaKey, shift: e.shiftKey, alt: e.altKey })) e.preventDefault(); });
-  initFind(); initAI(); initCompanion(); renderKeys();
+  initFind(); initAI(); initCompanion(); renderKeys(); initSocial(); initTools();
+  setInterval(sleepTabs, 60000);
 }
 const cur = () => tabs.find(t => t.id === active);
 const isWeb = (t) => t.kind === 'web' || t.kind === 'tor';
@@ -301,6 +304,7 @@ function makeWebview(t, url, tor) {
 }
 function activate(id) {
   active = id;
+  { const t0 = tabs.find(t => t.id === id); if (t0) { t0.last = Date.now(); if (t0.sleeping) wake(t0); } }
   tabs.forEach(t => t.el && t.el.classList.toggle('on', t.id === id));
   const t = cur();
   $('#url').value = isWeb(t) ? t.url : (t.kind === 'tor' ? '' : 'nova://' + ({ home: 'accueil', store: 'store', settings: 'reglages', history: 'historique' }[t.kind] || ''));
@@ -425,12 +429,16 @@ function handleKey({ key, ctrl, shift, alt }) {
   if (k === 'browserback' || (alt && k === 'arrowleft')) { $('#back').click(); return true; }
   if (k === 'browserforward' || (alt && k === 'arrowright')) { $('#fwd').click(); return true; }
   if (alt && k === 'home') { navigate('nova://accueil'); return true; }
+  if (alt && k === 'r') { openReader(); return true; }
   if (!ctrl) return false;
   if (k === ' ' || k === 'spacebar') { toggleCompanion(); return true; }
   if (k === 'tab') { const i = tabs.findIndex(t => t.id === active); activate(tabs[(i + (shift ? -1 : 1) + tabs.length) % tabs.length].id); return true; }
   if (/^[1-9]$/.test(k)) { const t = k === '9' ? tabs[tabs.length - 1] : tabs[+k - 1]; if (t) activate(t.id); return true; }
   if (shift) {
     if (k === 'n') { newTab('tor'); return true; }
+    if (k === 'e') { toggleShare(); return true; }
+    if (k === 'x') { screenshot(); return true; }
+    if (k === 'p') { pip(); return true; }
     if (k === 't') { const u = closed.pop(); if (u) newTab('web', u); return true; }
     if (k === 's') { openInternal('store'); return true; }
     if (k === 'm') { openMails(); return true; }
@@ -440,6 +448,7 @@ function handleKey({ key, ctrl, shift, alt }) {
   }
   switch (k) {
     case 't': newTab('home'); return true;
+    case 'b': toggleSocial(); return true;
     case 'w': closeTab(active); return true;
     case 'l': $('#url').focus(); return true;
     case 'j': $('#ai').classList.toggle('closed'); return true;
@@ -476,7 +485,7 @@ function pageHome(el) {
   el.innerHTML = `<div class="page">
     <div class="home-hero"><canvas class="hs" title="Touchez la sphère pour parler à Clipia"></canvas><h1>CLIPIA <span>NOVA</span></h1><p>${hello} — que faisons-nous aujourd'hui ?</p>
       <form class="search"><input placeholder="Rechercher sur le web, ou une adresse .onion…"><select>${Object.entries(D.engines).map(([id, e]) => `<option value="${id}" ${id === cfg.engine ? 'selected' : ''}>${e.name}</option>`).join('')}</select><button class="primary">Rechercher</button></form>
-      <div class="row" style="justify-content:center;gap:.6rem;margin-top:1rem"><button class="chip" id="hTalk">🎤 Parler à Clipia</button><button class="chip" id="hAsk">✦ Demander à Clipia</button><button class="chip" id="hTor">🧅 Onglet Tor</button></div>
+      <div class="row" style="justify-content:center;gap:.6rem;margin-top:1rem"><button class="chip" id="hTalk">🎤 Parler à Clipia</button><button class="chip" id="hAsk">✦ Demander à Clipia</button><button class="chip" id="hTor">🧅 Onglet Tor</button><button class="chip" id="hCom">💬 Communauté</button></div>
       <div class="safe-badge">🛡 Bouclier actif · <b id="blockedN">${blocked}</b> traqueur(s) bloqué(s) · aucun plugin tiers · vos données restent chez vous</div>
     </div>
     <h3 class="sec">Mes applications</h3>
@@ -492,6 +501,7 @@ function pageHome(el) {
   $('#hTalk', el).onclick = () => { toggleCompanion(true); Voice.listenOnce(); };
   $('#hAsk', el).onclick = () => { const q = $('input', f).value.trim(); if (q) ask(q, {}); else { toggleCompanion(true); $('#cpIn').focus(); } };
   $('#hTor', el).onclick = () => newTab('tor');
+  $('#hCom', el).onclick = () => openSocial('communaute');
   $$('[data-url]', el).forEach(x => x.onclick = e => { if (e.target.dataset.rm) return; navigate(x.dataset.url); });
   $$('[data-rm]', el).forEach(x => x.onclick = () => { cfg.installed = cfg.installed.filter(i => i !== x.dataset.rm); save(); pageHome(el); });
   $('[data-store]', el).onclick = () => openInternal('store');
@@ -566,8 +576,9 @@ function pageSettings(el) {
       <div class="row" style="margin-top:1rem"><button class="btn2" id="clr">🧹 Effacer cookies, cache et historique</button><button class="btn2" id="wipe">🔑 Supprimer toutes mes clés</button></div></div>
     <div class="card"><h2>🎭 Style de Clipia</h2><div class="row" style="margin-top:.6rem"><select id="sMode">${Object.entries(D.modes).map(([id, m]) => `<option value="${id}" ${id === cfg.mode ? 'selected' : ''}>${m.label}</option>`).join('')}</select></div>
       <div class="field"><label>Mon style personnalisé</label><textarea id="sPerso" rows="2">${esc(cfg.customPrompt)}</textarea></div></div>
+    <div class="card"><h2>⚡ Performances</h2><label class="row" style="margin-top:.6rem"><input type="checkbox" id="slp" ${cfg.tabSleep ? 'checked' : ''}> Mettre en veille les onglets inutilisés depuis <input id="slpMin" type="number" min="2" max="120" value="${cfg.sleepMin}" style="width:70px;background:#0b0926;border:1px solid var(--line);border-radius:8px;padding:.3rem"> min (libère la mémoire, la page se recharge quand vous y revenez)</label></div>
     <div class="card"><h2>⌨ Clavier</h2><p class="note">Plus de 30 raccourcis, comme dans l'application Clipia.</p><button class="btn2" id="sKeys" style="margin-top:.6rem">Voir les raccourcis (F1)</button></div>
-    <div class="card"><h2>À propos</h2><p class="note">Clipia Nova 2.0 — moteur Chromium · conçu par Clin Fabrice, CLENDAX (Flize, Ardennes).</p>
+    <div class="card"><h2>À propos</h2><p class="note">Clipia Nova 2.1 — moteur Chromium · conçu par Clin Fabrice, CLENDAX (Flize, Ardennes).</p>
       <button class="btn2" id="rewz" style="margin-top:.8rem">Relancer l'assistant de configuration</button></div>
   </div></div>`;
   let sel = cfg.provider;
@@ -584,6 +595,8 @@ function pageSettings(el) {
   $('#sMode', el).onchange = e => { cfg.mode = e.target.value; save(); $('#aiMode').value = cfg.mode; };
   $('#sPerso', el).onchange = e => { cfg.customPrompt = e.target.value.trim(); save(); };
   $('#sKeys', el).onclick = () => toggleKeys(true);
+  $('#slp', el).onchange = e => { cfg.tabSleep = e.target.checked; save(); };
+  $('#slpMin', el).onchange = e => { cfg.sleepMin = Math.max(2, +e.target.value || 10); save(); };
   $('#rewz', el).onclick = () => { step = 0; startWizard(); };
 }
 
@@ -641,6 +654,8 @@ async function pageText() {
 }
 async function quick(q) {
   $('#ai').classList.remove('closed');
+  const SOC = { ig: 'Écris une légende Instagram percutante (avec emojis) + 15 hashtags pertinents', tt: 'Écris un script TikTok de 30 secondes : accroche des 2 premières secondes, 4 plans, texte à l\'écran, son conseillé et 8 hashtags', fb: 'Rédige un post Facebook engageant (3 courts paragraphes + appel à l\'action)' };
+  if (SOC[q]) { const pg0 = await pageText(); return ask(pg0 ? `${SOC[q]}, à partir de cette page.\n\nTitre : ${pg0.title}\nContenu :\n${pg0.text}` : `${SOC[q]}. Demande-moi d'abord le sujet si tu ne le connais pas.`, { shown: { ig: '📸 Légende Instagram', tt: '🎵 Script TikTok', fb: '📘 Post Facebook' }[q] + (pg0 ? ' : ' + pg0.title : '') }); }
   if (q === 'clip') return ask("Propose-moi 3 idées de clip musical originales pour CLENDAX, avec pour chacune : l'ambiance, 5 plans clés et une accroche TikTok.", {});
   const pg = await pageText();
   if (q === 'post') return ask(pg ? `Rédige un post réseaux sociaux accrocheur à partir de cette page.\n\nTitre : ${pg.title}\nContenu :\n${pg.text}` : "Aide-moi à rédiger un post réseaux sociaux accrocheur. Pose-moi d'abord 2 questions.", { shown: pg ? '📣 Post à partir de : ' + pg.title : null });
@@ -658,6 +673,8 @@ async function command(text) {
     const q = m[1].replace(/^(le site |la page |l'appli |l'application )/, '').trim();
     if (/^(un )?onglet tor|tor$/.test(q)) { newTab('tor'); return 'J\'ouvre un onglet Tor.'; }
     if (/store|boutique/.test(q)) { openInternal('store'); return 'Voici le Store.'; }
+    const soc = D.socials.find(x => q.startsWith(x.name.toLowerCase()) || q.startsWith(x.id));
+    if (soc) { openSocial(soc.id); return 'J\'ouvre ' + soc.name + '.'; }
     if (/r[ée]glages|param[eè]tres/.test(q)) { openInternal('settings'); return 'Voici les réglages.'; }
     if (/mails?|messagerie/.test(q)) { openMails(); return 'J\'ouvre vos mails.'; }
     if (/historique/.test(q)) { openInternal('history'); return 'Voici votre historique.'; }
@@ -670,6 +687,9 @@ async function command(text) {
   if (/^(?:traduis|traduit)(?:-moi)? (?:la|cette) page/.test(low)) { quick('tr'); return null; }
   if (/^(?:ferme|fermer) (?:l'|cet |l’)?onglet/.test(low)) { closeTab(active); return 'Onglet fermé.'; }
   if (/^(?:tais-toi|chut|stop|arrête de parler)/.test(low)) { Voice.stop(); return ''; }
+  if (/^(?:mode lecture|lis(?:-moi)? (?:la|cette) page)/.test(low)) { openReader(/^lis/.test(low)); return null; }
+  if (/^(?:fais une |prends une )?capture/.test(low)) { screenshot(); return 'Capture enregistrée.'; }
+  if (/^partage/.test(low)) { toggleShare(true); return 'Où voulez-vous partager ?'; }
   if (/^(?:quelle heure|il est quelle heure)/.test(low)) return 'Il est ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.';
   return undefined;
 }
@@ -701,3 +721,100 @@ async function ask(text, { speak = false, shown = null, fromVoice = false } = {}
   bubble('a', r.text); cpLine('a', r.text);
   if (talk || cfg.voice) await Voice.speak(r.text); else Voice.onState(Voice.handsFree ? 'listening' : 'idle');
 }
+
+
+/* =========================================================
+   5. RÉSEAUX SOCIAUX INTÉGRÉS (pas des extensions : les sites officiels, dans un panneau)
+   ========================================================= */
+const MOBILE_UA = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36';
+const socViews = {}; let socCur = null;
+function initSocial() {
+  $('#rail').innerHTML = D.socials.map(x => `<button class="rl" data-soc="${x.id}" title="${x.name}${x.wide ? ' (s\'ouvre dans un onglet)' : ''}"><span style="background:${x.color}">${x.ic}</span></button>`).join('')
+    + `<button class="rl rl-ai" data-socai="1" title="Studio réseaux Clipia"><span>✦</span></button>`;
+  $$('#rail [data-soc]').forEach(b => b.onclick = () => openSocial(b.dataset.soc));
+  $('[data-socai]').onclick = () => { $('#ai').classList.remove('closed'); $('#chat').scrollTop = 1e9; toast('Studio réseaux : 📸 Instagram · 🎵 TikTok · 📘 Facebook'); };
+  $('#socClose').onclick = () => toggleSocial(false);
+  $('#socReload').onclick = () => socCur && socViews[socCur].reload();
+  $('#socTab').onclick = () => { if (!socCur) return; newTab('web', socViews[socCur].getURL ? socViews[socCur].getURL() : D.socials.find(x => x.id === socCur).url); toggleSocial(false); };
+}
+function openSocial(id) {
+  const x = D.socials.find(s => s.id === id); if (!x) return;
+  if (x.wide) { newTab('web', x.url); return; }
+  if (socCur === id && !$('#social').classList.contains('closed')) return toggleSocial(false);
+  if (!socViews[id]) {
+    const wv = document.createElement('webview');
+    wv.setAttribute('partition', 'persist:nova'); if (!x.desktop) wv.setAttribute('useragent', MOBILE_UA); wv.setAttribute('allowpopups', '');
+    wv.src = x.url; socViews[id] = wv; $('#socViews').appendChild(wv);
+  }
+  Object.entries(socViews).forEach(([k, v]) => v.classList.toggle('on', k === id));
+  socCur = id;
+  $('#socName').textContent = x.name; $('#socIc').textContent = x.ic; $('#socIc').style.background = x.color;
+  $$('#rail .rl').forEach(b => b.classList.toggle('on', b.dataset.soc === id));
+  $('#social').classList.remove('closed');
+}
+function toggleSocial(force) {
+  const open = force ?? $('#social').classList.contains('closed');
+  if (open) openSocial(socCur || 'facebook'); else { $('#social').classList.add('closed'); $$('#rail .rl').forEach(b => b.classList.remove('on')); }
+}
+
+/* ---------- Partage, lecture, capture, image dans l'image, veille ---------- */
+function initTools() {
+  $('#btnShare').onclick = (e) => { e.stopPropagation(); toggleShare(); };
+  $('#btnReader').onclick = () => openReader();
+  $('#btnShot').onclick = screenshot;
+  document.addEventListener('click', e => { if (!e.target.closest('#shareMenu')) $('#shareMenu').classList.add('hidden'); });
+  let fs = 1.15;
+  $('#rdBigger').onclick = () => { fs = Math.min(1.8, fs + .1); $('#rdBody').style.fontSize = fs + 'rem'; };
+  $('#rdSmaller').onclick = () => { fs = Math.max(.85, fs - .1); $('#rdBody').style.fontSize = fs + 'rem'; };
+  $('#rdClose').onclick = () => { $('#reader').classList.add('hidden'); Voice.stop(); };
+  $('#rdSpeak').onclick = () => Voice.speaking ? Voice.stop() : Voice.speak($('#rdBody').innerText.slice(0, 2400));
+  $('#rdSum').onclick = () => { $('#reader').classList.add('hidden'); quick('sum'); };
+}
+function toggleShare(force) {
+  const m = $('#shareMenu'), t = cur();
+  const show = force ?? m.classList.contains('hidden');
+  if (!show) return m.classList.add('hidden');
+  if (!t || t.kind !== 'web') return toast('Ouvrez une page pour la partager');
+  const u = encodeURIComponent(t.url), ti = encodeURIComponent(t.title || '');
+  m.innerHTML = `<b>Partager « ${esc((t.title || '').slice(0, 40))} »</b>` + D.share.map((x, i) => `<button data-sh="${i}"><span>${x.ic}</span>${x.name}</button>`).join('') + `<button data-copy="1"><span>⧉</span>Copier le lien</button><button data-ai="1"><span>✦</span>Post rédigé par Clipia</button>`;
+  $$('[data-sh]', m).forEach(b => b.onclick = () => { const x = D.share[+b.dataset.sh]; const url = x.url.replace(/\{u\}/g, u).replace(/\{t\}/g, ti); url.startsWith('mailto:') ? window.nova.openExternal(url) : newTab('web', url); m.classList.add('hidden'); });
+  $('[data-copy]', m).onclick = async () => { try { await navigator.clipboard.writeText(t.url); toast('✓ Lien copié'); } catch { toast(t.url); } m.classList.add('hidden'); };
+  $('[data-ai]', m).onclick = () => { m.classList.add('hidden'); quick('fb'); };
+  m.classList.remove('hidden');
+}
+async function openReader(speakNow) {
+  const t = cur(); if (!t?.wv) return toast('Ouvrez un article pour le mode lecture');
+  let r = null;
+  try {
+    r = await t.wv.executeJavaScript(`(() => { const c=[...document.querySelectorAll('article,main,[role=main],.post,.article,.entry-content,.content,#content')]; let best=null,bl=0; for (const e of c){const l=(e.innerText||'').length; if(l>bl){best=e;bl=l}} const root=best||document.body; const items=[...root.querySelectorAll('h1,h2,h3,p,li,blockquote')].map(e=>({t:e.tagName,x:(e.innerText||'').trim()})).filter(o=>o.x.length>2&&o.x.length<4000).slice(0,500); return {title:document.title, host:location.hostname, items}; })()`);
+  } catch {}
+  if (!r || !r.items.length) return toast('Cette page n\'a pas de texte à lire');
+  $('#rdBody').innerHTML = `<small>${esc(r.host)}</small><h1>${esc(r.title)}</h1>` + r.items.map(i => /^H/.test(i.t) ? `<h2>${esc(i.x)}</h2>` : i.t === 'LI' ? `<p class="li">• ${esc(i.x)}</p>` : i.t === 'BLOCKQUOTE' ? `<blockquote>${esc(i.x)}</blockquote>` : `<p>${esc(i.x)}</p>`).join('');
+  $('#reader').classList.remove('hidden'); $('#reader').scrollTop = 0;
+  if (speakNow) Voice.speak($('#rdBody').innerText.slice(0, 2400));
+}
+async function screenshot() {
+  const t = cur(); if (!t?.wv) return toast('Ouvrez une page à capturer');
+  try {
+    const img = await t.wv.capturePage();
+    const r = await window.nova.savePng({ data: img.toDataURL(), name: (t.title || 'page').replace(/[^\w\- ]+/g, '').slice(0, 40) });
+    toast('📸 Capture enregistrée', { label: 'Afficher', run: () => window.nova.showFile(r.path) });
+  } catch (e) { toast('Capture impossible : ' + e.message); }
+}
+async function pip() {
+  const t = cur(); if (!t?.wv) return;
+  const r = await t.wv.executeJavaScript(`(async()=>{const v=[...document.querySelectorAll('video')].sort((a,b)=>b.clientWidth*b.clientHeight-a.clientWidth*a.clientHeight)[0]; if(!v) return 'none'; if(document.pictureInPictureElement){await document.exitPictureInPicture();return 'off'} await v.requestPictureInPicture(); return 'on'})()`, true).catch(() => 'err');
+  toast(r === 'on' ? '▣ Vidéo en image dans l\'image' : r === 'off' ? 'Image dans l\'image fermée' : 'Aucune vidéo sur cette page');
+}
+function sleepTabs() {
+  if (!cfg.tabSleep) return;
+  const limit = Date.now() - cfg.sleepMin * 60000;
+  tabs.filter(t => t.kind === 'web' && t.id !== active && !t.sleeping && t.wv && (t.last || 0) < limit).forEach(t => {
+    try { if (t.wv.isCurrentlyAudible()) return; } catch {}
+    t.url = t.wv.getURL ? t.wv.getURL() || t.url : t.url;
+    t.wv.remove(); t.wv = null; t.el = el('div', 'view'); t.el.innerHTML = '<div class="page" style="display:grid;place-items:center"><p style="color:var(--muted)">💤 Onglet en veille — il se recharge…</p></div>';
+    $('#views').appendChild(t.el); t.sleeping = true;
+  });
+  drawTabs();
+}
+function wake(t) { t.sleeping = false; const u = t.url; t.el.remove(); t.el = null; makeWebview(t, u); }

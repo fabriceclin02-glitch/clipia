@@ -195,6 +195,9 @@ html.mob .bu{opacity:1!important}
 html.mob video{max-width:100%;height:auto}
 html.mob .shots{scroll-snap-type:none;-webkit-overflow-scrolling:touch}
 html.mob #bot-b,html.mob #wa{animation:none!important}
+.nova-ban{display:block;position:relative;z-index:5;text-align:center;padding:10px 16px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#d946ef,#8b5cf6,#3b82f6);background-size:300% 100%;animation:novaban 8s linear infinite;color:#fff;text-decoration:none;font-size:15px}
+.nova-ban span{margin-left:8px;text-decoration:underline}
+@keyframes novaban{to{background-position:300% 0}}
 </style>
 </head>
 <body>
@@ -202,9 +205,10 @@ html.mob #bot-b,html.mob #wa{animation:none!important}
 <div class="fond" aria-hidden="true"><i></i><i></i><i></i><span id="pts"></span></div>
 <header><div class="c"><nav>
   <a class="logo" href="#top"><canvas id="logo3d" width="132" height="132" style="width:44px;height:44px" aria-hidden="true"></canvas>CLIPIA <small style="color:#c9a0ff;font-weight:700">X10</small></a>
-  <a class="l" href="#video">Vidéos</a><a class="l" href="#navigateur" style="color:#c9a0ff;font-weight:700;white-space:nowrap">🌐 Navigateur Nova</a><a class="l" href="#offres" style="color:#7ee2d0;font-weight:700">Gratuit &amp; Dév</a><a class="l" href="#agents">Agents</a><a class="l" href="#entreprise">Entreprise</a><a class="l" href="#code-glm" style="color:#7ee2d0;font-weight:700;white-space:nowrap">Z.ai</a><a class="l" href="#tout-installer" style="color:#7ee2d0;font-weight:700;white-space:nowrap">⚡ Tout installer</a><a class="l" href="#kodi-v1" style="color:#ffd7a0;font-weight:700;white-space:nowrap">📺 Kodi V1</a><a class="l" href="#nouveautes">Nouveautés</a><a class="l" href="#voix">Voix 3D</a><a class="l" href="#studio">Studio</a><a class="l" href="#openclaw">OpenClaw</a><a class="l" href="#mobile">Téléphone & MCP</a><a class="l" href="#installation">Installation</a><a class="l" href="#offres">Tarifs</a><a class="l" href="#faq">FAQ</a><a class="btn p dlnav" href="#telecharger" style="padding:8px 16px;font-size:14px">Télécharger</a>
+  <a class="l" href="#video">Vidéos</a><a class="l" href="#navigateur" style="color:#c9a0ff;font-weight:700;white-space:nowrap">🌐 Navigateur Nova</a><a class="l" href="communaute/" style="color:#f5d0fe;font-weight:700;white-space:nowrap">💬 Communauté</a><a class="l" href="#offres" style="color:#7ee2d0;font-weight:700">Gratuit &amp; Dév</a><a class="l" href="#agents">Agents</a><a class="l" href="#entreprise">Entreprise</a><a class="l" href="#code-glm" style="color:#7ee2d0;font-weight:700;white-space:nowrap">Z.ai</a><a class="l" href="#tout-installer" style="color:#7ee2d0;font-weight:700;white-space:nowrap">⚡ Tout installer</a><a class="l" href="#kodi-v1" style="color:#ffd7a0;font-weight:700;white-space:nowrap">📺 Kodi V1</a><a class="l" href="#nouveautes">Nouveautés</a><a class="l" href="#voix">Voix 3D</a><a class="l" href="#studio">Studio</a><a class="l" href="#openclaw">OpenClaw</a><a class="l" href="#mobile">Téléphone & MCP</a><a class="l" href="#installation">Installation</a><a class="l" href="#offres">Tarifs</a><a class="l" href="#faq">FAQ</a><a class="btn p dlnav" href="#telecharger" style="padding:8px 16px;font-size:14px">Télécharger</a>
 </nav></div></header>
 
+<a href="#navigateur" class="nova-ban">🚀 <b>Grande nouveauté :</b> Clipia Nova 2.1, le navigateur compagnon avec Facebook, Instagram, TikTok et le chat Clipia Communauté intégrés <span>Découvrir →</span></a>
 <main id="top">
 <div class="c hero">
   <div>
@@ -233,23 +237,24 @@ html.mob #bot-b,html.mob #wa{animation:none!important}
 
 
 <section id="navigateur"><div class="c">
-  <h2 class="rv">🌐 Clipia Nova : le navigateur compagnon <span class="nv">NOUVEAU</span></h2>
-  <p class="sous rv">L'innovation à ne pas manquer : un vrai navigateur où Clipia vit avec vous. Sa sphère 3D vous écoute, vous parle et vous répond, à la voix comme au clavier, sur Windows, Mac, Linux et Android. Et surtout : <b>la sécurité d'abord</b>. Aucun plugin venu de partout, aucune collecte : vos données restent entre vos mains, et seulement les vôtres.</p>
+  <div class="rv" style="text-align:center;margin-bottom:10px"><span class="etiq" style="border-color:#d946ef;color:#f5d0fe"><b style="background:#d946ef;box-shadow:0 0 10px #d946ef"></b>GRANDE NOUVEAUTÉ · Clipia Nova 2.1</span></div>
+  <h2 class="rv" style="text-align:center">🌐 Clipia Nova : le navigateur compagnon</h2>
+  <p class="sous rv" style="margin-left:auto;margin-right:auto;text-align:center">L'innovation à ne pas manquer. Clipia vit dans votre navigateur : sa sphère 3D vous écoute, vous parle et vous répond. <b>Facebook, Instagram, TikTok</b> et tous vos réseaux sont intégrés en un clic, avec le nouveau chat <b>Clipia Communauté</b>. Et toujours la sécurité d'abord : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
   <div class="vid2 rv"><video controls preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video></div>
   <div class="g" style="margin-top:22px">
-    <div class="k rv"><h3>🔮 Un compagnon, pas un onglet</h3><p>Ctrl + Espace : la sphère s'ouvre en grand, vous écoute et vous répond à voix haute. En mains libres, dites simplement « Clipia… ». Elle retient ce que vous lui demandez de retenir.</p></div>
-    <div class="k rv"><h3>🛡 Sécurité d'abord</h3><p>Traqueurs bloqués, HTTPS automatique, caméra, micro et position seulement sur votre accord. Clés IA chiffrées par le coffre-fort de votre système.</p></div>
-    <div class="k rv"><h3>🧩 Zéro plugin tiers</h3><p>Tout est intégré dès l'installation : rien ne s'ajoute dans votre dos, aucune extension inconnue ne lit vos pages.</p></div>
-    <div class="k rv"><h3>🙈 Vos données restent chez vous</h3><p>Pas de compte obligatoire, pas de serveur qui stocke votre navigation, vos e-mails ou vos mots de passe : il n'y a rien à pirater chez nous.</p></div>
-    <div class="k rv"><h3>🧅 Mode Tor intégré</h3><p>Ctrl + Maj + N : un onglet isolé qui passe par le réseau Tor, pour ouvrir les sites en .onion. Rien n'est écrit sur le disque.</p></div>
-    <div class="k rv"><h3>✦ L'IA de votre choix</h3><p>Claude, ChatGPT, Gemini, Mistral, DeepSeek, Groq, Grok, GLM, OpenRouter ou Ollama en local. Plus de 30 raccourcis clavier, un Store d'applis, toutes vos messageries.</p></div>
+    <div class="k rv"><h3>📱 Réseaux sociaux intégrés</h3><p>Facebook, Instagram, TikTok, WhatsApp, Messenger, YouTube, X, Snapchat, LinkedIn, Pinterest : une barre à gauche, un clic (Ctrl + B), votre réseau s'ouvre à côté de la page.</p></div>
+    <div class="k rv"><h3>💬 Clipia Communauté</h3><p>Le chat en temps réel de la communauté : salons, messages privés chiffrés, un seul compte (pseudo + mot de passe) sur téléphone et ordinateur.</p></div>
+    <div class="k rv"><h3>📸 Studio réseaux</h3><p>Clipia rédige vos légendes Instagram, vos scripts TikTok et vos posts Facebook, puis vous partagez en un clic.</p></div>
+    <div class="k rv"><h3>🔮 Un compagnon qui parle</h3><p>Ctrl + Espace : la sphère s'ouvre en grand, vous écoute et vous répond. En mains libres, dites « Clipia… ». Elle retient ce que vous lui confiez.</p></div>
+    <div class="k rv"><h3>🛡 Sécurité d'abord</h3><p>Traqueurs bloqués, HTTPS automatique, mode Tor pour les sites .onion, clés IA chiffrées, zéro plugin tiers : rien ne quitte votre machine sans vous.</p></div>
+    <div class="k rv"><h3>⚡ Rapide et complet</h3><p>Mode lecture, capture, image dans l'image, veille des onglets, plus de 35 raccourcis clavier, toutes les IA (Claude, ChatGPT, Gemini, Mistral, Ollama…).</p></div>
   </div>
   <div class="rv" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px">
-    <a class="btn p" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Windows-Installation.exe">⬇ Windows</a>
-    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-arm64.dmg">⬇ Mac (Apple M1…M4)</a>
-    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-x64.dmg">⬇ Mac (Intel)</a>
+    <a class="btn p" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Windows-Installation.exe">⬇ Windows</a>
+    <a class="btn" href="nova.html#telecharger">⬇ Mac</a>
     <a class="btn" href="nova.html#telecharger">⬇ Linux</a>
-    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Android.apk">⬇ Android</a>
+    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Android.apk">⬇ Android</a>
+    <a class="btn p" href="communaute/">💬 Clipia Communauté</a>
     <a class="btn" href="nova.html">Tout savoir sur Clipia Nova →</a>
   </div>
 </div></section>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clipia Communauté — le chat en temps réel</title>
+<meta name="description" content="Clipia Communauté : discutez en temps réel avec la communauté Clipia, sur téléphone et ordinateur, avec un seul compte.">
+<meta name="theme-color" content="#07061a">
+<link rel="icon" href="icone.png">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{--bg:#07061a;--bg2:#0d0b26;--panel:#151238;--line:#2a2560;--violet:#8b5cf6;--txt:#ecebff;--muted:#a19ccc;--ok:#34d399;--grad:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#d946ef)}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:system-ui,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer}
+input,textarea{font:inherit;color:var(--txt)}
+.hidden{display:none!important}
+.grad{background:var(--grad);-webkit-background-clip:text;color:transparent}
+.primary{background:var(--grad);color:#fff;padding:.85rem 1.3rem;border-radius:14px;font-weight:700;box-shadow:0 10px 30px -12px var(--violet)}
+.primary:disabled{opacity:.6}
+
+/* Connexion */
+#login{position:fixed;inset:0;display:grid;place-items:center;padding:1.2rem;background:radial-gradient(circle at 50% 20%,#231a6e,transparent 60%),var(--bg);overflow:auto}
+.card{width:min(440px,100%);background:#120f33dd;border:1px solid var(--line);border-radius:26px;padding:1.8rem;backdrop-filter:blur(12px)}
+.logo{display:flex;flex-direction:column;align-items:center;gap:.4rem;margin-bottom:1.2rem;text-align:center}
+.logo canvas{width:120px;height:120px}
+.logo h1{font-size:1.6rem;letter-spacing:.12em}
+.logo p{color:var(--muted);font-size:.92rem}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:#0a0824;border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:1rem}
+.tabs button{padding:.6rem;border-radius:10px;color:var(--muted);font-weight:600}
+.tabs button.on{background:var(--grad);color:#fff}
+.field{margin-top:.8rem}
+.field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:.3rem}
+.field input{width:100%;background:#0a0824;border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem}
+.field input:focus{outline:none;border-color:var(--violet)}
+.emojis{display:flex;flex-wrap:wrap;gap:.35rem}
+.emojis button{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);font-size:1.25rem;background:#0a0824}
+.emojis button.on{border-color:var(--violet);background:#8b5cf633}
+.note{font-size:.8rem;color:var(--muted);line-height:1.5;margin-top:.9rem}
+.err{color:#fca5a5;font-size:.9rem;margin-top:.7rem;min-height:1.2rem}
+#loginBtn{width:100%;margin-top:1.1rem}
+
+/* Application */
+#app{display:flex;height:100%}
+#side{width:290px;flex:none;background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column}
+.me{display:flex;align-items:center;gap:.7rem;padding:1rem;border-bottom:1px solid var(--line)}
+.av{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-size:1.2rem;flex:none}
+.me b{display:block;font-size:.95rem}.me small{color:var(--muted);font-size:.72rem}
+.me .sp{flex:1;min-width:0}
+.iconbtn{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.iconbtn:hover{background:#ffffff12;color:var(--txt)}
+.lists{flex:1;overflow:auto;padding:.6rem}
+.lists h3{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:#7d78b3;margin:1rem .5rem .4rem}
+.item{display:flex;align-items:center;gap:.6rem;width:100%;padding:.55rem .6rem;border-radius:11px;color:#cfcbf5;text-align:left}
+.item:hover{background:#ffffff0a}
+.item.on{background:#8b5cf633;color:#fff}
+.item .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .av{width:28px;height:28px;border-radius:9px;font-size:.95rem}
+.badge{background:#ec4899;color:#fff;border-radius:999px;font-size:.7rem;padding:.05rem .45rem;font-weight:700}
+.net{padding:.6rem 1rem;border-top:1px solid var(--line);font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.dot{width:8px;height:8px;border-radius:50%;background:#f59e0b}
+.dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+#chatPane{flex:1;display:flex;flex-direction:column;min-width:0;background:radial-gradient(circle at 70% 0%,#1a1458,transparent 55%),var(--bg)}
+.top{display:flex;align-items:center;gap:.7rem;padding:.8rem 1rem;border-bottom:1px solid var(--line);background:#0b0924cc}
+.top b{font-size:1.05rem}.top small{display:block;color:var(--muted);font-size:.78rem}
+#menuBtn{display:none}
+#msgs{flex:1;overflow:auto;padding:1rem 1.2rem;display:flex;flex-direction:column;gap:.15rem}
+.day{align-self:center;font-size:.72rem;color:#7d78b3;margin:1rem 0 .4rem;letter-spacing:.06em}
+.m{display:flex;gap:.6rem;align-items:flex-start;padding:.25rem .3rem;border-radius:10px}
+.m:hover{background:#ffffff06}
+.m .av{width:34px;height:34px;font-size:1.05rem;cursor:pointer}
+.m .b{min-width:0;flex:1}
+.m .h{display:flex;gap:.5rem;align-items:baseline}
+.m .h b{font-size:.9rem;cursor:pointer}
+.m .h small{color:#7d78b3;font-size:.72rem}
+.m .t{white-space:pre-wrap;word-wrap:break-word;line-height:1.45;font-size:.95rem;color:#e4e1ff}
+.m.cont{padding-top:0}.m.cont .av{visibility:hidden;height:0}.m.cont .h{display:none}
+.m.mine .h b{color:#c4b5fd}
+.empty{margin:auto;text-align:center;color:var(--muted);max-width:340px;line-height:1.6}
+#composer{display:flex;gap:.5rem;padding:.8rem;border-top:1px solid var(--line);background:#0b0924}
+#composer textarea{flex:1;resize:none;background:#0a0824;border:1px solid var(--line);border-radius:14px;padding:.7rem .9rem;max-height:140px}
+#composer textarea:focus{outline:none;border-color:var(--violet)}
+#composer .primary{padding:0 1.1rem;border-radius:14px}
+#emojiBtn{font-size:1.2rem}
+#profile{position:fixed;inset:0;background:#05040fcc;display:grid;place-items:center;z-index:50;padding:1rem}
+#toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,160px);background:#1a1745;border:1px solid var(--violet);padding:.7rem 1.2rem;border-radius:999px;transition:.3s;z-index:60;font-size:.9rem}
+#toast.on{transform:translate(-50%,0)}
+@media(max-width:760px){
+  #side{position:fixed;inset:0 auto 0 0;z-index:40;width:86vw;transform:translateX(-100%);transition:transform .25s;box-shadow:20px 0 60px #000}
+  #side.open{transform:none}
+  #menuBtn{display:grid}
+}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="card">
+    <div class="logo"><canvas id="orb"></canvas><h1>CLIPIA <span class="grad">COMMUNAUTÉ</span></h1><p>Discutez en temps réel avec la communauté, sur téléphone et ordinateur, avec un seul compte.</p></div>
+    <div class="tabs"><button id="tCreate" class="on">Créer mon compte</button><button id="tLogin">Me connecter</button></div>
+    <div class="field"><label>Pseudo</label><input id="lName" maxlength="24" autocomplete="username" placeholder="Ex. : Fabrice08"></div>
+    <div class="field"><label>Mot de passe (10 caractères minimum)</label><input id="lPass" type="password" autocomplete="current-password"></div>
+    <div class="field" id="confBox"><label>Confirmez le mot de passe</label><input id="lPass2" type="password" autocomplete="new-password"></div>
+    <div class="field" id="emoBox"><label>Votre avatar</label><div class="emojis" id="emos"></div></div>
+    <div class="err" id="lErr"></div>
+    <button class="primary" id="loginBtn">Créer mon compte</button>
+    <p class="note">🔐 Votre pseudo et votre mot de passe <b>sont</b> votre compte : retapez-les sur n'importe quel appareil et vous retrouvez tout. Aucune adresse e-mail demandée. Notez bien votre mot de passe : personne ne peut le récupérer à votre place, pas même Clipia.</p>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <aside id="side">
+    <div class="me"><div class="av" id="meAv"></div><div class="sp"><b id="meName"></b><small id="meId"></small></div><button class="iconbtn" id="logout" title="Se déconnecter">⎋</button></div>
+    <div class="lists">
+      <h3>Salons</h3><div id="chans"></div>
+      <h3>Messages privés</h3><div id="dms"></div>
+      <h3>Membres actifs</h3><div id="members"></div>
+    </div>
+    <div class="net"><span class="dot" id="netDot"></span><span id="netTxt">Connexion…</span></div>
+  </aside>
+  <main id="chatPane">
+    <div class="top"><button class="iconbtn" id="menuBtn">☰</button><div style="flex:1;min-width:0"><b id="cTitle"></b><small id="cSub"></small></div><button class="iconbtn hidden" id="muteBtn" title="Masquer cette personne">🚫</button></div>
+    <div id="msgs"></div>
+    <form id="composer"><button type="button" class="iconbtn" id="emojiBtn" title="Emoji">😊</button><textarea id="txt" rows="1" placeholder="Écrire un message…" maxlength="2000"></textarea><button class="primary">➤</button></form>
+  </main>
+</div>
+
+<div id="toast"></div>
+<script src="nostr-kit.js"></script>
+<script src="app.js"></script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});</script>
+</body>
+</html>

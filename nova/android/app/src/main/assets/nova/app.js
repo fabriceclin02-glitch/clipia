@@ -9,7 +9,7 @@ const store = {
   get(k, d) { try { const v = A ? A.get(k) : localStorage.getItem('nova.' + k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { const s = JSON.stringify(v); A ? A.set(k, s) : localStorage.setItem('nova.' + k, s); }
 };
-const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google', mails: [], installed: ['clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps', 'meteo'], voice: true, memory: [], trackers: true, https: true };
+const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google', mails: [], installed: ['communaute', 'clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps', 'meteo'], voice: true, memory: [], trackers: true, https: true };
 let cfg = { ...DEF, ...store.get('cfg', {}) };
 let KEYS = store.get('keys', {});
 const save = () => store.set('cfg', cfg);
@@ -168,6 +168,7 @@ function renderHome() {
     <form class="search" id="sf"><input placeholder="Rechercher sur le web…"><button>🔍</button></form>
     <button id="askAi" style="color:#c4b5fd;margin-top:.8rem;font-size:.9rem">✦ ou demander à Clipia</button><br>
     <span class="badge">🛡 Bouclier actif · ${A ? A.blocked() : 0} traqueur(s) bloqué(s)</span></div>
+    <h3 class="sec">Réseaux</h3><div class="soc">${D.socials.map(x => `<button data-url="${x.url}" title="${x.name}"><span style="background:${x.color}">${x.ic}</span><small>${x.name.replace('Clipia ', '')}</small></button>`).join('')}</div>
     ${cfg.mails.length ? `<h3 class="sec">Mes mails</h3><div class="tiles">${cfg.mails.map(id => D.mails.find(m => m.id === id)).map(m => `<div class="tile" data-url="${m.url}"><div class="ic">${m.ic}</div><small>${m.name}</small></div>`).join('')}</div>` : ''}
     <h3 class="sec">Mes applications</h3><div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}<div class="tile" id="addApp"><div class="ic">＋</div><small>Ajouter</small></div></div>
     ${hist.length ? `<h3 class="sec">Récemment visité</h3><div class="hist">${hist.slice(0, 6).map(x => `<button data-url="${esc(x.url)}">🕘 ${esc(x.title)}</button>`).join('')}</div>` : ''}`;
@@ -252,6 +253,9 @@ function initAI() {
   $('#aiClear').onclick = () => { convo = []; $('#chat').innerHTML = ''; hello(); };
   $('#askGo').onclick = () => { const v = $('#askIn').value.trim(); if (v) { $('#askIn').value = ''; send(v); } };
   document.querySelectorAll('#v-ai [data-q]').forEach(b => b.onclick = () => send({
+    ig: "Écris une légende Instagram percutante avec emojis et 15 hashtags. Demande-moi d'abord le sujet.",
+    tt: "Écris un script TikTok de 30 secondes (accroche, 4 plans, texte à l'écran, son, hashtags). Demande-moi d'abord le sujet.",
+    fb: "Rédige un post Facebook engageant avec un appel à l'action. Demande-moi d'abord le sujet.",
     clip: "Propose-moi 3 idées de clip musical originales pour CLENDAX, avec l'ambiance, 5 plans clés et une accroche TikTok pour chacune.",
     post: "Aide-moi à rédiger un post réseaux sociaux accrocheur. Pose-moi d'abord 2 questions sur le sujet.",
     plan: "Aide-moi à construire un plan d'action concret pour mon objectif. Demande-moi d'abord mon objectif.",

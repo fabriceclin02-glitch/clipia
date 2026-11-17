@@ -16,6 +16,9 @@ header{min-height:92vh;display:flex;flex-direction:column;align-items:center;jus
 #sp{width:min(360px,70vw);height:min(360px,70vw)}
 h1{font-size:clamp(2.4rem,7vw,4.6rem);letter-spacing:.2em;font-weight:900;margin-top:.5rem}
 .tag{color:var(--muted);font-size:clamp(1rem,2.2vw,1.3rem);max-width:44rem;margin:1rem auto 0;line-height:1.6}
+.socrow{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:center;margin:0 0 2rem}
+.socrow span{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:1.4rem;box-shadow:0 12px 30px -12px #000;transition:.25s}
+.socrow span:hover{transform:translateY(-4px) scale(1.06)}
 .hero-vid{display:block;width:min(900px,92vw);margin:2rem auto 0;border-radius:20px;border:1px solid var(--line);box-shadow:0 30px 80px -30px #8b5cf6}
 .cta{display:inline-block;margin-top:2rem;padding:1rem 2rem;border-radius:999px;background:var(--grad);color:#fff;font-weight:800;box-shadow:0 14px 40px -14px #8b5cf6}
 .safe{display:inline-block;margin-top:1.2rem;padding:.45rem 1rem;border-radius:999px;background:#34d39915;border:1px solid #34d39955;color:var(--ok);font-size:.9rem}
@@ -47,29 +50,53 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
   <canvas id="sp"></canvas>
   <h1>CLIPIA <span class="grad">NOVA</span></h1>
   <p class="tag">Le navigateur compagnon : Clipia vous écoute, vous parle et vous répond, sur toutes vos machines. Il travaille <b>pour vous</b>, pas sur vous : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
-  <a class="cta" href="#telecharger">Télécharger gratuitement</a>
-  <span class="safe">🛡 Aucune collecte · Traqueurs bloqués · Mode Tor .onion · Zéro plugin tiers</span>
+  <a class="cta" href="#telecharger">Télécharger gratuitement</a> <a class="cta" href="communaute/" style="background:none;border:1px solid #8b5cf6">💬 Clipia Communauté</a>
+  <span class="safe">🛡 Aucune collecte · Traqueurs bloqués · Mode Tor .onion · Réseaux sociaux intégrés · Chat Clipia Communauté</span>
   <video class="hero-vid" controls preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4"></video>
 </header>
 
 <section id="telecharger">
   <h2>Choisissez votre <span class="grad">appareil</span></h2>
-  <p class="sub">Gratuit · version 2.0 · Windows, Mac, Linux et Android.</p>
+  <p class="sub">Gratuit · version 2.1 · Windows, Mac, Linux et Android.</p>
   <div class="dl">
     <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11 (y compris PC ARM). Installation classique, ou version portable sans installation (clé USB).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
     <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS 11 et plus. Choisissez selon votre processeur (menu  → À propos de ce Mac).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
     <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>AppImage (toutes distributions) ou paquet .deb (Ubuntu, Debian, Mint). PC classiques et ARM (Raspberry Pi 4/5).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
     <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Clipia vous écoute et vous parle, Store, bouclier, .onion via Tor Browser.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.0.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.1.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
   </div>
-  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : pas encore disponible (Apple impose sa propre boutique). Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.0.0" style="text-decoration:underline">page de la version 2.0.0</a></p>
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : pas encore disponible (Apple impose sa propre boutique). Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.1.0" style="text-decoration:underline">page de la version 2.1.0</a></p>
+</section>
+
+<section id="reseaux">
+  <h2>Vos réseaux, <span class="grad">intégrés</span></h2>
+  <p class="sub">Facebook, Instagram, TikTok, WhatsApp, Messenger, YouTube, X, Snapchat, LinkedIn, Pinterest : un clic dans la barre de gauche (Ctrl + B) et votre réseau s'ouvre à côté de la page, sans quitter ce que vous faites. Ce sont les sites officiels, pas des plugins : rien ne s'installe dans votre navigateur.</p>
+  <div class="socrow"><span style="background:#1877F2">f</span><span style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)">◎</span><span style="background:linear-gradient(135deg,#25F4EE,#000 45%,#FE2C55)">♪</span><span style="background:#25D366">✆</span><span style="background:linear-gradient(45deg,#0099ff,#a033ff,#ff5280)">✉</span><span style="background:#FF0000">▶</span><span style="background:#111">𝕏</span><span style="background:#FFFC00;color:#111">👻</span><span style="background:#0A66C2">in</span><span style="background:#E60023">P</span></div>
+  <div class="feat">
+    <div class="f">📸<b>Studio réseaux Clipia</b><span>Légende Instagram avec hashtags, script TikTok de 30 secondes, post Facebook : Clipia les rédige à partir de la page ouverte ou de votre idée.</span></div>
+    <div class="f">⤴<b>Partage en un clic</b><span>Ctrl + Maj + E : Facebook, WhatsApp, Messenger, X, LinkedIn, Pinterest, Telegram ou e-mail.</span></div>
+    <div class="f">📖<b>Mode lecture</b><span>Alt + R : l'article sans publicité, en grand, lu à voix haute par Clipia si vous le souhaitez.</span></div>
+    <div class="f">⚡<b>Plus rapide, plus léger</b><span>Les onglets inutilisés se mettent en veille pour libérer la mémoire. Capture d'écran (Ctrl + Maj + X), vidéo en image dans l'image (Ctrl + Maj + P).</span></div>
+  </div>
+</section>
+
+<section id="communaute">
+  <h2>Clipia <span class="grad">Communauté</span></h2>
+  <p class="sub">Le chat en temps réel de la communauté Clipia, comme un messenger. Créez votre compte avec un pseudo et un mot de passe, puis retrouvez vos salons et vos messages privés sur votre téléphone comme sur votre ordinateur.</p>
+  <div class="feat">
+    <div class="f">💬<b>Salons en direct</b><span>Général, Musique & clips, Entraide, Projets & business, Clipia & Nova.</span></div>
+    <div class="f">🔒<b>Messages privés chiffrés</b><span>Seuls vous et votre correspondant pouvez les lire.</span></div>
+    <div class="f">📱<b>Un compte, tous vos appareils</b><span>Dans Clipia Nova (barre de gauche), sur Android, ou dans n'importe quel navigateur. Installable comme une application.</span></div>
+    <div class="f">🙈<b>Sans e-mail, sans serveur central</b><span>Aucune adresse demandée, aucune base de données à pirater : la communauté fonctionne sur un réseau ouvert.</span></div>
+  </div>
+  <p style="text-align:center;margin-top:1.6rem"><a class="cta" href="communaute/">💬 Rejoindre Clipia Communauté</a></p>
 </section>
 
 <section>

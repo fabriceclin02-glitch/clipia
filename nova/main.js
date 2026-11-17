@@ -20,7 +20,7 @@ function createWindow() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, webviewTag: true }
   });
   Menu.setApplicationMenu(null);
-  win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
+  win.loadFile(path.join(__dirname, 'renderer', 'index.html'), DEMO ? { query: { demo: '1' } } : undefined);
   win.on('enter-full-screen', () => win.webContents.send('nova:fullscreen', true));
   win.on('leave-full-screen', () => win.webContents.send('nova:fullscreen', false));
   win.on('closed', () => { win = null; });
@@ -40,9 +40,9 @@ app.on('web-contents-created', (_e, contents) => {
     if (input.type !== 'keyDown' || !win) return;
     const mod = input.control || input.meta;
     const k = (input.key || '').toLowerCase();
-    const global = (mod && ['t', 'w', 'l', 'j', 'd', 'h', 'f', 'r', 'p', 'tab', ',', '/', ' ', '=', '+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'n', 'm', 's', 'k'].includes(k))
+    const global = (mod && ['t', 'w', 'l', 'j', 'd', 'h', 'f', 'r', 'p', 'tab', ',', '/', ' ', '=', '+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'n', 'm', 's', 'k', 'b', 'e', 'x'].includes(k))
       || ['f1', 'f5', 'f11', 'escape', 'browserback', 'browserforward'].includes(k)
-      || (input.alt && ['arrowleft', 'arrowright', 'home'].includes(k));
+      || (input.alt && ['arrowleft', 'arrowright', 'home', 'r'].includes(k));
     if (global) {
       event.preventDefault();
       win.webContents.send('nova:key', { key: input.key, code: input.code, ctrl: mod, shift: input.shift, alt: input.alt });
@@ -213,6 +213,12 @@ ipcMain.handle('privacy:clear', async () => {
   return true;
 });
 ipcMain.handle('nova:show-file', (_e, p) => shell.showItemInFolder(p));
+ipcMain.handle('nova:save-png', (_e, { data, name }) => {
+  const dir = app.getPath('downloads');
+  const f = path.join(dir, `Clipia-Nova-${(name || 'capture').trim().replace(/\s+/g, '-')}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.png`);
+  fs.writeFileSync(f, Buffer.from(String(data).split(',')[1] || '', 'base64'));
+  return { path: f };
+});
 
 /* ---------- Mode Tor (.onion) ----------
    Nova lance son propre Tor (Tor Expert Bundle fourni avec l'application) ou utilise un Tor déjà présent

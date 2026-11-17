@@ -1,0 +1,12 @@
+{
+  "name": "Clipia Communauté",
+  "short_name": "Clipia Chat",
+  "description": "Le chat en temps réel de la communauté Clipia, sur tous vos appareils.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07061a",
+  "theme_color": "#07061a",
+  "lang": "fr",
+  "icons": [{ "src": "icone.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any maskable" }]
+}

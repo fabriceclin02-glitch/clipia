@@ -257,3 +257,39 @@ kbd{background:#0b0926;border:1px solid var(--line);border-bottom-width:3px;bord
 .tor-status.ready{border-color:#34d399;color:var(--ok)}
 .tor-status.error{border-color:#f87171;color:#fca5a5}
 .tor-warn{margin-top:2rem;text-align:left;font-size:.85rem;color:#c4b5fd;background:#2a1647;border:1px solid #4c2a7a;border-radius:14px;padding:1rem 1.2rem;line-height:1.55}
+
+.demo-lite *{backdrop-filter:none !important}
+.demo-lite #companion{background:radial-gradient(circle at 50% 40%,#1b1458,#05040f 70%)}
+
+/* ================= Nova 2.1 : réseaux, partage, lecture ================= */
+#rail{width:58px;flex:none;display:flex;flex-direction:column;align-items:center;gap:.45rem;padding:.7rem 0;background:#08061c;border-right:1px solid var(--line);overflow-y:auto}
+#rail::-webkit-scrollbar{width:0}
+.rl{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;position:relative;transition:.2s}
+.rl span{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1rem;box-shadow:0 6px 16px -8px #000}
+.rl[data-soc=snapchat] span{color:#111}
+.rl:hover{transform:translateY(-2px) scale(1.06)}
+.rl.on::before{content:"";position:absolute;left:-8px;top:8px;bottom:8px;width:4px;border-radius:4px;background:var(--grad)}
+.rl-ai span{background:var(--grad);font-size:1.1rem}
+#social{width:430px;flex:none;display:flex;flex-direction:column;background:#0c0a26;border-right:1px solid var(--line);transition:margin .3s}
+#social.closed{margin-left:-430px}
+#social header{display:flex;justify-content:space-between;align-items:center;padding:.6rem .8rem;border-bottom:1px solid var(--line)}
+.soc-id{display:flex;gap:.6rem;align-items:center}
+#socIc{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:.9rem}
+#socViews{flex:1;position:relative}
+#socViews webview{position:absolute;inset:0;display:none}
+#socViews webview.on{display:flex}
+#shareMenu{position:fixed;top:92px;right:240px;z-index:650;width:290px;background:#151238f7;border:1px solid var(--violet);border-radius:18px;padding:.8rem;box-shadow:0 30px 60px -20px #000;display:grid;grid-template-columns:1fr 1fr;gap:.35rem}
+#shareMenu b{grid-column:1/-1;font-size:.85rem;color:var(--muted);margin:.1rem .2rem .4rem}
+#shareMenu button{display:flex;gap:.5rem;align-items:center;padding:.55rem .6rem;border-radius:10px;font-size:.88rem;text-align:left}
+#shareMenu button:hover{background:#8b5cf622}
+#shareMenu button span{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:#ffffff14;font-weight:800;font-size:.8rem}
+#reader{position:fixed;inset:0;z-index:550;background:#0e0b22;overflow:auto}
+.rd-bar{position:sticky;top:0;display:flex;gap:.5rem;align-items:center;padding:.8rem 1.4rem;background:#0e0b22ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.rd-sp{flex:1}
+#rdBody{max-width:720px;margin:3rem auto 6rem;padding:0 1.4rem;font-family:Georgia,"Times New Roman",serif;font-size:1.15rem;line-height:1.8;color:#e9e6ff}
+#rdBody small{font-family:system-ui;color:#a5b4fc;letter-spacing:.1em;text-transform:uppercase;font-size:.75rem}
+#rdBody h1{font-size:2.2em;line-height:1.2;margin:.4rem 0 1.5rem}
+#rdBody h2{font-size:1.35em;margin:2rem 0 .6rem}
+#rdBody p{margin:0 0 1.1rem}
+#rdBody .li{margin-left:1rem}
+#rdBody blockquote{border-left:3px solid var(--violet);padding-left:1rem;color:#c7c3f2;font-style:italic;margin:1.2rem 0}

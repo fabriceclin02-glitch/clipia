@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('nova', {
   openExternal: (url) => ipcRenderer.invoke('nova:open-external', url),
   toggleFullscreen: () => ipcRenderer.invoke('nova:fullscreen'),
   showFile: (p) => ipcRenderer.invoke('nova:show-file', p),
+  savePng: (p) => ipcRenderer.invoke('nova:save-png', p),
   isDemo: () => ipcRenderer.invoke('nova:demo'),
   torStart: () => ipcRenderer.invoke('tor:start'),
   torStop: () => ipcRenderer.invoke('tor:stop'),

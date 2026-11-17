@@ -38,6 +38,11 @@ section{padding:1.2rem}
 .search input{flex:1;background:none;border:none;outline:none;min-width:0}
 .search button{background:var(--grad);border-radius:999px;padding:.6rem 1rem;color:#fff;font-weight:700}
 .badge{display:inline-block;margin-top:1rem;padding:.4rem .9rem;border-radius:999px;background:#34d39915;border:1px solid #34d39955;color:var(--ok);font-size:.8rem}
+.soc{display:flex;gap:.7rem;overflow-x:auto;padding:.2rem 0 .4rem}
+.soc::-webkit-scrollbar{display:none}
+.soc button{display:flex;flex-direction:column;align-items:center;gap:.3rem;min-width:62px}
+.soc span{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.2rem}
+.soc small{font-size:.7rem;color:var(--muted)}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.8rem;margin-top:1.4rem}
 .tile{display:flex;flex-direction:column;align-items:center;gap:.35rem}
 .tile .ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.5rem;background:#1a1745;border:1px solid var(--line)}
@@ -94,7 +99,7 @@ label.sw{display:flex;gap:.6rem;align-items:center;margin-top:.7rem}
   <div class="row" style="justify-content:center"><button class="btn2" id="handsBtn">🖐 Mains libres</button></div></div>
   <div class="row" style="justify-content:space-between"><div><div class="page-title grad" style="margin:0">Clipia</div><small id="aiEngine" style="color:var(--muted)"></small></div>
   <div class="row"><select id="aiMode" style="background:#1a1745;border:1px solid var(--line);border-radius:10px;padding:.4rem"></select><button id="aiVoice" class="btn2">🔈</button><button id="aiClear" class="btn2">🗑</button></div></div>
-  <div class="quick" style="margin-top:.8rem"><button data-q="clip">🎬 Idées de clip</button><button data-q="post">📣 Post réseaux</button><button data-q="plan">💼 Plan d'action</button><button data-q="idee">🚀 Idée de projet</button></div>
+  <div class="quick" style="margin-top:.8rem"><button data-q="ig">📸 Instagram</button><button data-q="tt">🎵 TikTok</button><button data-q="fb">📘 Facebook</button><button data-q="clip">🎬 Idées de clip</button><button data-q="post">📣 Post réseaux</button><button data-q="plan">💼 Plan d'action</button><button data-q="idee">🚀 Idée de projet</button></div>
   <div id="chat"></div>
 </section>
 <section id="v-settings" class="view hidden"></section>
