@@ -7,7 +7,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 /* ---------- Configuration (clés à part, chiffrées par le système) ---------- */
-const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'google',
+const DEF = { onboarded: false, name: '', provider: 'gemini', models: {}, mode: 'ami', customPrompt: '', engine: 'clipia',
   mails: [], installed: ['communaute', 'clipia', 'gmail', 'youtube', 'claude', 'whatsapp', 'maps'], history: [], favorites: [], devApps: [],
   voice: true, voiceName: '', voiceRate: 1.02, sttEngine: 'groq', memory: [], ollamaHost: '',
   tabSleep: true, sleepMin: 10,
@@ -324,7 +324,7 @@ function closeTab(id) {
   if (active === id) activate(tabs[Math.max(0, i - 1)].id); else drawTabs();
 }
 function drawTabs() {
-  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.kind === 'repair' ? '🛠 Dépannage' : t.kind === 'update' ? '🔄 Mise à jour' : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
+  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.kind === 'repair' ? '🛠 Dépannage' : t.kind === 'update' ? '🔄 Mise à jour' : t.kind === 'search' ? '🔎 ' + (t.q || 'Recherche') : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
   $$('#tabs .tab').forEach(e => {
     e.onclick = ev => { if (ev.target.dataset.x) closeTab(+ev.target.dataset.x); else activate(+e.dataset.id); };
     e.onauxclick = ev => { if (ev.button === 1) closeTab(+e.dataset.id); };
@@ -334,10 +334,11 @@ function navigate(input) {
   const s = (input || '').trim(); if (!s) return;
   const t = cur();
   if (/^nova:\/\//.test(s)) return toInternal(t, s.includes('store') ? 'store' : s.includes('reglages') ? 'settings' : s.includes('historique') ? 'history' : s.includes('depannage') ? 'repair' : s.includes('maj') ? 'update' : 'home');
+  if (t.kind !== 'tor' && !/^https?:\/\//i.test(s) && !(/^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/.test(s) && !s.includes(' ')) && (D.engines[cfg.engine] || {}).internal) { t.q = s; return toInternal(t, 'search'); }
   let url;
   if (/^https?:\/\//i.test(s)) url = s;
   else if (/^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/.test(s) && !s.includes(' ')) url = (/\.onion(\/|:|$)/.test(s) ? 'http://' : 'https://') + s;
-  else url = t.kind === 'tor' ? 'https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion/?q=' + encodeURIComponent(s) : D.engines[cfg.engine].url + encodeURIComponent(s);
+  else url = t.kind === 'tor' ? 'https://duckduckgogg42xjoc72x3sjasowoarfbgcmvfimaftt6twagswzczad.onion/?q=' + encodeURIComponent(s) : (D.engines[cfg.engine] && D.engines[cfg.engine].url || D.engines.duck.url) + encodeURIComponent(s);
   let onion = false; try { onion = new URL(url).hostname.endsWith('.onion'); } catch {}
   if (t.kind === 'tor') return torOpen(t, url);
   if (onion) { toast('🧅 Adresse .onion : ouverture dans un onglet Tor'); return newTab('tor', url); }
@@ -476,7 +477,7 @@ function toggleKeys(force) { const k = $('#keys'); const show = force ?? k.class
 
 /* ---------- Pages internes ---------- */
 function renderInternal(t) {
-  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor, repair: pageRepair, update: pageUpdate })[t.kind]?.(t.kind === 'tor' ? t : t.el);
+  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor, repair: pageRepair, update: pageUpdate, search: pageSearch })[t.kind]?.(t.kind === 'tor' ? t : t.el, t);
 }
 
 function pageHome(el) {
@@ -749,6 +750,32 @@ async function ask(text, { speak = false, shown = null, fromVoice = false } = {}
   if (talk || cfg.voice) await Voice.speak(r.text); else Voice.onState(Voice.handsFree ? 'listening' : 'idle');
 }
 
+
+/* =========================================================
+   CLIPIA SEARCH — moteur de recherche indépendant
+   ========================================================= */
+async function pageSearch(el, t) {
+  t = t || tabs.find(x => x.el === el); const q = (t && t.q) || '';
+  const keys = (await window.nova.getKeys()) || {};
+  el.innerHTML = `<div class="page srch"><form class="search big"><span class="lg">✦</span><input value="${esc(q)}" placeholder="Rechercher avec Clipia Search…"><button class="primary">Rechercher</button></form>
+    <p class="note">Clipia Search n'utilise ni Google, ni Bing, ni Yahoo. Aucun profil, aucune publicité, aucun historique envoyé : votre requête part directement de votre ordinateur vers des index indépendants.</p>
+    <div id="sr" class="sr"><p class="note">${q ? '⏳ Recherche…' : 'Tapez votre recherche.'}</p></div>
+    <details class="card"><summary>⚙ Améliorer les résultats : ajouter une clé Brave Search (facultatif)</summary>
+      <p class="note">Brave possède son propre index du web, bien plus complet. Une clé gratuite s'obtient sur brave.com/search/api. Elle est stockée chiffrée sur votre machine.</p>
+      <div class="row" style="gap:.5rem"><input id="brKey" type="password" placeholder="${keys.brave ? '••••••• (clé enregistrée)' : 'Clé Brave Search'}"><button class="btn2" id="brSave">Enregistrer</button></div></details></div>`;
+  const f = $('form', el); f.onsubmit = e => { e.preventDefault(); const v = $('input', f).value.trim(); if (v) { t.q = v; drawTabs(); pageSearch(el, t); } };
+  $('#brSave', el).onclick = async () => { const v = $('#brKey', el).value.trim(); const k = (await window.nova.getKeys()) || {}; if (v) k.brave = v; else delete k.brave; await window.nova.setKeys(k); toast('✓ Clé enregistrée'); pageSearch(el, t); };
+  if (!q) return; drawTabs();
+  const r = await window.nova.search(q), box = $('#sr', el); if (!box) return;
+  const names = { wikipedia: 'Wikipédia', marginalia: 'Marginalia', brave: 'Brave Search' };
+  const head = Object.entries(r.sources).map(([k, n]) => `${names[k]} : ${n}`).join(' · ');
+  const errs = Object.entries(r.errors).map(([k, e]) => `${names[k]} indisponible (${esc(e)})`).join(' · ');
+  if (!r.results.length) { box.innerHTML = `<p class="note">Aucun résultat pour « ${esc(q)} ».${errs ? ' ' + errs : ''}</p><p><button class="btn2" data-ext="1">Essayer sur DuckDuckGo</button></p>`; $('[data-ext]', box).onclick = () => navigate(D.engines.duck.url + encodeURIComponent(q)); return; }
+  box.innerHTML = `<p class="note">${r.results.length} résultats · ${head}${errs ? ' · ⚠ ' + errs : ''}</p><button class="btn2" id="srAI">✦ Résumer avec Clipia</button>`
+    + r.results.map(x => `<a class="res" data-u="${esc(x.url)}"><small>${esc(x.url.replace(/^https?:\/\//, '').slice(0, 80))} <i>${esc(names[x.src])}</i></small><b>${esc(x.title)}</b><p>${esc(x.desc)}</p></a>`).join('');
+  $$('.res', box).forEach(a => a.onclick = () => newTab('web', a.dataset.u));
+  $('#srAI', box).onclick = () => ask('Résume en français, en quelques lignes et en citant les sites, ce que disent ces résultats de recherche pour « ' + q + ' » :\n' + r.results.slice(0, 8).map((x, i) => `${i + 1}. ${x.title} (${x.url}) : ${x.desc}`).join('\n'), {});
+}
 
 /* =========================================================
    MISE À JOUR AUTOMATIQUE

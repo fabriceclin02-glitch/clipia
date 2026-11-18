@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld('nova', {
   updateInstall: () => ipcRenderer.invoke('update:install'),
   updateVersion: () => ipcRenderer.invoke('update:version'),
   onUpdateProgress: on('update:progress'),
+  search: (q) => ipcRenderer.invoke('search:run', q),
   isDemo: () => ipcRenderer.invoke('nova:demo'),
   torStart: () => ipcRenderer.invoke('tor:start'),
   torStop: () => ipcRenderer.invoke('tor:stop'),

@@ -225,6 +225,34 @@ function protect(ses, { tor = false } = {}) {
   });
 }
 // Réseau : DNS chiffré (DoH) + proxy / VPN au choix, pour les onglets normaux (jamais pour Tor).
+
+// Moteur Clipia Search : interroge des index indépendants (jamais Google / Bing / Yahoo), directement depuis votre machine.
+const SRCH = { marginalia: process.env.NOVA_SEARCH_MARGINALIA || 'https://api.marginalia.nu/public/search/', wiki: process.env.NOVA_SEARCH_WIKI || 'https://fr.wikipedia.org/w/api.php', brave: process.env.NOVA_SEARCH_BRAVE || 'https://api.search.brave.com/res/v1/web/search' };
+async function getJson(url, headers) {
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 8000);
+  try { const r = await require('electron').net.fetch(url, { headers: { 'User-Agent': 'Clipia-Nova', Accept: 'application/json', ...headers }, signal: ctl.signal }); if (!r.ok) throw new Error('code ' + r.status); return await r.json(); }
+  finally { clearTimeout(to); }
+}
+const clean = (s) => String(s || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/\s+/g, ' ').trim();
+ipcMain.handle('search:run', async (_e, q) => {
+  q = String(q || '').trim().slice(0, 200); if (!q) return { results: [], sources: {}, errors: {} };
+  const keys = DEMO ? {} : (readVault() || {});
+  const jobs = {
+    wikipedia: async () => (await getJson(SRCH.wiki + '?action=query&list=search&format=json&srlimit=4&srsearch=' + encodeURIComponent(q))).query.search
+      .map(x => ({ title: x.title, url: 'https://fr.wikipedia.org/wiki/' + encodeURIComponent(x.title.replace(/ /g, '_')), desc: clean(x.snippet) })),
+    marginalia: async () => ((await getJson(SRCH.marginalia + encodeURIComponent(q) + '?count=12')).results || []).map(x => ({ title: clean(x.title) || x.url, url: x.url, desc: clean(x.description) })),
+  };
+  if (keys.brave) jobs.brave = async () => ((await getJson(SRCH.brave + '?count=15&country=fr&search_lang=fr&q=' + encodeURIComponent(q), { 'X-Subscription-Token': keys.brave })).web?.results || []).map(x => ({ title: clean(x.title), url: x.url, desc: clean(x.description) }));
+  const out = {}, errors = {};
+  await Promise.all(Object.entries(jobs).map(async ([k, f]) => { try { out[k] = await f(); } catch (e) { errors[k] = e.message; out[k] = []; } }));
+  const seen = new Set(), results = [];
+  for (const k of ['wikipedia', 'brave', 'marginalia']) for (const r of (out[k] || [])) {
+    if (!/^https?:\/\//i.test(r.url || '')) continue;
+    const id = r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/[#?].*$/, '').replace(/\/$/, '');
+    if (seen.has(id)) continue; seen.add(id); results.push({ ...r, src: k });
+  }
+  return { results, sources: Object.fromEntries(Object.entries(out).map(([k, v]) => [k, v.length])), errors };
+});
 ipcMain.handle('net:set', async (_e, n) => {
   try {
     const dns = { cloudflare: 'https://cloudflare-dns.com/dns-query', quad9: 'https://dns.quad9.net/dns-query', google: 'https://dns.google/dns-query' }[n.doh];

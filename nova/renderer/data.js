@@ -35,6 +35,7 @@ window.NOVA_DATA = {
   ],
 
   engines: {
+    clipia: { name: 'Clipia Search ✦', internal: true },
     google: { name: 'Google', url: 'https://www.google.com/search?q=' },
     duck: { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
     qwant: { name: 'Qwant 🇫🇷', url: 'https://www.qwant.com/?q=' },
