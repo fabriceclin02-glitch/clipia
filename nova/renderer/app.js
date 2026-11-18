@@ -324,7 +324,7 @@ function closeTab(id) {
   if (active === id) activate(tabs[Math.max(0, i - 1)].id); else drawTabs();
 }
 function drawTabs() {
-  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.kind === 'repair' ? '🛠 Dépannage' : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
+  $('#tabs').innerHTML = tabs.map((t, i) => `<div class="tab ${t.id === active ? 'on' : ''} ${t.kind === 'tor' ? 'tor' : ''}" data-id="${t.id}" title="${esc(t.title)} — Ctrl+${i + 1}"><span>${t.kind === 'tor' ? '🧅 ' : ''}${esc(t.kind === 'store' ? '🛍 Store' : t.kind === 'settings' ? '⚙ Réglages' : t.kind === 'history' ? '🕘 Historique' : t.kind === 'repair' ? '🛠 Dépannage' : t.kind === 'update' ? '🔄 Mise à jour' : t.title)}</span><b class="x" data-x="${t.id}">✕</b></div>`).join('');
   $$('#tabs .tab').forEach(e => {
     e.onclick = ev => { if (ev.target.dataset.x) closeTab(+ev.target.dataset.x); else activate(+e.dataset.id); };
     e.onauxclick = ev => { if (ev.button === 1) closeTab(+e.dataset.id); };
@@ -333,7 +333,7 @@ function drawTabs() {
 function navigate(input) {
   const s = (input || '').trim(); if (!s) return;
   const t = cur();
-  if (/^nova:\/\//.test(s)) return toInternal(t, s.includes('store') ? 'store' : s.includes('reglages') ? 'settings' : s.includes('historique') ? 'history' : s.includes('depannage') ? 'repair' : 'home');
+  if (/^nova:\/\//.test(s)) return toInternal(t, s.includes('store') ? 'store' : s.includes('reglages') ? 'settings' : s.includes('historique') ? 'history' : s.includes('depannage') ? 'repair' : s.includes('maj') ? 'update' : 'home');
   let url;
   if (/^https?:\/\//i.test(s)) url = s;
   else if (/^[\w-]+(\.[\w-]+)+(:\d+)?(\/\S*)?$/.test(s) && !s.includes(' ')) url = (/\.onion(\/|:|$)/.test(s) ? 'http://' : 'https://') + s;
@@ -476,7 +476,7 @@ function toggleKeys(force) { const k = $('#keys'); const show = force ?? k.class
 
 /* ---------- Pages internes ---------- */
 function renderInternal(t) {
-  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor, repair: pageRepair })[t.kind]?.(t.kind === 'tor' ? t : t.el);
+  ({ home: pageHome, store: pageStore, settings: pageSettings, history: pageHistory, tor: pageTor, repair: pageRepair, update: pageUpdate })[t.kind]?.(t.kind === 'tor' ? t : t.el);
 }
 
 function pageHome(el) {
@@ -492,7 +492,7 @@ function pageHome(el) {
     <h3 class="sec">Mes applications</h3>
     <div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><span class="rm" data-rm="${a.id}">✕</span><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}
       <div class="tile" data-store="1"><div class="ic">＋</div><small>Ajouter</small></div></div>
-    <div class="vidcard" data-url="https://fabriceclin02-glitch.github.io/clipia/nova.html" title="Voir la présentation"><img src="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg" alt="" onerror="this.parentNode.style.display='none'"><div class="play">▶</div><b>Découvrir Clipia Nova en 1 minute</b></div>
+    <div class="vidcard" data-url="https://fabriceclin02-glitch.github.io/clipia/nova.html" title="Voir la présentation"><img src="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg" alt=""><div class="play">▶</div><b>Découvrir Clipia Nova en 1 minute</b></div>
     <h3 class="sec">🧰 Boîte à outils indispensable <span class="tag">NOUVEAU</span></h3>
     <div class="toolbox">${D.toolbox.map(([t, ids]) => `<div class="tb"><h4>${t}</h4><div class="tbr">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button class="tbt" data-url="${esc(x.url)}" title="${esc(x.name)} — ${esc(x.desc)}"><span>${x.ic}</span><small>${esc(x.name)}</small></button>`).join('')}<button class="tbt more" data-cat="${esc(t.split(' ').slice(1).join(' ').split(' &')[0])}"><span>＋</span><small>Tout voir</small></button></div></div>`).join('')}</div>
     ${cfg.favorites.length ? `<h3 class="sec">Favoris</h3><div class="hist">${cfg.favorites.slice(0, 8).map(x => `<button data-url="${esc(x.url)}">★ ${esc(x.title)}</button>`).join('')}</div>` : ''}
@@ -750,6 +750,42 @@ async function ask(text, { speak = false, shown = null, fromVoice = false } = {}
 }
 
 
+/* =========================================================
+   MISE À JOUR AUTOMATIQUE
+   ========================================================= */
+const upd = { info: null, busy: false, msg: '', pct: 0 };
+async function autoUpdate(manual) {
+  if (!manual && cfg.autoUpdate === false) return;
+  const r = await window.nova.updateCheck(); upd.info = r;
+  $('#updDot').classList.toggle('hidden', !r.available);
+  if (r.available && !manual && upd.notified !== r.latest) { upd.notified = r.latest; toast('🔄 Clipia Nova ' + r.latest + ' est disponible — cliquez sur 🔄 pour l\'installer'); }
+  tabs.filter(t => t.kind === 'update').forEach(t => pageUpdate(t.el));
+  return r;
+}
+async function pageUpdate(el) {
+  const cur = await window.nova.updateVersion(), r = upd.info;
+  const mb = n => (n / 1048576).toFixed(0) + ' Mo';
+  let state;
+  if (upd.busy) state = `<div class="bar"><i style="width:${upd.pct}%"></i></div><p class="note">${upd.msg || 'Téléchargement…'} ${upd.pct}%</p>`;
+  else if (!r) state = '<p class="note">Cliquez sur « Rechercher » pour vérifier.</p>';
+  else if (!r.ok) state = `<p class="note" style="color:#fca5a5">✕ ${esc(r.error)}</p>`;
+  else if (r.available) state = `<p><b>Version ${esc(r.latest)} disponible</b> (${mb(r.size)})</p>${r.notes ? `<pre class="notes">${esc(r.notes)}</pre>` : ''}<button class="primary" id="updGo">⬇ Télécharger et installer</button><p class="note">Le fichier est vérifié (empreinte SHA-256) avant toute installation. Sur Windows, Clipia Nova se ferme puis se rouvre tout seul.</p>`;
+  else state = '<p style="color:#34d399">✓ Vous avez la dernière version.</p>';
+  el.innerHTML = `<div class="page"><h1>🔄 Mise à jour</h1><div class="card"><p>Version installée : <b>${esc(cur)}</b></p>${state}
+    <div class="row" style="margin-top:.8rem;gap:.6rem;flex-wrap:wrap"><button class="btn2" id="updChk">Rechercher une mise à jour</button>
+    <label class="chk"><input type="checkbox" id="updAuto" ${cfg.autoUpdate === false ? '' : 'checked'}> Vérifier automatiquement (au démarrage, puis toutes les 6 h)</label></div></div></div>`;
+  $('#updChk', el).onclick = async () => { $('#updChk', el).textContent = 'Recherche…'; await autoUpdate(true); };
+  $('#updAuto', el).onchange = (e) => { cfg.autoUpdate = e.target.checked; save(); };
+  const go = $('#updGo', el);
+  if (go) go.onclick = async () => {
+    upd.busy = true; upd.pct = 0; upd.msg = 'Téléchargement…'; pageUpdate(el);
+    const res = await window.nova.updateInstall(); upd.busy = false;
+    upd.info = res.ok ? { ok: true, available: false, current: cur } : { ok: false, error: res.error };
+    pageUpdate(el); toast(res.ok ? '✓ ' + res.msg : '✕ ' + res.error);
+  };
+}
+window.nova.onUpdateProgress(p => { upd.pct = p.total ? Math.min(100, Math.round(p.got / p.total * 100)) : 0; tabs.filter(t => t.kind === 'update').forEach(t => { const b = t.el.querySelector('.bar i'); if (b) b.style.width = upd.pct + '%'; const n = t.el.querySelector('.note'); if (n && upd.busy) n.textContent = 'Téléchargement… ' + upd.pct + ' %'; }); });
+
 /* Réponses de base sans internet ni IA locale : heure, date, calculs, mémoire, aide, dépannage. */
 function calcSafe(src) {
   const tk = src.match(/\d+(?:\.\d+)?|\*\*|[-+*/()%]/g) || []; let i = 0;
@@ -780,6 +816,7 @@ addEventListener('online', () => { toast('✓ Connexion rétablie'); document.ti
 const MOBILE_UA = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Mobile Safari/537.36';
 const socViews = {}; let socCur = null;
 function initSocial() {
+  document.querySelectorAll('.vidcard img').forEach(i => i.addEventListener('error', () => { i.parentNode.style.display = 'none'; }));
   $('#rail').innerHTML = D.socials.map(x => `<button class="rl" data-soc="${x.id}" title="${x.name}${x.wide ? ' (s\'ouvre dans un onglet)' : ''}"><span style="background:${x.color}">${x.ic}</span></button>`).join('')
     + `<button class="rl rl-ai" data-socai="1" title="Studio réseaux Clipia"><span>✦</span></button>`;
   $$('#rail [data-soc]').forEach(b => b.onclick = () => openSocial(b.dataset.soc));
@@ -814,6 +851,8 @@ function initTools() {
   $('#btnReader').onclick = () => openReader();
   $('#btnShot').onclick = screenshot;
   $('#btnFix').onclick = () => openInternal('repair');
+  $('#btnUpd').onclick = () => openInternal('update');
+  setTimeout(() => autoUpdate(), 15000); setInterval(() => autoUpdate(), 6 * 3600 * 1000);
   document.addEventListener('click', e => { if (!e.target.closest('#shareMenu')) $('#shareMenu').classList.add('hidden'); });
   let fs = 1.15;
   $('#rdBigger').onclick = () => { fs = Math.min(1.8, fs + .1); $('#rdBody').style.fontSize = fs + 'rem'; };

@@ -334,6 +334,7 @@ ipcMain.handle('tor:start', () => startTor());
 ipcMain.handle('tor:stop', () => { stopTor(); return tor; });
 ipcMain.handle('tor:status', () => tor);
 
+require('./updater').init(ipcMain, (ch, v) => { if (win && !win.isDestroyed()) win.webContents.send(ch, v); });
 app.whenReady().then(() => {
   torSession = session.fromPartition('tor-nova');           // en mémoire uniquement : rien n'est écrit sur le disque
   torSession.setProxy({ proxyRules: 'socks5://127.0.0.1:1', proxyBypassRules: '<-loopback>' }); // bloqué tant que Tor n'est pas prêt
