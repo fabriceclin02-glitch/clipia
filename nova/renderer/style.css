@@ -321,3 +321,8 @@ kbd{background:#0b0926;border:1px solid var(--line);border-bottom-width:3px;bord
 .tbt:hover{border-color:var(--violet);transform:translateY(-2px)}
 .tbt span{font-size:1.5rem}.tbt small{font-size:.72rem;color:var(--muted);text-align:center}
 .tbt.more span{opacity:.6}
+
+.vidcard{position:relative;max-width:560px;margin:1.2rem auto;border-radius:20px;overflow:hidden;border:1px solid var(--line);cursor:pointer;box-shadow:0 20px 60px -25px #8b5cf6}
+.vidcard img{display:block;width:100%}.vidcard b{position:absolute;left:0;right:0;bottom:0;padding:.7rem 1rem;background:linear-gradient(transparent,#000c);font-size:.95rem}
+.vidcard .play{position:absolute;inset:0;display:grid;place-items:center;font-size:3rem;color:#fff;text-shadow:0 0 30px #8b5cf6}
+.vidcard:hover .play{transform:scale(1.15);transition:.2s}

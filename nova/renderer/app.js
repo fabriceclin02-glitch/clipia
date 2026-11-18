@@ -492,6 +492,7 @@ function pageHome(el) {
     <h3 class="sec">Mes applications</h3>
     <div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><span class="rm" data-rm="${a.id}">✕</span><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}
       <div class="tile" data-store="1"><div class="ic">＋</div><small>Ajouter</small></div></div>
+    <div class="vidcard" data-url="https://fabriceclin02-glitch.github.io/clipia/nova.html" title="Voir la présentation"><img src="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg" alt="" onerror="this.parentNode.style.display='none'"><div class="play">▶</div><b>Découvrir Clipia Nova en 1 minute</b></div>
     <h3 class="sec">🧰 Boîte à outils indispensable <span class="tag">NOUVEAU</span></h3>
     <div class="toolbox">${D.toolbox.map(([t, ids]) => `<div class="tb"><h4>${t}</h4><div class="tbr">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button class="tbt" data-url="${esc(x.url)}" title="${esc(x.name)} — ${esc(x.desc)}"><span>${x.ic}</span><small>${esc(x.name)}</small></button>`).join('')}<button class="tbt more" data-cat="${esc(t.split(' ').slice(1).join(' ').split(' &')[0])}"><span>＋</span><small>Tout voir</small></button></div></div>`).join('')}</div>
     ${cfg.favorites.length ? `<h3 class="sec">Favoris</h3><div class="hist">${cfg.favorites.slice(0, 8).map(x => `<button data-url="${esc(x.url)}">★ ${esc(x.title)}</button>`).join('')}</div>` : ''}

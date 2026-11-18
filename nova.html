@@ -4,7 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clipia Nova — le navigateur compagnon qui protège ses utilisateurs</title>
-<meta name="description" content="Clipia Nova : navigateur avec IA intégrée (Claude, ChatGPT, Gemini, Mistral…), Store d'applications et bouclier anti-traqueurs. Gratuit pour Windows, Mac, Linux et Android.">
+<meta name="description" content="Clipia Nova : le navigateur compagnon avec IA intégrée, VPN gratuit, mode hors connexion, zéro plugin tiers et aucune collecte. Gratuit pour Windows, Mac, Linux et Android.">
+<meta property="og:type" content="video.other">
+<meta property="og:title" content="Clipia Nova — le navigateur compagnon, VPN gratuit, marche sans internet">
+<meta property="og:description" content="Une IA qui vous parle, répare votre PC et protège vos données. Zéro plugin tiers. Gratuit : Windows, Mac, Linux, Android.">
+<meta property="og:image" content="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg">
+<meta property="og:video" content="https://fabriceclin02-glitch.github.io/clipia/Clipia-Nova-presentation.mp4">
+<meta property="og:video:type" content="video/mp4">
+<meta property="og:url" content="https://fabriceclin02-glitch.github.io/clipia/nova.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg">
+<link rel="canonical" href="https://fabriceclin02-glitch.github.io/clipia/nova.html">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Clipia Nova","applicationCategory":"BrowserApplication","operatingSystem":"Windows, macOS, Linux, Android","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"url":"https://fabriceclin02-glitch.github.io/clipia/nova.html","image":"https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg","author":{"@type":"Person","name":"Clin Fabrice","address":"Flize, Ardennes, France"}}</script>
 <link rel="icon" href="nova/build/icon.png">
 <style>
 :root{--bg:#07061a;--panel:#151238;--line:#2a2560;--txt:#ecebff;--muted:#a19ccc;--ok:#34d399;--grad:linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#d946ef)}
@@ -52,7 +63,8 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
   <p class="tag">Le navigateur compagnon : Clipia vous écoute, vous parle et vous répond, sur toutes vos machines. Il travaille <b>pour vous</b>, pas sur vous : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
   <a class="cta" href="#telecharger">Télécharger gratuitement</a> <a class="cta" href="communaute/" style="background:none;border:1px solid #8b5cf6">💬 Clipia Communauté</a>
   <span class="safe">🔐 VPN gratuit · 📴 Marche sans internet · 🛡 Aucune collecte · Traqueurs bloqués · Mode Tor .onion · Réseaux sociaux intégrés · Chat Clipia Communauté</span>
-  <video class="hero-vid" controls preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4"></video>
+  <video id="heroVid" class="hero-vid" controls autoplay muted loop preload="auto" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4"></video>
+  <button class="cta" id="snd" style="margin-top:.8rem;cursor:pointer;background:none;border:1px solid #34d399;color:#34d399">🔊 Activer le son</button>
 </header>
 
 <section id="telecharger">
@@ -60,19 +72,19 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
   <p class="sub">Gratuit · version 2.3 · Windows, Mac, Linux et Android.</p>
   <div class="dl">
     <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11 (y compris PC ARM). Installation classique, ou version portable sans installation (clé USB).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
     <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS 11 et plus. Choisissez selon votre processeur (menu  → À propos de ce Mac).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
     <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>AppImage (toutes distributions) ou paquet .deb (Ubuntu, Debian, Mint). PC classiques et ARM (Raspberry Pi 4/5).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
     <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Clipia vous écoute et vous parle, Store, bouclier, .onion via Tor Browser.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
   </div>
-  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : pas encore disponible (Apple impose sa propre boutique). Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.3.0" style="text-decoration:underline">page de la version 2.3.0</a></p>
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : Clipia Nova n'y est pas disponible (Apple impose son moteur et sa boutique, ce qui est incompatible avec un navigateur indépendant). En attendant, <a href="communaute/" style="text-decoration:underline">Clipia Communauté</a> s'installe sur iPhone : Safari ▸ Partager ▸ « Sur l'écran d'accueil ». Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.3.1" style="text-decoration:underline">page de la version 2.3.1</a></p>
 </section>
 
 <section id="depannage">
@@ -180,5 +192,6 @@ for(const[x0,y0,z0]of pts){let x=x0*ca-z0*sa,z=x0*sa+z0*ca,y=y0*cb-z*sb;z=y0*sb+
 ctx.fillStyle=`hsla(${215+(y0+1)*45},90%,${55+dd*20}%,${.15+dd*.85})`;ctx.beginPath();ctx.arc(W/2+x*R,H/2+y*R,(.6+dd*1.8)*d,0,7);ctx.fill()}
 if(FX)FX.front(ctx,W/2,H/2,Math.min(W,H)*.28,t,d,0);requestAnimationFrame(f)})(performance.now())})();
 </script>
+<script>(function(){var v=document.getElementById("heroVid"),b=document.getElementById("snd");if(!v||!b)return;b.onclick=function(){v.muted=false;v.currentTime=0;v.play();b.style.display="none"};v.addEventListener("volumechange",function(){if(!v.muted)b.style.display="none"});})();</script>
 </body>
 </html>

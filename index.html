@@ -240,7 +240,7 @@ html.mob #bot-b,html.mob #wa{animation:none!important}
   <div class="rv" style="text-align:center;margin-bottom:10px"><span class="etiq" style="border-color:#d946ef;color:#f5d0fe"><b style="background:#d946ef;box-shadow:0 0 10px #d946ef"></b>GRANDE NOUVEAUTÉ · Clipia Nova 2.3</span></div>
   <h2 class="rv" style="text-align:center">🌐 Clipia Nova : le navigateur compagnon</h2>
   <p class="sous rv" style="margin-left:auto;margin-right:auto;text-align:center">L'innovation à ne pas manquer. Clipia vit dans votre navigateur : sa sphère 3D vous écoute, vous parle et vous répond. <b>Facebook, Instagram, TikTok</b> et tous vos réseaux sont intégrés en un clic, avec le nouveau chat <b>Clipia Communauté</b>. Et toujours la sécurité d'abord : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
-  <div class="vid2 rv"><video controls preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video></div>
+  <div class="vid2 rv"><video id="novaVid" controls muted loop preload="metadata" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4">Ta navigation ne lit pas la vidéo.</video></div>
   <div class="g" style="margin-top:22px">
     <div class="k rv"><h3>🛠 Elle répare votre ordinateur</h3><p>« Clipia, mon PC rame. » Elle analyse processeur, mémoire, disque et réseau, explique le problème et propose les réparations. Rien ne s'exécute sans votre accord, les commandes dangereuses sont bloquées.</p></div>
     <div class="k rv"><h3>📱 Réseaux sociaux intégrés</h3><p>Facebook, Instagram, TikTok, WhatsApp, Messenger, YouTube, X, Snapchat, LinkedIn, Pinterest : une barre à gauche, un clic (Ctrl + B), votre réseau s'ouvre à côté de la page.</p></div>
@@ -254,10 +254,10 @@ html.mob #bot-b,html.mob #wa{animation:none!important}
     <div class="k rv"><h3>⚡ Rapide et complet</h3><p>Mode lecture, capture, image dans l'image, veille des onglets, plus de 35 raccourcis clavier, toutes les IA (Claude, ChatGPT, Gemini, Mistral, Ollama…).</p></div>
   </div>
   <div class="rv" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:26px">
-    <a class="btn p" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Windows-Installation.exe">⬇ Windows</a>
+    <a class="btn p" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Windows-Installation.exe">⬇ Windows</a>
     <a class="btn" href="nova.html#telecharger">⬇ Mac</a>
     <a class="btn" href="nova.html#telecharger">⬇ Linux</a>
-    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.0/Clipia-Nova-Android.apk">⬇ Android</a>
+    <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.3.1/Clipia-Nova-Android.apk">⬇ Android</a>
     <a class="btn p" href="communaute/">💬 Clipia Communauté</a>
     <a class="btn" href="nova.html">Découvrir le site Clipia Nova →</a>
   </div>
@@ -811,5 +811,6 @@ P.map(function(q){var X=q[0]*cy+q[2]*sy,Z=-q[0]*sy+q[2]*cy,Y=q[1]*cx-Z*sx;Z=q[1]
 if(window.ClipiaFX)window.ClipiaFX.back(c,66,66,34,t*3,1,0);c.strokeStyle='rgba(52,211,153,.9)';c.lineWidth=2.2;c.beginPath();c.ellipse(66,66,56,16,-.5+Math.sin(t)*.15,0,7);c.stroke();if(window.ClipiaFX)window.ClipiaFX.front(c,66,66,34,t*3,1,0);
 c.font='800 34px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillStyle='#fff';c.shadowColor='#a78bfa';c.shadowBlur=10;c.fillText('C',66,68);c.shadowBlur=0;
 if(!red&&!window.MOB)requestAnimationFrame(f)}f()})();</script>
+<script>(function(){var v=document.getElementById("novaVid");if(!v||!window.IntersectionObserver)return;new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){v.play().catch(function(){})}else v.pause()})},{threshold:.55}).observe(v)})();</script>
 </body>
 </html>
