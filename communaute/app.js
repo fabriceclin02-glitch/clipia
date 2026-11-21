@@ -136,6 +136,7 @@ const tag = (pk) => '#' + pk.slice(-4);
 
 /* ---------- Application ---------- */
 function enterApp() {
+  if (new URLSearchParams(location.search).get('retour') === 'clips') { location.href = 'clips.html'; return; }
   profiles[PK] = ME;
   $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
   $('#meAv').textContent = ME.emoji; $('#meAv').style.background = ME.color;

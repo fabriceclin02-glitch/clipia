@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Clipia Clips — vidéos, musique, images et stories de la communauté</title>
+<meta name="description" content="Clipia Clips : le fil de la communauté Clipia. Partage tes vidéos, ta musique, tes images et tes stories. Sans publicité, sans revente de données.">
+<link rel="icon" href="icone.png">
+<link rel="manifest" href="manifest.json">
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#05060f;color:#eef0ff;font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+a{color:#9bb4ff}button{font:inherit;cursor:pointer}
+#haut{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:8px;padding:10px 12px;background:linear-gradient(#05060fee,#05060f00)}
+#haut b{font-size:18px;background:linear-gradient(90deg,#ffd27a,#ff9fd4,#9fb4ff);-webkit-background-clip:text;color:transparent}
+#haut .esp{flex:1}.pil{border:1px solid #ffffff33;background:#0c0f26cc;color:#fff;border-radius:99px;padding:6px 12px;text-decoration:none;font-weight:600;font-size:13px}
+.pil.on{background:#fff;color:#111}
+#stories{position:fixed;top:52px;left:0;right:0;z-index:19;display:flex;gap:10px;overflow-x:auto;padding:6px 12px}
+.story{flex:0 0 auto;width:62px;text-align:center;font-size:11px;color:#cfd6ff;background:none;border:0}
+.story i{display:block;width:58px;height:58px;border-radius:50%;margin:0 auto 3px;padding:3px;background:linear-gradient(135deg,#ffd27a,#ff6fb5,#7c5cff)}
+.story i span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:#0b0d22;font-size:24px;font-style:normal;overflow:hidden}
+.story i img{width:100%;height:100%;object-fit:cover}
+#fil{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory}
+.clip{position:relative;height:100%;scroll-snap-align:start;display:grid;place-items:center;background:#000;overflow:hidden}
+.clip video,.clip img.media{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
+.clip .fondaudio{display:grid;place-items:center;width:100%;height:100%;background:radial-gradient(circle at 50% 40%,#3a1f7a,#05060f 70%)}
+.clip .disque{width:200px;height:200px;border-radius:50%;background:conic-gradient(#ffd27a,#ff6fb5,#7c5cff,#2f8cff,#ffd27a);animation:tourne 6s linear infinite;display:grid;place-items:center;font-size:60px}
+@keyframes tourne{to{transform:rotate(360deg)}}
+.clip .lien{padding:30px;text-align:center}.clip .lien a{font-size:18px;word-break:break-all}
+.info{position:absolute;left:14px;right:80px;bottom:calc(22px + env(safe-area-inset-bottom));text-shadow:0 1px 6px #000}
+.info .aut{font-weight:800;font-size:16px}.info .txt{margin-top:4px;white-space:pre-wrap;max-height:30vh;overflow:auto}
+.actions{position:absolute;right:10px;bottom:calc(30px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;align-items:center}
+.actions button{background:#0008;border:0;color:#fff;width:52px;height:52px;border-radius:50%;font-size:24px;display:grid;place-items:center}
+.actions small{display:block;text-align:center;font-size:12px;margin-top:-10px}
+.son{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#000a;border:0;color:#fff;border-radius:99px;padding:10px 18px;font-weight:700}
+#vide{height:100%;display:grid;place-items:center;text-align:center;padding:30px;color:#b4b9de}
+#plus{position:fixed;z-index:21;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));width:62px;height:42px;border-radius:14px;border:0;background:linear-gradient(90deg,#2ff3e0,#fff,#ff2e63);color:#000;font-size:28px;font-weight:900;box-shadow:0 6px 20px #0008}
+.fen{position:fixed;inset:0;z-index:50;background:#000c;display:none;align-items:flex-end;justify-content:center}
+.fen.on{display:flex}
+.panneau{width:100%;max-width:520px;max-height:88vh;overflow:auto;background:#0e1130;border:1px solid #2a3070;border-radius:20px 20px 0 0;padding:18px}
+.panneau h3{margin:0 0 10px}.panneau label{display:block;margin:10px 0 4px;font-weight:600}
+.panneau input,.panneau textarea,.panneau select{width:100%;padding:10px;border-radius:10px;border:1px solid #2a3070;background:#070918;color:#fff;font:inherit}
+.btn{display:inline-block;padding:11px 18px;border-radius:12px;border:0;background:linear-gradient(135deg,#7c5cff,#2f8cff);color:#fff;font-weight:700;text-decoration:none}
+.btn.gris{background:#2a3070}.note{font-size:12.5px;color:#8d93bd}
+.com{border-bottom:1px solid #ffffff12;padding:8px 0}.com b{color:#ffd27a}
+#vueStory{position:fixed;inset:0;z-index:60;background:#000;display:none;place-items:center}
+#vueStory.on{display:grid}#vueStory .barre{position:absolute;top:10px;left:10px;right:10px;height:3px;background:#fff4;border-radius:3px}
+#vueStory .barre i{display:block;height:100%;width:0;background:#fff;border-radius:3px}
+#vueStory .qui{position:absolute;top:22px;left:14px;font-weight:800}
+#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#111a;border:1px solid #fff3;padding:8px 14px;border-radius:12px;z-index:70;display:none}
+</style>
+</head>
+<body>
+<div id="haut">
+  <b>Clipia Clips</b>
+  <button class="pil on" id="tPour">Pour toi</button>
+  <button class="pil" id="tMusique">🎵 Musique</button>
+  <span class="esp"></span>
+  <a class="pil" href="./">💬 Chat</a>
+  <a class="pil" href="../ecole-des-voyants.html">👁</a>
+</div>
+<div id="stories"></div>
+<div id="fil"><div id="vide">Chargement du fil de la communauté…</div></div>
+<button id="plus" aria-label="Publier">+</button>
+
+<div class="fen" id="fPub"><div class="panneau">
+  <h3>Publier dans Clipia Clips</h3>
+  <div id="pasCo" style="display:none"><p>Pour publier, connecte-toi d'abord avec ton compte Clipia Communauté (pseudo + mot de passe).</p><a class="btn" href="./?retour=clips">Me connecter</a></div>
+  <div id="formPub">
+    <label>Type</label>
+    <select id="pType"><option value="clip">Clip (reste dans le fil)</option><option value="story">Story (disparaît après 24 h)</option></select>
+    <label>Fichier : vidéo, musique ou image</label>
+    <input type="file" id="pFichier" accept="video/*,audio/*,image/*">
+    <label>…ou un lien (YouTube, TikTok, SoundCloud, fichier .mp4/.mp3/.jpg…)</label>
+    <input id="pLien" placeholder="https://…">
+    <label>Légende</label>
+    <textarea id="pTexte" rows="3" maxlength="600" placeholder="Raconte, ajoute des #hashtags"></textarea>
+    <p class="note">Ton fichier est envoyé sur un hébergement public gratuit du réseau Nostr : tout le monde pourra le voir. Pas de contenu illégal, violent ou haineux, rien qui ne t'appartienne pas.</p>
+    <p><button class="btn" id="pEnvoyer">Publier</button> <button class="btn gris" data-ferme>Annuler</button></p>
+    <p class="note" id="pEtat"></p>
+  </div>
+</div></div>
+
+<div class="fen" id="fCom"><div class="panneau">
+  <h3>Commentaires</h3>
+  <div id="listeCom"></div>
+  <p style="display:flex;gap:8px;margin-top:10px"><input id="cTexte" placeholder="Ton commentaire…" maxlength="400"><button class="btn" id="cEnvoyer">Envoyer</button></p>
+  <p><button class="btn gris" data-ferme>Fermer</button></p>
+</div></div>
+
+<div id="vueStory"><div class="barre"><i></i></div><div class="qui"></div><div id="storyMedia"></div></div>
+<div id="toast"></div>
+
+<script src="nostr-kit.js"></script>
+<script src="clips.js"></script>
+</body>
+</html>

@@ -45,6 +45,7 @@ window.NOVA_DATA = {
 
   store: [
     { id: 'communaute', cat: 'CLENDAX', ic: '💬', name: 'Clipia Communauté', by: 'CLENDAX', desc: 'Le chat en temps réel de la communauté : salons, messages privés chiffrés, un seul compte sur tous vos appareils.', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/', star: true },
+    { id: 'clips', cat: 'CLENDAX', ic: '🎬', name: 'Clipia Clips', by: 'CLENDAX', desc: 'Le fil façon TikTok de la communauté : vidéos, musique, images et stories. Même compte que Clipia Communauté.', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/clips.html', star: true },
     { id: 'clipia', cat: 'CLENDAX', ic: '🔮', name: 'Clipia', by: 'CLENDAX', desc: "L'IA personnelle façon Jarvis : conversation vocale, studio créatif, sphère 3D.", url: 'https://fabriceclin02-glitch.github.io/clipia/', star: true },
     { id: 'yt-fab', cat: 'CLENDAX', ic: '🎵', name: 'FABRICEclin Musique', by: 'CLENDAX', desc: 'Les morceaux CLENDAX sur YouTube.', url: 'https://www.youtube.com/@FABRICEclin', star: true },
     { id: 'tt-clx', cat: 'CLENDAX', ic: '🎬', name: 'CLENDAX TikTok', by: 'CLENDAX', desc: 'Les extraits et coulisses sur TikTok.', url: 'https://www.tiktok.com/@clendax08160', star: true },
@@ -144,6 +145,7 @@ window.NOVA_DATA = {
 
   socials: [
     { id: 'communaute', name: 'Clipia Communauté', ic: '💬', color: 'linear-gradient(135deg,#3b82f6,#8b5cf6 55%,#d946ef)', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/', star: true, desktop: true },
+    { id: 'clips', name: 'Clipia Clips', ic: '🎬', color: 'linear-gradient(135deg,#2ff3e0,#7c5cff 55%,#ff2e63)', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/clips.html', star: true, desktop: true },
     { id: 'facebook',  name: 'Facebook',  ic: 'f',  color: '#1877F2', url: 'https://m.facebook.com/', star: true },
     { id: 'instagram', name: 'Instagram', ic: '◎', color: 'linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)', url: 'https://www.instagram.com/', star: true },
     { id: 'tiktok',    name: 'TikTok',    ic: '♪', color: 'linear-gradient(135deg,#25F4EE,#000 45%,#FE2C55)', url: 'https://www.tiktok.com/', star: true },

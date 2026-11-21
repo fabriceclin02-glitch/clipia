@@ -18,9 +18,9 @@ DIT={'IA':'I.A.','1 mois':'un mois','2 mois':'deux mois','2 ans':'deux ans','10 
 def oral(t):
     for a,b in DIT.items(): t=re.sub(r'\b'+re.escape(a)+r'\b',b,t)
     return t
-v=PiperVoice.load('/home/claude/voix/fr-gilles-low.onnx')
+v=PiperVoice.load('/home/claude/voix/fr-siwis-medium.onnx')
 from piper import SynthesisConfig
-cfg=SynthesisConfig(length_scale=1.08)
+cfg=SynthesisConfig(length_scale=1.02)
 sr=v.config.sample_rate; out=[]; t=0.8; res=[]
 out.append(np.zeros(int(0.8*sr),dtype=np.int16))
 prev=0
