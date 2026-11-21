@@ -2,6 +2,11 @@ package com.clendax.clipianova;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.os.Build;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -416,6 +421,30 @@ public class MainActivity extends Activity {
             return true;
         }
         @JavascriptInterface public void stopSpeak() { if (trusted() && tts != null) tts.stop(); }
+        /** Version installée (ex. 2.9.0), pour comparer avec la dernière version publiée sur GitHub. */
+        @JavascriptInterface public String version() {
+            try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionName; } catch (Exception e) { return "0"; }
+        }
+        /** Notification système « nouvelle version » : un appui ouvre le téléchargement de l'APK. */
+        @JavascriptInterface public void notifyUpdate(String title, String text, String link) {
+            if (!trusted() || link == null || !link.startsWith("https://github.com/fabriceclin02-glitch/clipia/")) return;
+            ui.post(() -> {
+                try {
+                    if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{ "android.permission.POST_NOTIFICATIONS" }, 43);
+                    }
+                    NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    Notification.Builder b;
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        nm.createNotificationChannel(new NotificationChannel("maj", "Mises à jour de Clipia Nova", NotificationManager.IMPORTANCE_DEFAULT));
+                        b = new Notification.Builder(MainActivity.this, "maj");
+                    } else b = new Notification.Builder(MainActivity.this);
+                    PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 7, new Intent(Intent.ACTION_VIEW, Uri.parse(link)), PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    b.setSmallIcon(getApplicationInfo().icon).setContentTitle(title).setContentText(text).setContentIntent(pi).setAutoCancel(true);
+                    nm.notify(7, b.build());
+                } catch (Exception ignored) {}
+            });
+        }
         @JavascriptInterface public void tor(String u) { if (trusted()) ui.post(() -> openTor(u)); }
         @JavascriptInterface public void open(String u) { if (trusted()) ui.post(() -> go(u)); }
         @JavascriptInterface public void openOutside(String u) {

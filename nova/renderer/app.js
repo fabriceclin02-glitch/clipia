@@ -495,6 +495,7 @@ function pageHome(el) {
       <div class="tile" data-store="1"><div class="ic">＋</div><small>Ajouter</small></div></div>
     <div class="vidcard" data-url="https://fabriceclin02-glitch.github.io/clipia/ecole-des-voyants.html#film" title="Regarder le film"><img src="https://fabriceclin02-glitch.github.io/clipia/img/poster-voyants.jpg" alt=""><div class="play">▶</div><b>🚀 Clipia Nova, le navigateur qui fait avancer les choses · Le film « L'École des Voyants »</b></div>
     <div class="vidcard" data-url="https://fabriceclin02-glitch.github.io/clipia/nova.html" title="Voir la présentation"><img src="https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg" alt=""><div class="play">▶</div><b>Découvrir Clipia Nova en 1 minute</b></div>
+    <div class="vitrine"></div>
     <h3 class="sec">🧰 Boîte à outils indispensable <span class="tag">NOUVEAU</span></h3>
     <div class="toolbox">${D.toolbox.map(([t, ids]) => `<div class="tb"><h4>${t}</h4><div class="tbr">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button class="tbt" data-url="${esc(x.url)}" title="${esc(x.name)} — ${esc(x.desc)}"><span>${x.ic}</span><small>${esc(x.name)}</small></button>`).join('')}<button class="tbt more" data-cat="${esc(t.split(' ').slice(1).join(' ').split(' &')[0])}"><span>＋</span><small>Tout voir</small></button></div></div>`).join('')}</div>
     ${cfg.favorites.length ? `<h3 class="sec">Favoris</h3><div class="hist">${cfg.favorites.slice(0, 8).map(x => `<button data-url="${esc(x.url)}">★ ${esc(x.title)}</button>`).join('')}</div>` : ''}
@@ -511,6 +512,7 @@ function pageHome(el) {
   $$('[data-url]', el).forEach(x => x.onclick = e => { if (e.target.dataset.rm) return; navigate(x.dataset.url); });
   $$('[data-cat]', el).forEach(b => b.onclick = e => { e.stopPropagation(); const m = { 'Réseaux': 'Réseaux', 'Création': 'Création', 'Vidéo': 'Vidéo', 'Musique': 'Musique', 'Hébergement': 'Hébergement', 'Business': 'Business' }; storeCat = m[b.dataset.cat] || 'Tout'; newTab('store'); });
   $$('[data-rm]', el).forEach(x => x.onclick = () => { cfg.installed = cfg.installed.filter(i => i !== x.dataset.rm); save(); pageHome(el); });
+  drawVitrine(el);
   $('[data-store]', el).onclick = () => openInternal('store');
 }
 
@@ -779,6 +781,23 @@ async function pageSearch(el, t) {
 }
 
 /* =========================================================
+   VITRINE : produits gagnants + vidéos qui cartonnent (mis à jour en ligne, sans nouvelle version)
+   ========================================================= */
+async function drawVitrine(el, force) {
+  const box = $('.vitrine', el); if (!box) return;
+  let v; try { v = await window.nova.vitrine(force); } catch { return; }
+  if (!box.isConnected) return;
+  const plat = { youtube: '▶ YouTube', tiktok: '♪ TikTok', clipia: '✦ Clipia' };
+  const vues = n => n >= 1e6 ? (n / 1e6).toFixed(1).replace('.', ',') + ' M de vues' : n >= 1e3 ? Math.round(n / 1e3) + ' k vues' : '';
+  box.innerHTML = (v.videos.length ? `<h3 class="sec">🔥 Les vidéos qui cartonnent <span class="tag">EN AVANT-PREMIÈRE</span></h3>
+    <div class="vt-row">${v.videos.map(x => `<button class="vt vid" data-vurl="${esc(x.url)}" title="${esc(x.titre)}"><div class="im">${x.image ? `<img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''}<span class="pl ${esc(x.plateforme)}">${plat[x.plateforme] || '▶'}</span></div><b>${esc(x.titre)}</b><small>${esc(x.auteur)}${x.vues ? ' · ' + vues(x.vues) : ''}</small></button>`).join('')}</div>` : '')
+    + (v.produits.length ? `<h3 class="sec">🛍 Produits gagnants du moment</h3>
+    <div class="vt-row">${v.produits.map(x => `<button class="vt prod" data-vurl="${esc(x.url)}" title="${esc(x.titre)}"><div class="im">${x.image ? `<img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''}${x.badge ? `<span class="bd">${esc(x.badge)}</span>` : ''}</div><b>${esc(x.titre)}</b>${x.prix ? `<i class="px">${esc(x.prix)}</i>` : ''}</button>`).join('')}</div>
+    <p class="vt-note">Vitrine sélectionnée par CLENDAX · aucun pistage publicitaire</p>` : '');
+  $$('[data-vurl]', box).forEach(b => b.onclick = () => navigate(b.dataset.vurl));
+}
+
+/* =========================================================
    MISE À JOUR AUTOMATIQUE
    ========================================================= */
 const upd = { info: null, busy: false, msg: '', pct: 0 };
@@ -801,7 +820,7 @@ async function pageUpdate(el) {
   else state = '<p style="color:#34d399">✓ Vous avez la dernière version.</p>';
   el.innerHTML = `<div class="page"><h1>🔄 Mise à jour</h1><div class="card"><p>Version installée : <b>${esc(cur)}</b></p>${state}
     <div class="row" style="margin-top:.8rem;gap:.6rem;flex-wrap:wrap"><button class="btn2" id="updChk">Rechercher une mise à jour</button>
-    <label class="chk"><input type="checkbox" id="updAuto" ${cfg.autoUpdate === false ? '' : 'checked'}> Vérifier automatiquement (au démarrage, puis toutes les 6 h)</label></div></div></div>`;
+    <label class="chk"><input type="checkbox" id="updAuto" ${cfg.autoUpdate === false ? '' : 'checked'}> Vérifier automatiquement (au démarrage, puis toutes les heures — notification dès qu'une version sort)</label></div></div></div>`;
   $('#updChk', el).onclick = async () => { $('#updChk', el).textContent = 'Recherche…'; await autoUpdate(true); };
   $('#updAuto', el).onchange = (e) => { cfg.autoUpdate = e.target.checked; save(); };
   const go = $('#updGo', el);
@@ -880,7 +899,9 @@ function initTools() {
   $('#btnShot').onclick = screenshot;
   $('#btnFix').onclick = () => openInternal('repair');
   $('#btnUpd').onclick = () => openInternal('update');
-  setTimeout(() => autoUpdate(), 15000); setInterval(() => autoUpdate(), 6 * 3600 * 1000);
+  setTimeout(() => autoUpdate(), 15000); setInterval(() => autoUpdate(), 3600 * 1000);
+  window.nova.onUpdateOpen(() => openInternal('update'));
+  setInterval(() => tabs.filter(t => t.kind === 'home' && t.id === active).forEach(t => drawVitrine(t.el, true)), 30 * 60 * 1000);
   document.addEventListener('click', e => { if (!e.target.closest('#shareMenu')) $('#shareMenu').classList.add('hidden'); });
   let fs = 1.15;
   $('#rdBigger').onclick = () => { fs = Math.min(1.8, fs + .1); $('#rdBody').style.fontSize = fs + 'rem'; };

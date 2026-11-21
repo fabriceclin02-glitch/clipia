@@ -1,0 +1,26 @@
+name: Vitrine Clipia Nova (produits et vidéos du moment)
+# Toutes les 3 heures : récupère les vidéos YouTube les plus regardées en France et complète les vidéos TikTok,
+# puis met à jour vitrine.json. Clipia Nova lit ce fichier directement : pas besoin de nouvelle version.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: vitrine
+  cancel-in-progress: false
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { sparse-checkout: "vitrine.json\noutils", sparse-checkout-cone-mode: false }
+      - run: python3 outils/vitrine_maj.py
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      - name: Enregistrer
+        run: |
+          if git diff --quiet -- vitrine.json; then echo "Rien à enregistrer"; exit 0; fi
+          git config user.name "Clipia Vitrine"; git config user.email "actions@users.noreply.github.com"
+          git add vitrine.json && git commit -m "Vitrine : mise à jour automatique" && git pull --rebase && git push

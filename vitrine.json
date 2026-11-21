@@ -1,0 +1,18 @@
+{
+  "maj": "2026-11-22T00:00:00Z",
+  "aide": "Vitrine de Clipia Nova (page d'accueil du navigateur). Modifiez 'produits' et 'videos' ici : les navigateurs se mettent à jour seuls, sans nouvelle version. 'videos_auto' est rempli par le robot (YouTube tendances France) toutes les 3 heures. Pour une vidéo TikTok, mettez seulement 'plateforme':'tiktok' et 'url' : le robot ajoute l'image.",
+  "produits": [
+    { "titre": "Clipia X10 — votre IA personnelle", "prix": "Gratuit", "badge": "N°1", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-x10-presentation.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/" },
+    { "titre": "Clipia Nova — navigateur nouvelle génération", "prix": "Gratuit", "badge": "NOUVEAU", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/nova.html" },
+    { "titre": "Kodi Clipia V1 — films et musique à la voix", "prix": "Gratuit", "badge": "TENDANCE", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-kodi-v1.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/" },
+    { "titre": "Guide PDF Clipia (Etsy)", "prix": "9,90 €", "badge": "BEST-SELLER", "image": "https://fabriceclin02-glitch.github.io/clipia/img/og.jpg", "url": "https://www.etsy.com/shop/numeriquedeal" },
+    { "titre": "Option développeur Clipia", "prix": "9,90 €/mois", "badge": "PRO", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-code-demo.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/developpeur.html" }
+  ],
+  "videos": [
+    { "titre": "Clipia Nova en 1 minute", "plateforme": "clipia", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-nova.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/nova.html", "auteur": "CLENDAX" },
+    { "titre": "L'École des Voyants — le film", "plateforme": "clipia", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-voyants.jpg", "url": "https://fabriceclin02-glitch.github.io/clipia/ecole-des-voyants.html#film", "auteur": "CLENDAX" },
+    { "titre": "La chaîne YouTube FABRICEclin", "plateforme": "youtube", "image": "https://fabriceclin02-glitch.github.io/clipia/img/poster-x10-presentation.jpg", "url": "https://www.youtube.com/@FABRICEclin", "auteur": "@FABRICEclin" },
+    { "titre": "CLENDAX sur TikTok", "plateforme": "tiktok", "image": "https://fabriceclin02-glitch.github.io/clipia/img/orbe.jpg", "url": "https://www.tiktok.com/@clendax08160", "auteur": "@clendax08160" }
+  ],
+  "videos_auto": []
+}

@@ -5,6 +5,7 @@ La liste à jour (avec les sommes de contrôle SHA-256) est dans [`liens.json`](
 
 | Version | Contenu principal | Fichiers |
 |---|---|---|
+| Nova 2.9.0 | Navigateur Clipia Nova : notification de mise à jour (Windows, Mac, Linux, Android) dès qu'une version sort sur GitHub, vitrine d'accueil « vidéos qui cartonnent » (YouTube/TikTok) et « produits gagnants » mise à jour en ligne via `vitrine.json` | Release `nova-v2.9.0` |
 | 10.3.0 | Nouveaux modèles (Claude 5.5, GPT-6, Gemini 4 / 3.8, GLM-5.3, Kimi K3, DeepSeek V4, Qwen 3.6, Grok 4.6, GPT-OSS sur Groq), modèles retirés remplacés, audit (voir AUDIT.md) | `telechargements/` |
 | Nova 2.6.0 | Navigateur Clipia Nova : mêmes nouveaux modèles, moteur Kimi K3 | Release `nova-v2.6.0` |
 | APK 8.11.0 | Appli téléphone : Groq GPT-OSS 120B par défaut, Gemini Flash à jour, GLM-5.3 | `telechargements/` |

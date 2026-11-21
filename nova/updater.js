@@ -1,7 +1,7 @@
 // Mise à jour de Clipia Nova : vérifie la dernière version publiée sur GitHub, la télécharge,
 // contrôle son empreinte SHA-256 puis l'installe (Windows : silencieux + relance ; Linux AppImage : remplacement ;
 // Mac / .deb / version portable : le fichier est téléchargé et ouvert). Rien n'est installé sans le clic de l'utilisateur.
-const { app, shell, net } = require('electron');
+const { app, shell, net, Notification, BrowserWindow } = require('electron');
 const fs = require('fs'), path = require('path'), crypto = require('crypto'), { spawn } = require('child_process');
 
 const REPO = 'fabriceclin02-glitch/clipia';
@@ -76,9 +76,20 @@ function apply(file, info) {
   return { ok: true, mode: 'manual', msg: 'Fichier téléchargé et vérifié : ouvrez-le pour terminer l\'installation.' };
 }
 
+// Notification système (Windows, Mac, Linux) : une seule fois par nouvelle version, même si la fenêtre est réduite.
+let notified = '';
+function notify(r, send) {
+  if (!r.available || notified === r.latest || !Notification.isSupported()) return;
+  notified = r.latest;
+  const n = new Notification({ title: 'Clipia Nova ' + r.latest + ' est disponible', body: 'Cliquez pour mettre à jour votre navigateur (vous avez la version ' + r.current + ').' });
+  n.on('click', () => { const w = BrowserWindow.getAllWindows()[0]; if (w) { if (w.isMinimized()) w.restore(); w.show(); w.focus(); } send('update:open', r.latest); });
+  n.show();
+}
+
 function init(ipcMain, send) {
   let info = null;
-  ipcMain.handle('update:check', async () => { const r = await check(); info = r.available ? r : null; return r; });
+  if (process.platform === 'win32') app.setAppUserModelId('com.clendax.clipianova');
+  ipcMain.handle('update:check', async () => { const r = await check(); info = r.available ? r : null; notify(r, send); return r; });
   ipcMain.handle('update:install', async () => {
     if (!info) return { ok: false, error: 'Aucune mise à jour à installer.' };
     const d = await download(info, send); if (!d.ok) return d;

@@ -169,6 +169,7 @@ function renderHome() {
     <button id="askAi" style="color:#c4b5fd;margin-top:.8rem;font-size:.9rem">✦ ou demander à Clipia</button><br>
     <span class="badge">🛡 Bouclier actif · ${A ? A.blocked() : 0} traqueur(s) bloqué(s)</span></div>
     ${D.toolbox ? `<h3 class="sec">🧰 Boîte à outils indispensable</h3>` + D.toolbox.map(([t, ids]) => `<h4 style="margin:.9rem 0 .4rem;font-size:.95rem">${t}</h4><div class="soc">${ids.map(id => D.store.find(x => x.id === id)).filter(Boolean).map(x => `<button data-url="${x.url}" title="${x.name}"><span style="background:#1f1b52">${x.ic}</span><small>${x.name}</small></button>`).join('')}</div>`).join('') : ''}
+    <div id="updBanner"></div><div id="vitrine"></div>
     <h3 class="sec">Réseaux</h3><div class="soc">${D.socials.map(x => `<button data-url="${x.url}" title="${x.name}"><span style="background:${x.color}">${x.ic}</span><small>${x.name.replace('Clipia ', '')}</small></button>`).join('')}</div>
     ${cfg.mails.length ? `<h3 class="sec">Mes mails</h3><div class="tiles">${cfg.mails.map(id => D.mails.find(m => m.id === id)).map(m => `<div class="tile" data-url="${m.url}"><div class="ic">${m.ic}</div><small>${m.name}</small></div>`).join('')}</div>` : ''}
     <h3 class="sec">Mes applications</h3><div class="tiles">${apps.map(a => `<div class="tile" data-url="${esc(a.url)}"><div class="ic">${a.ic}</div><small>${esc(a.name)}</small></div>`).join('')}<div class="tile" id="addApp"><div class="ic">＋</div><small>Ajouter</small></div></div>
@@ -178,6 +179,7 @@ function renderHome() {
   $('#askAi').onclick = () => { const q = $('#sf input').value.trim(); show('ai'); if (q) send(q); };
   $('#addApp').onclick = () => show('store');
   document.querySelectorAll('#v-home [data-url]').forEach(t => t.onclick = () => open(t.dataset.url));
+  drawVitrine(); drawUpdate();
 }
 
 let cat = 'Tout';
@@ -297,3 +299,48 @@ async function send(text, shown, fromVoice) {
   convo.push({ role: 'assistant', content: r.text }); bubble('a', r.text);
   if (cfg.voice || fromVoice) say(r.text); else orbState('idle', 'Touchez la sphère ou 🎤 pour parler');
 }
+
+/* ---------- Vitrine : vidéos qui cartonnent + produits gagnants (mis à jour en ligne) ---------- */
+const VITRINE_URL = 'https://raw.githubusercontent.com/fabriceclin02-glitch/clipia/main/vitrine.json';
+const okUrl = u => typeof u === 'string' && /^https:\/\/[^\s"'<>]+$/.test(u);
+let vit = store.get('vitrine', null), vitT = 0;
+async function loadVitrine() {
+  if (Date.now() - vitT < 20 * 60 * 1000 && vit) return vit;
+  const r = await http('GET', VITRINE_URL + '?t=' + Math.floor(Date.now() / 600000), { Accept: 'application/json' });
+  try { if (r.status === 200) { const d = JSON.parse(r.body); vit = { produits: d.produits || [], videos: [...(d.videos || []), ...(d.videos_auto || [])] }; vitT = Date.now(); store.set('vitrine', vit); } } catch {}
+  return vit || { produits: [], videos: [] };
+}
+async function drawVitrine() {
+  const v = await loadVitrine(), box = $('#vitrine'); if (!box) return;
+  const ok = x => x && x.titre && okUrl(x.url) && (!x.image || okUrl(x.image));
+  const plat = { youtube: '▶ YouTube', tiktok: '♪ TikTok', clipia: '✦ Clipia' };
+  const vids = v.videos.filter(ok).slice(0, 30), prods = v.produits.filter(ok).slice(0, 24);
+  const card = (x, prod) => `<button class="vt ${prod ? 'prod' : ''}" data-url="${esc(x.url)}"><div class="im">${x.image ? `<img src="${esc(x.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ''}${prod ? (x.badge ? `<span class="bd">${esc(x.badge)}</span>` : '') : `<span class="pl ${esc(x.plateforme)}">${plat[x.plateforme] || '▶'}</span>`}</div><b>${esc(x.titre)}</b>${prod ? (x.prix ? `<i class="px">${esc(x.prix)}</i>` : '') : `<small>${esc(x.auteur || '')}</small>`}</button>`;
+  box.innerHTML = (vids.length ? `<h3 class="sec">🔥 Vidéos qui cartonnent</h3><div class="vt-row">${vids.map(x => card(x)).join('')}</div>` : '')
+    + (prods.length ? `<h3 class="sec">🛍 Produits gagnants</h3><div class="vt-row">${prods.map(x => card(x, 1)).join('')}</div><p class="vt-note">Vitrine CLENDAX · aucun pistage publicitaire</p>` : '');
+  box.querySelectorAll('[data-url]').forEach(t => t.onclick = () => open(t.dataset.url));
+}
+
+/* ---------- Mise à jour : vérifie GitHub au démarrage puis toutes les heures ---------- */
+const APK = 'https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v{V}/Clipia-Nova-Android.apk';
+const verN = s => String(s).replace(/^nova-v|^v/, '').split('.').map(n => parseInt(n, 10) || 0);
+const newer = (a, b) => { const x = verN(a), y = verN(b); for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0); return false; };
+let updInfo = null;
+async function checkUpdate() {
+  if (!A) return;
+  const r = await http('GET', 'https://api.github.com/repos/fabriceclin02-glitch/clipia/releases?per_page=20', { Accept: 'application/vnd.github+json', 'User-Agent': 'Clipia-Nova-Android' });
+  let rel; try { rel = JSON.parse(r.body).filter(x => /^nova-v\d/.test(x.tag_name) && !x.draft && !x.prerelease && x.assets.some(a => a.name === 'Clipia-Nova-Android.apk')).sort((a, b) => newer(a.tag_name, b.tag_name) ? -1 : 1)[0]; } catch { return; }
+  if (!rel) return;
+  const v = rel.tag_name.replace('nova-v', ''), cur = A.version();
+  if (!newer(v, cur)) { updInfo = null; drawUpdate(); return; }
+  updInfo = { v, cur, url: APK.replace('{V}', v) };
+  drawUpdate();
+  if (store.get('updNotified', '') !== v) { store.set('updNotified', v); A.notifyUpdate('Clipia Nova ' + v + ' est disponible', 'Touchez pour mettre à jour (version actuelle : ' + cur + ').', updInfo.url); }
+}
+function drawUpdate() {
+  const b = $('#updBanner'); if (!b) return;
+  b.innerHTML = updInfo ? `<button class="upd-banner">🔄 Clipia Nova ${esc(updInfo.v)} est disponible — touchez pour mettre à jour</button>` : '';
+  const btn = b.querySelector('button'); if (btn) btn.onclick = () => { A.openOutside(updInfo.url); toast('Téléchargement lancé : ouvrez le fichier pour installer'); };
+}
+setTimeout(checkUpdate, 8000); setInterval(checkUpdate, 3600 * 1000);
+setInterval(() => { if (view === 'home') drawVitrine(); }, 30 * 60 * 1000);

@@ -363,6 +363,24 @@ ipcMain.handle('tor:start', () => startTor());
 ipcMain.handle('tor:stop', () => { stopTor(); return tor; });
 ipcMain.handle('tor:status', () => tor);
 
+// Vitrine de la page d'accueil (produits du moment + vidéos qui cartonnent) : un simple fichier JSON public,
+// mis à jour sur GitHub sans nouvelle version du navigateur. Gardé en cache pour fonctionner hors connexion.
+const VITRINE_URL = process.env.NOVA_VITRINE_URL || 'https://raw.githubusercontent.com/fabriceclin02-glitch/clipia/main/vitrine.json';
+let vitrine = { t: 0, data: null };
+const okUrl = (u) => typeof u === 'string' && /^https:\/\/[^\s"'<>]+$/.test(u);
+function cleanVitrine(d) {
+  const it = (x) => x && okUrl(x.url) && (!x.image || okUrl(x.image)) && x.titre;
+  const pick = (x) => ({ titre: String(x.titre).slice(0, 140), prix: String(x.prix || '').slice(0, 30), badge: String(x.badge || '').slice(0, 20), image: x.image || '', url: x.url, plateforme: String(x.plateforme || ''), auteur: String(x.auteur || '').slice(0, 60), vues: Number(x.vues) || 0 });
+  return { maj: String(d.maj || ''), produits: (d.produits || []).filter(it).slice(0, 24).map(pick), videos: [...(d.videos || []), ...(d.videos_auto || [])].filter(it).slice(0, 30).map(pick) };
+}
+ipcMain.handle('vitrine:get', async (_e, force) => {
+  const cache = path.join(app.getPath('userData'), 'vitrine.json');
+  if (!force && vitrine.data && Date.now() - vitrine.t < 20 * 60 * 1000) return vitrine.data;
+  try { vitrine = { t: Date.now(), data: cleanVitrine(await getJson(VITRINE_URL + '?t=' + Math.floor(Date.now() / 600000))) }; fs.writeFileSync(cache, JSON.stringify(vitrine.data)); }
+  catch { if (!vitrine.data) { try { vitrine.data = JSON.parse(fs.readFileSync(cache, 'utf8')); } catch { vitrine.data = { produits: [], videos: [] }; } } }
+  return vitrine.data;
+});
+
 require('./updater').init(ipcMain, (ch, v) => { if (win && !win.isDestroyed()) win.webContents.send(ch, v); });
 app.whenReady().then(() => {
   torSession = session.fromPartition('tor-nova');           // en mémoire uniquement : rien n'est écrit sur le disque
