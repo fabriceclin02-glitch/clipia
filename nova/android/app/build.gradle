@@ -18,8 +18,8 @@ android {
         applicationId "com.clendax.clipianova"
         minSdk 24
         targetSdk 34
-        versionCode 20700
-        versionName "2.7.0"
+        versionCode 20800
+        versionName "2.8.0"
     }
 
     if (signatureFournie) {

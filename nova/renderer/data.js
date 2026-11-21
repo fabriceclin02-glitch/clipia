@@ -47,6 +47,7 @@ window.NOVA_DATA = {
   store: [
     { id: 'communaute', cat: 'CLENDAX', ic: '💬', name: 'Clipia Communauté', by: 'CLENDAX', desc: 'Le chat en temps réel de la communauté : salons, messages privés chiffrés, un seul compte sur tous vos appareils.', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/', star: true },
     { id: 'clips', cat: 'CLENDAX', ic: '🎬', name: 'Clipia Clips', by: 'CLENDAX', desc: 'Le fil façon TikTok de la communauté : vidéos, musique, images et stories. Même compte que Clipia Communauté.', url: 'https://fabriceclin02-glitch.github.io/clipia/communaute/clips.html', star: true },
+    { id: 'studio', cat: 'CLENDAX', ic: '🎬', name: 'Clipia Studio', by: 'CLENDAX', desc: 'Montage vidéo, musique composée hors ligne et images, avec rendu dans Clipia. Nécessite Clipia X10 installée sur cet ordinateur.', url: 'http://127.0.0.1:8787/', star: true },
     { id: 'clipia', cat: 'CLENDAX', ic: '🔮', name: 'Clipia', by: 'CLENDAX', desc: "L'IA personnelle façon Jarvis : conversation vocale, studio créatif, sphère 3D.", url: 'https://fabriceclin02-glitch.github.io/clipia/', star: true },
     { id: 'yt-fab', cat: 'CLENDAX', ic: '🎵', name: 'FABRICEclin Musique', by: 'CLENDAX', desc: 'Les morceaux CLENDAX sur YouTube.', url: 'https://www.youtube.com/@FABRICEclin', star: true },
     { id: 'tt-clx', cat: 'CLENDAX', ic: '🎬', name: 'CLENDAX TikTok', by: 'CLENDAX', desc: 'Les extraits et coulisses sur TikTok.', url: 'https://www.tiktok.com/@clendax08160', star: true },

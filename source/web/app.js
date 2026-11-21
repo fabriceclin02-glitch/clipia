@@ -1781,7 +1781,7 @@ VUES.clipia = async (v) => {
       <div class="jointes" id="jointes" hidden></div>
       <textarea id="saisie" rows="1" placeholder="Écrivez, déposez un fichier, ou parlez…"></textarea>
       <div class="outils-bas">
-        <button class="ic-btn" id="bFichier" title="Joindre un fichier">📎</button>
+        <button class="ic-btn" id="bFichier" title="Ajouter un fichier : vidéo, musique, image, PDF, JPEG — pour le transformer" style="font-size:22px;font-weight:800;color:#fff;background:linear-gradient(135deg,#7c5cff,#2f8cff)">＋</button>
         <button class="ic-btn" id="bImage"   title="Joindre une image">🖼</button>
         <button class="ic-btn" id="bAudio"   title="Joindre un audio">♪</button>
         <button class="ic-btn" id="bMicro"   title="Dicter">🎙</button>
@@ -1812,7 +1812,7 @@ VUES.clipia = async (v) => {
       <div class="barres idle" id="barres">${'<i></i>'.repeat(17)}</div>
       <div class="legende" id="legende">Je vous écoute…</div>
     </div>
-    <input type="file" id="fIn" hidden multiple>
+    <input type="file" id="fIn" hidden multiple accept="video/*,audio/*,image/*,.pdf,.jpg,.jpeg,.png,.txt,.md,.json,.csv">
   </div>
 
   </div>`));

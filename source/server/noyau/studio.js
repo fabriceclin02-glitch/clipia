@@ -1,3 +1,4 @@
+import { composer } from './compositeur.js';
 /** CLIPIA X7 — Studio montage : prompt → plan de scènes → images / musique → timeline → export MP4 (ffmpeg), façon CapCut / Canva.
  *  Marche même sans service d'images : une carte colorée de secours remplace l'image, et le dit. */
 import fs from 'node:fs';
@@ -86,11 +87,10 @@ export async function imageScene({ description, couleur, format = '16:9' }, cree
   }
 }
 
-export async function musiqueSecours(duree = 30) {
-  fs.mkdirSync(MEDIA_DIR, { recursive: true }); const f = `studio-${id()}.wav`; const d = Math.max(5, Math.min(300, +duree || 30));
-  const expr = '0.10*sin(2*PI*220*t)+0.08*sin(2*PI*277.18*t)+0.08*sin(2*PI*329.63*t)+0.05*sin(2*PI*440*t)*(0.5+0.5*sin(2*PI*0.25*t))';
-  await ff(['-f', 'lavfi', '-i', `aevalsrc='${expr}':s=44100:d=${d}`, '-af', `afade=t=in:d=2,afade=t=out:st=${Math.max(0, d - 3)}:d=3`, path.join(MEDIA_DIR, f)], 90000);
-  return { fichier: f, url: '/media/' + f, secours: true };
+export async function musiqueSecours(duree = 30, description = '') {
+  // Compositeur embarqué : vraie musique originale, hors ligne, sans clé ni installation.
+  const r = composer({ description, duree, dossier: MEDIA_DIR });
+  return { fichier: r.fichier, url: '/media/' + r.fichier, secours: true, style: r.style, embarque: true };
 }
 
 /* ── 3. L'export ── */
