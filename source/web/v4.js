@@ -26,12 +26,12 @@ export function installerV4({ $, el, esc, api, API, VUES, route, toast, MENU }) 
   profilCharge();
 
 
-  /* ═════════ GLM-5.2 (Z.ai) : page dédiée, configuration de la clé API ═════════ */
+  /* ═════════ GLM-5.3 (Z.ai) : page dédiée, configuration de la clé API ═════════ */
   VUES.glm = async (v) => {
     const e = await api('/api/v4/etat').catch(() => ({ etapes: [] }));
     const fait = !!(e.etapes.find(x => x.id === 'glm') || {}).fait;
-    v.append(el(`<h1>🧠 GLM-5.2 de Z.ai</h1><p class="sous">Le modèle ouvert de 753 milliards de paramètres, très bon en code et en tâches longues. Il tourne chez Z.ai avec <b>ta</b> clé API (facultatif, payant à l'usage).</p>
-      <div class="carte"><div class="rang" style="justify-content:space-between"><b>État</b><span class="etiq ${fait ? 'ok' : 'neutre'}">${fait ? '✓ clé enregistrée : GLM-5.2 est actif' : 'pas encore configuré'}</span></div>
+    v.append(el(`<h1>🧠 GLM-5.3 de Z.ai</h1><p class="sous">Le modèle ouvert de 753 milliards de paramètres, très bon en code et en tâches longues. Il tourne chez Z.ai avec <b>ta</b> clé API (facultatif, payant à l'usage).</p>
+      <div class="carte"><div class="rang" style="justify-content:space-between"><b>État</b><span class="etiq ${fait ? 'ok' : 'neutre'}">${fait ? '✓ clé enregistrée : GLM-5.3 est actif' : 'pas encore configuré'}</span></div>
         <ol class="v4-ol" style="margin-top:10px"><li>Va sur <a href="https://z.ai/manage-apikey/apikey-list" target="_blank" rel="noopener">z.ai/manage-apikey</a>, crée un compte et ajoute un petit crédit.</li>
         <li>Crée une clé API et copie-la.</li><li>Colle-la ci-dessous, puis clique <b>Tester et activer</b> : la clé est testée avant d'être gardée sur ton ordinateur, jamais dans une conversation.</li></ol>
         <div class="rang"><input type="password" id="glm-cle" placeholder="clé Z.ai…" autocomplete="off" style="flex:1;min-width:220px"><button class="btn or" id="glm-test">Tester et activer</button></div>
@@ -66,7 +66,7 @@ export function installerV4({ $, el, esc, api, API, VUES, route, toast, MENU }) 
         <ol class="v4-ol"><li>Va sur <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com/settings/keys</a>.</li>
         <li>Crée un compte, ajoute un petit crédit, puis <b>Create Key</b> (elle commence par <code>sk-ant-</code>).</li><li>Colle-la ici.</li></ol>${cle('anthropic', 'sk-ant-…')}`,
         voix: 'Claude est facultatif. Si tu as une clé, colle-la ici, sinon passe cette étape.' },
-      glm: { c: 'GLM-5.2 de Z.ai : très bon en code et en tâches longues. Facultatif, payant à l\'usage.', corps: `
+      glm: { c: 'GLM-5.3 de Z.ai : très bon en code et en tâches longues. Facultatif, payant à l\'usage.', corps: `
         <p class="v4-p">Modèle ouvert de 753 milliards de paramètres : il tourne chez Z.ai (trop gros pour un ordinateur personnel), avec <b>ta</b> clé.</p>
         <ol class="v4-ol"><li>Va sur <a href="https://z.ai/manage-apikey/apikey-list" target="_blank" rel="noopener">z.ai/manage-apikey</a>, crée un compte, ajoute un petit crédit.</li>
         <li>Crée une clé API, copie-la.</li><li>Colle-la ici, dans Clipia (jamais dans une conversation).</li></ol>${cle('zai', 'clé Z.ai…')}`,

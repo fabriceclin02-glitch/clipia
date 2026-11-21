@@ -112,7 +112,7 @@ function provForm(box, id, guide) {
 }
 
 /* ---------- Appels IA (via le pont natif : pas de blocage CORS) ---------- */
-const BASES = { anthropic: 'https://api.anthropic.com/v1', openai: 'https://api.openai.com/v1', gemini: 'https://generativelanguage.googleapis.com/v1beta/openai', mistral: 'https://api.mistral.ai/v1', deepseek: 'https://api.deepseek.com', groq: 'https://api.groq.com/openai/v1', xai: 'https://api.x.ai/v1', zai: 'https://api.z.ai/api/paas/v4', openrouter: 'https://openrouter.ai/api/v1' };
+const BASES = { anthropic: 'https://api.anthropic.com/v1', openai: 'https://api.openai.com/v1', gemini: 'https://generativelanguage.googleapis.com/v1beta/openai', mistral: 'https://api.mistral.ai/v1', deepseek: 'https://api.deepseek.com', groq: 'https://api.groq.com/openai/v1', xai: 'https://api.x.ai/v1', zai: 'https://api.z.ai/api/paas/v4', moonshot: 'https://api.moonshot.ai/v1', openrouter: 'https://openrouter.ai/api/v1' };
 const pending = {};
 window.novaAI = (id, json) => { const r = JSON.parse(json); (pending[id] || (() => {}))(r); delete pending[id]; };
 function http(method, url, headers, body) {

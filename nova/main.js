@@ -70,6 +70,7 @@ const PROVIDERS = {
   groq:       { base: 'https://api.groq.com/openai/v1' },
   xai:        { base: 'https://api.x.ai/v1' },
   zai:        { base: 'https://api.z.ai/api/paas/v4' },
+  moonshot:   { base: 'https://api.moonshot.ai/v1' },
   openrouter: { base: 'https://openrouter.ai/api/v1' },
   ollama:     { base: 'http://localhost:11434/v1', local: true }
 };

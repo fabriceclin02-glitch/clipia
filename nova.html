@@ -57,11 +57,18 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
 </style>
 </head>
 <body>
+<nav style="position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:10px 12px;background:#0b0820e6;backdrop-filter:blur(8px);border-bottom:1px solid #ffffff1a;font:600 14px system-ui,sans-serif">
+  <a href="index.html" style="color:#cfd6ff;text-decoration:none;padding:6px 12px;border-radius:99px;border:1px solid #ffffff22">← Clipia X10</a>
+  <a href="nova.html" aria-current="page" style="color:#fff;text-decoration:none;padding:6px 12px;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#d946ef)">🌐 Clipia Nova</a>
+  <a href="index.html#modeles" style="color:#9ff0c8;text-decoration:none;padding:6px 12px;border-radius:99px;border:1px solid #7ee2d055">🧠 Nouveaux modèles</a>
+  <a href="#telecharger" style="color:#f5d0fe;text-decoration:none;padding:6px 12px;border-radius:99px;border:1px solid #d946ef55">⬇ Télécharger Nova</a>
+</nav>
 <header>
   <canvas id="sp"></canvas>
   <h1>CLIPIA <span class="grad">NOVA</span></h1>
   <p class="tag">Le navigateur compagnon : Clipia vous écoute, vous parle et vous répond, sur toutes vos machines. Il travaille <b>pour vous</b>, pas sur vous : aucun plugin tiers, aucune collecte, vos données restent entre vos mains.</p>
   <a class="cta" href="#telecharger">Télécharger gratuitement</a> <a class="cta" href="communaute/" style="background:none;border:1px solid #8b5cf6">💬 Clipia Communauté</a>
+  <span class="safe" style="display:block;margin-bottom:6px">🧠 Nouveaux modèles intégrés : Claude Sonnet 5.5 · GPT-6 · Gemini 3.8 Flash · GLM-5.3 · Kimi K3 · DeepSeek V4 · GPT-OSS gratuit sur Groq</span>
   <span class="safe">🔐 VPN gratuit · 📴 Marche sans internet · 🛡 Aucune collecte · Traqueurs bloqués · Mode Tor .onion · Réseaux sociaux intégrés · Chat Clipia Communauté</span>
   <video id="heroVid" class="hero-vid" controls autoplay muted loop preload="auto" poster="img/poster-nova.jpg" playsinline><source src="Clipia-Nova-presentation.mp4" type="video/mp4"></video>
   <button class="cta" id="snd" style="margin-top:.8rem;cursor:pointer;background:none;border:1px solid #34d399;color:#34d399">🔊 Activer le son</button>
@@ -69,22 +76,22 @@ footer{border-top:1px solid var(--line);padding:2.5rem 6vw;text-align:center;col
 
 <section id="telecharger">
   <h2>Choisissez votre <span class="grad">appareil</span></h2>
-  <p class="sub">Gratuit · version 2.5 · Windows, Mac, Linux et Android.</p>
+  <p class="sub">Gratuit · version 2.6 · Windows, Mac, Linux et Android.</p>
   <div class="dl">
     <div class="os"><div class="ic">🪟</div><h3>Windows</h3><p>Windows 10 et 11 (y compris PC ARM). Installation classique, ou version portable sans installation (clé USB).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Windows-Installation.exe">Installer (.exe)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Windows-Portable.exe">Version portable</a></div>
     <div class="os"><div class="ic">🍎</div><h3>Mac</h3><p>macOS 11 et plus. Choisissez selon votre processeur (menu  → À propos de ce Mac).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Mac-arm64.dmg">Apple M1, M2, M3, M4</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Mac-x64.dmg">Mac Intel</a></div>
     <div class="os"><div class="ic">🐧</div><h3>Linux</h3><p>AppImage (toutes distributions) ou paquet .deb (Ubuntu, Debian, Mint). PC classiques et ARM (Raspberry Pi 4/5).</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
-      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Linux-x86_64.AppImage">AppImage (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Linux-amd64.deb">.deb (PC)</a>
+      <a class="btn alt" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Linux-arm64.AppImage">AppImage (ARM)</a></div>
     <div class="os"><div class="ic">🤖</div><h3>Android</h3><p>Android 7 et plus. Clipia vous écoute et vous parle, Store, bouclier, .onion via Tor Browser.</p>
-      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.5.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
+      <a class="btn" href="https://github.com/fabriceclin02-glitch/clipia/releases/download/nova-v2.6.0/Clipia-Nova-Android.apk">Télécharger (.apk)</a></div>
   </div>
-  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : Clipia Nova n'y est pas disponible (Apple impose son moteur et sa boutique, ce qui est incompatible avec un navigateur indépendant). En attendant, <a href="communaute/" style="text-decoration:underline">Clipia Communauté</a> s'installe sur iPhone : Safari ▸ Partager ▸ « Sur l'écran d'accueil ». Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.5.0" style="text-decoration:underline">page de la version 2.5.0</a></p>
+  <p class="sub" style="margin-top:1.5rem;font-size:.85rem">iPhone et iPad : Clipia Nova n'y est pas disponible (Apple impose son moteur et sa boutique, ce qui est incompatible avec un navigateur indépendant). En attendant, <a href="communaute/" style="text-decoration:underline">Clipia Communauté</a> s'installe sur iPhone : Safari ▸ Partager ▸ « Sur l'écran d'accueil ». Toutes les versions et empreintes de contrôle : <a href="https://github.com/fabriceclin02-glitch/clipia/releases/tag/nova-v2.6.0" style="text-decoration:underline">page de la version 2.6.0</a></p>
 </section>
 
 <section id="depannage">

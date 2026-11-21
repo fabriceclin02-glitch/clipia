@@ -5,6 +5,9 @@ La liste à jour (avec les sommes de contrôle SHA-256) est dans [`liens.json`](
 
 | Version | Contenu principal | Fichiers |
 |---|---|---|
+| 10.3.0 | Nouveaux modèles (Claude 5.5, GPT-6, Gemini 4 / 3.8, GLM-5.3, Kimi K3, DeepSeek V4, Qwen 3.6, Grok 4.6, GPT-OSS sur Groq), modèles retirés remplacés, audit (voir AUDIT.md) | `telechargements/` |
+| Nova 2.6.0 | Navigateur Clipia Nova : mêmes nouveaux modèles, moteur Kimi K3 | Release `nova-v2.6.0` |
+| APK 8.11.0 | Appli téléphone : Groq GPT-OSS 120B par défaut, Gemini Flash à jour, GLM-5.3 | `telechargements/` |
 | OS 4.0 | **Clipia OS 4** : image ISO bootable (Ubuntu 24.04, Clipia 8.2), live USB, installation sur disque, Réglages, visite guidée, sphère 3D | branche `os-images` |
 | 8.4.0 | GLM-5.2 (Z.ai) : moteur et étape facultative de l'installation guidée ; vidéo « code et accès à l'ordinateur » | `telechargements/` |
 | 8.3.0 | Kodi (installateur + Logithèque, piloté à la voix), films/séries/TV : Prime Video, Netflix, TF1+, M6+, France.tv, Arte, Pluto TV | `telechargements/` |

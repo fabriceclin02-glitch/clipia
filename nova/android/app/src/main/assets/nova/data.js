@@ -2,13 +2,14 @@
 window.NOVA_DATA = {
   providers: {
     anthropic:  { name: 'Claude', by: 'Anthropic', model: 'claude-sonnet-5-5', keyUrl: 'https://console.anthropic.com/settings/keys', free: false },
-    openai:     { name: 'ChatGPT', by: 'OpenAI', model: 'gpt-4o-mini', keyUrl: 'https://platform.openai.com/api-keys', free: false },
-    gemini:     { name: 'Gemini', by: 'Google', model: 'gemini-2.5-flash', keyUrl: 'https://aistudio.google.com/apikey', free: true },
+    openai:     { name: 'ChatGPT', by: 'OpenAI', model: 'gpt-6-luna', keyUrl: 'https://platform.openai.com/api-keys', free: false },
+    gemini:     { name: 'Gemini', by: 'Google', model: 'gemini-flash-latest', keyUrl: 'https://aistudio.google.com/apikey', free: true },
     mistral:    { name: 'Mistral', by: 'Mistral AI 🇫🇷', model: 'mistral-small-latest', keyUrl: 'https://console.mistral.ai/api-keys', free: true },
-    deepseek:   { name: 'DeepSeek', by: 'DeepSeek', model: 'deepseek-chat', keyUrl: 'https://platform.deepseek.com/api_keys', free: false },
-    groq:       { name: 'Groq', by: 'Llama, Qwen…', model: 'llama-3.3-70b-versatile', keyUrl: 'https://console.groq.com/keys', free: true },
-    xai:        { name: 'Grok', by: 'xAI', model: 'grok-3-mini', keyUrl: 'https://console.x.ai', free: false },
-    zai:        { name: 'GLM', by: 'Z.ai', model: 'glm-5.2', keyUrl: 'https://z.ai/manage-apikey/apikey-list', free: false },
+    deepseek:   { name: 'DeepSeek', by: 'DeepSeek', model: 'deepseek-v4-flash', keyUrl: 'https://platform.deepseek.com/api_keys', free: false },
+    groq:       { name: 'Groq', by: 'GPT-OSS, Qwen 3.6…', model: 'openai/gpt-oss-120b', keyUrl: 'https://console.groq.com/keys', free: true },
+    xai:        { name: 'Grok', by: 'xAI', model: 'grok-4.6', keyUrl: 'https://console.x.ai', free: false },
+    zai:        { name: 'GLM', by: 'Z.ai', model: 'glm-5.3', keyUrl: 'https://z.ai/manage-apikey/apikey-list', free: false },
+    moonshot:   { name: 'Kimi K3', by: 'Moonshot AI', model: 'kimi-k3', keyUrl: 'https://platform.moonshot.ai', free: false },
     openrouter: { name: 'OpenRouter', by: '300+ modèles', model: 'openrouter/auto', keyUrl: 'https://openrouter.ai/keys', free: true },
     ollama:     { name: 'Ollama', by: 'Local, sur ce PC', model: 'qwen2.5:3b', keyUrl: 'https://ollama.com/download', free: true, noKey: true }
   },

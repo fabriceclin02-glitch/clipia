@@ -1,6 +1,6 @@
 'use strict';
 /* Clipia X10 mobile — noyau : stockage, réseau, moteurs de texte, enregistrement de fichiers */
-const VERSION='8.10.0';
+const VERSION='8.11.0';
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -110,16 +110,16 @@ async function partager(c,idNatif){
    Aucune clé n'est embarquée : « Libre » est anonyme (service communautaire, très limité) ;
    les autres utilisent la clé gratuite que la personne crée elle-même et qui reste sur le téléphone. */
 const MOTEURS={
-  groq:{nom:'Groq',court:'🚀 Groq',base:'https://api.groq.com/openai/v1',lien:'https://console.groq.com/keys',ph:'gsk_…',defaut:'llama-3.3-70b-versatile',
+  groq:{nom:'Groq',court:'🚀 Groq',base:'https://api.groq.com/openai/v1',lien:'https://console.groq.com/keys',ph:'gsk_…',defaut:'openai/gpt-oss-120b',
     desc:'Gratuit, le plus rapide. Recommandé pour commencer.',etapes:['Ouvre le lien ci-dessous et connecte-toi (Google ou e-mail).','Touche « Create API Key », donne un nom, valide.','Copie la clé (gsk_…) et colle-la ici.']},
-  gemini:{nom:'Google Gemini',court:'✨ Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',lien:'https://aistudio.google.com/apikey',ph:'AIza…',defaut:'gemini-2.5-flash',
+  gemini:{nom:'Google Gemini',court:'✨ Gemini',base:'https://generativelanguage.googleapis.com/v1beta/openai',lien:'https://aistudio.google.com/apikey',ph:'AIza…',defaut:'gemini-flash-latest',
     desc:'Gratuit avec un compte Google, très capable pour le code.',etapes:['Ouvre le lien et connecte-toi avec ton compte Google.','Touche « Créer une clé API ».','Copie la clé (AIza…) et colle-la ici.']},
   pollinations:{nom:'Pollinations (clé)',court:'🌸 Pollinations',base:'https://gen.pollinations.ai/v1',lien:'https://enter.pollinations.ai/keys',ph:'pk_… ou sk_…',defaut:'',
     desc:'Une seule clé pour texte, images, voix et vidéo IA.',etapes:['Ouvre le lien et crée un compte.','Crée une clé d\'application (pk_…).','Colle-la ici : Clipia choisit le modèle toute seule.']},
   openrouter:{nom:'OpenRouter (modèles gratuits)',court:'🌐 OpenRouter',base:'https://openrouter.ai/api/v1',lien:'https://openrouter.ai/keys',ph:'sk-or-v1-…',defaut:'meta-llama/llama-3.3-70b-instruct:free',
     desc:'Plein de modèles gratuits avec une clé gratuite.',etapes:['Ouvre le lien et connecte-toi.','Crée une clé (Create Key).','Colle-la ici.']},
-  zai:{nom:'GLM-5.2 de Z.ai (code)',court:'🧠 GLM-5.2',base:'https://api.z.ai/api/paas/v4',lien:'https://z.ai/manage-apikey/apikey-list',ph:'clé Z.ai',defaut:'glm-5.2',
-    desc:'Très bon en code et en tâches longues. Facultatif, payant à l\'usage (ta propre clé Z.ai).',etapes:['Ouvre le lien et connecte-toi à Z.ai.','Crée une clé API (API Keys).','Colle-la ici : Clipia utilisera GLM-5.2 pour coder.']},
+  zai:{nom:'GLM-5.3 de Z.ai (code)',court:'🧠 GLM-5.3',base:'https://api.z.ai/api/paas/v4',lien:'https://z.ai/manage-apikey/apikey-list',ph:'clé Z.ai',defaut:'glm-5.3',
+    desc:'Très bon en code et en tâches longues. Facultatif, payant à l\'usage (ta propre clé Z.ai).',etapes:['Ouvre le lien et connecte-toi à Z.ai.','Crée une clé API (API Keys).','Colle-la ici : Clipia utilisera GLM-5.3 pour coder.']},
   pc:{nom:'Mon PC (Clipia X10 sur ordinateur)',court:'🖥 Mon PC',desc:'Toute la puissance de Clipia sur ton ordinateur, pilotée d\'ici.'},
   libre:{nom:'Libre (sans clé)',court:'⚡ Libre',base:'https://text.pollinations.ai/openai',defaut:'',desc:'Sans compte ni clé, mais très limité (1 demande toutes les 30 s environ, modèle modeste). Dépannage seulement.'}
 };

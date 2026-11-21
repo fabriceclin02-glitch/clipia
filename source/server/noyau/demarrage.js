@@ -62,8 +62,8 @@ function candidats(besoin) {
 export function scoreQualite(providerId, modele = '') {
   const m = String(modele);
   let sc = taillePrevue(m);
-  if (/claude|gpt-5|gpt-4\.1|gpt-4o(?!-mini)|o3|o4|gemini-(2|3)|sonnet|opus|grok-[3-9]|mistral-large|deepseek-(v3|chat)|llama-?4|qwen3?-?max/i.test(m)) sc = Math.max(sc, 200);
-  else if (/llama-3\.3-70b|gpt-oss-120b|qwen.*(32|72|235)b|llama-3\.1-(70|405)b|mixtral|gpt-4o-mini|gemini.*flash|deepseek-r1-distill-llama-70b/i.test(m)) sc = Math.max(sc, 70);
+  if (/claude|fable|gpt-[5-9]|gpt-4\.1|gpt-4o(?!-mini)|o3|o4|gemini-[2-9]|gemini-flash-latest|sonnet|opus|grok-[3-9]|mistral-(large|medium)|deepseek-(v[3-9]|chat)|llama-?4|qwen3?\.?[5-9]?-?(max|plus)|glm-5|kimi-k[3-9]/i.test(m)) sc = Math.max(sc, 200);
+  else if (/llama-3\.3-70b|gpt-oss-(120|20)b|qwen3\.6|gemma4|qwen.*(32|72|235)b|llama-3\.1-(70|405)b|mixtral|gpt-4o-mini|gemini.*flash|deepseek-r1-distill-llama-70b/i.test(m)) sc = Math.max(sc, 70);
   if (/deepseek-r1|qwq|reason/i.test(m)) sc *= 0.5;
   if (/^(pollinations|github-models)$/.test(providerId)) sc *= 0.12;
   // Claude (payant) = renfort : Groq gratuit passe devant tant qu'il répond ; réglage « claude.prioritaire » pour l'inverser.

@@ -72,7 +72,7 @@ const imagesBrutes = m => (m.images || []).map(i => (i.split(',')[1] || '')).fil
 const SANS_TEMPERATURE = new Set();
 const refuseTemperature = (p, model) => SANS_TEMPERATURE.has(p.id + '|' + model)
   || (p.kind === 'anthropic' && /opus-4-[1-9]|opus-[5-9]|sonnet-[5-9]|sonnet-4-[5-9]|fable|mythos|haiku-[5-9]/i.test(String(model)))
-  || (p.kind === 'openai' && /^(o\d|gpt-5)/i.test(String(model)));
+  || (p.kind === 'openai' && /^(o\d|gpt-[5-9])/i.test(String(model)));
 const erreurTemperature = (status, txt) => status === 400 && /temperature/i.test(txt) && /(deprecated|not supported|unsupported|does not support)/i.test(txt);
 
 function buildBody(p, { model, messages, system, temperature = 0.8, maxTokens = 2048, stream = false }) {
@@ -220,7 +220,7 @@ const PAS_CONVERSATION = /whisper|tts|audio|speech|embed|guard|moderation|rerank
 
 /** Ce qui parle bien français et répond vite, dans l'ordre où on veut le voir. */
 const PREFERES = [
-  /llama-3\.3-70b/i, /qwen3?.*(32|72)b/i, /gpt-oss-120b/i, /llama-3\.1-70b/i, /mixtral/i,
+  /gpt-oss-120b/i, /qwen3\.6/i, /kimi-k3/i, /llama-3\.3-70b/i, /qwen3?.*(27|32|72)b/i, /gpt-oss-20b/i, /llama-3\.1-70b/i, /mixtral/i,
   /gpt-4o(?!-mini)/i, /gpt-4o-mini/i, /llama-3\.1-8b/i, /gemma2?-9b/i, /llama-3\.2/i
 ];
 
