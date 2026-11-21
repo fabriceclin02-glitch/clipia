@@ -20,7 +20,7 @@ def oral(t):
     return t
 v=PiperVoice.load('/home/claude/voix/fr-siwis-medium.onnx')
 from piper import SynthesisConfig
-cfg=SynthesisConfig(length_scale=1.02)
+cfg=SynthesisConfig(length_scale=1.06)
 sr=v.config.sample_rate; out=[]; t=0.8; res=[]
 out.append(np.zeros(int(0.8*sr),dtype=np.int16))
 prev=0
@@ -30,7 +30,7 @@ for i,(pi,c) in enumerate(caps):
     with wave.open(f,'wb') as w: v.synthesize_wav(oral(c),w,syn_config=cfg)
     with wave.open(f) as w: a=np.frombuffer(w.readframes(w.getnframes()),dtype=np.int16)
     d=len(a)/sr; res.append({'i':i,'p':pi,'t0':round(t,3),'t1':round(t+d,3),'txt':c})
-    out.append(a); pause=0.45 if c.endswith(('.','?','!')) else 0.2
+    out.append(a); pause=0.6 if c.endswith(('.','?','!')) else 0.28
     out.append(np.zeros(int(pause*sr),dtype=np.int16)); t+=d+pause
 out.append(np.zeros(int(2.5*sr),dtype=np.int16))
 a=np.concatenate(out)

@@ -4,10 +4,18 @@ D = '/home/claude/voyants'; SC = D + '/scenes'
 T = json.load(open(D + '/timing.json', encoding='utf-8'))
 caps = T['caps']; FIN = T['duree'] + 6.0   # carte finale tenue 6 s de plus
 # scène → première légende
-PLAN = [('01-terre', 0), ('02-voyant', 3), ('03-neurones', 9), ('04-bunkers', 14), ('05-film', 17), ('06-robots', 26),
-        ('07-combat', 32), ('08-echecs', 36), ('09-appel', 44), ('10-grands-parents', 51), ('11-message', 57),
-        ('12-clipia', 64), ('13-fous', 66), ('14-onde', 71), ('15-puce', 78), ('16-savants', 81), ('17-voiture', 86),
-        ('18-question', 88), ('14-onde', 89), ('19-fin', None)]
+ANCRES = [('01-terre', None), ('02-voyant', 'Une nouvelle école'), ('03-neurones', 'Je ne peux pas tout expliquer'), ('04-bunkers', 'Pendant ce temps'),
+          ('05-film', 'Pourquoi croyez-vous'), ('06-robots', 'Ils fabriquent déjà'), ('07-combat', 'Clairement, je préfère'), ('08-echecs', 'Alors, il est temps de passer'),
+          ('09-appel', 'Alors, je vous invite'), ('10-grands-parents', 'Quand on voit ce dont'), ('11-message', "Et peut-être qu'en lisant"), ('12-clipia', "C'est pour cela que Clipia"),
+          ('13-fous', 'Cela ressemble peut-être'), ('14-onde', 'Mais notre force'), ('15-puce', 'Alors, avec mes petits moyens'), ('16-savants', 'Nos plus grands scientifiques'),
+          ('17-voiture', "Voulez-vous vraiment qu'un robot"), ('18-question', 'Comme le dit une phrase'), ('14-onde', 'Laissez-nous encore'), ('19-fin', 'FIN')]
+def trouve(a):
+    if a is None: return 0
+    if a == 'FIN': return None
+    for c in caps:
+        if a in c['txt']: return c['i']
+    raise SystemExit('ancre introuvable : ' + a)
+PLAN = [(n, trouve(a)) for n, a in ANCRES]
 debuts = []
 for nom, c in PLAN:
     if c is None: debuts.append(caps[-1]['t1'] + 1.2)
