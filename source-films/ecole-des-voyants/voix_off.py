@@ -14,7 +14,7 @@ for pi,par in enumerate(txt):
             if cur and len(cur)+len(b)>105: caps.append((pi,cur)); cur=b
             else: cur=(cur+' '+b).strip()
         if cur: caps.append((pi,cur))
-DIT={'IA':'I.A.','1 mois':'un mois','2 mois':'deux mois','2 ans':'deux ans','10 ans':'dix ans','3 équations':'trois équations','3 jours':'trois jours','2026':'deux mille vingt-six','Clipia':'Clipia','eh ben':'eh bien','Et ben':'Eh bien','Ben,':'Bon,','soi-disant':'soi-disant'}
+DIT={'IA':'I.A.','HK':'H.K.','TikToker':'Tik-Tokeur','Facebooker':'Facebookeur','YouTuber':'YouTubeur','1 mois':'un mois','2 mois':'deux mois','2 ans':'deux ans','10 ans':'dix ans','3 équations':'trois équations','3 jours':'trois jours','2026':'deux mille vingt-six','Clipia':'Clipia','eh ben':'eh bien','Et ben':'Eh bien','Ben,':'Bon,','soi-disant':'soi-disant'}
 def oral(t):
     for a,b in DIT.items(): t=re.sub(r'\b'+re.escape(a)+r'\b',b,t)
     return t

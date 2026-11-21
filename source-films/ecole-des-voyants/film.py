@@ -7,7 +7,7 @@ caps = T['caps']; FIN = T['duree'] + 6.0   # carte finale tenue 6 s de plus
 PLAN = [('01-terre', 0), ('02-voyant', 3), ('03-neurones', 9), ('04-bunkers', 14), ('05-film', 17), ('06-robots', 26),
         ('07-combat', 32), ('08-echecs', 36), ('09-appel', 44), ('10-grands-parents', 51), ('11-message', 57),
         ('12-clipia', 64), ('13-fous', 66), ('14-onde', 71), ('15-puce', 78), ('16-savants', 81), ('17-voiture', 86),
-        ('18-question', 88), ('19-fin', None)]
+        ('18-question', 88), ('14-onde', 89), ('19-fin', None)]
 debuts = []
 for nom, c in PLAN:
     if c is None: debuts.append(caps[-1]['t1'] + 1.2)
@@ -16,7 +16,7 @@ for nom, c in PLAN:
 X = 1.2   # durée des fondus
 FPS = 25
 # mouvements de caméra (zoom avant, arrière, travellings)
-MOUV = ['in', 'pg', 'out', 'pd', 'in', 'out', 'in', 'pd', 'out', 'in', 'pg', 'in', 'out', 'in', 'in', 'pd', 'pg', 'in', 'out']
+MOUV = ['in', 'pg', 'out', 'pd', 'in', 'out', 'in', 'pd', 'out', 'in', 'pg', 'in', 'out', 'in', 'in', 'pd', 'pg', 'in', 'in', 'out']
 entrees, filtres = [], []
 for k, (nom, _) in enumerate(PLAN):
     d = (debuts[k + 1] if k + 1 < len(PLAN) else FIN) - debuts[k] + (X if k + 1 < len(PLAN) else 0)
@@ -30,7 +30,7 @@ for k, (nom, _) in enumerate(PLAN):
     filtres.append(f"[{k}:v]scale=3840:2160,zoompan=z='{z}':x='{x}':y='{y}':d=1:s=1280x720:fps={FPS},setsar=1,format=yuv420p[s{k}]")
 # chaîne de fondus
 prec = 's0'; cumul = 0.0
-types = ['fade', 'fadeblack', 'fade', 'dissolve', 'fade', 'fadeblack', 'fade', 'fade', 'dissolve', 'fadeblack', 'fade', 'fade', 'dissolve', 'fade', 'fadeblack', 'fade', 'fade', 'fadeblack']
+types = ['fade', 'fadeblack', 'fade', 'dissolve', 'fade', 'fadeblack', 'fade', 'fade', 'dissolve', 'fadeblack', 'fade', 'fade', 'dissolve', 'fade', 'fadeblack', 'fade', 'fade', 'fadeblack', 'fade']
 for k in range(1, len(PLAN)):
     dprec = debuts[k] - debuts[k - 1]
     cumul += dprec
