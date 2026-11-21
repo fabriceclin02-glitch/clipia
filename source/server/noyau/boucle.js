@@ -310,9 +310,28 @@ async function converserInterne(options = {}, onEvent = () => {}) {
   return { texte: t, preuves, etapes };
 }
 
+/* ══ VERROU INTERNET DES AGENTS ═══════════════════════════════════════════
+   Par défaut, les agents, sous-agents et travaux en arrière-plan n'ont AUCUN accès
+   à internet (ni entrant ni sortant). Seule la conversation directe avec l'utilisateur
+   peut utiliser le web. Réglage « agents.internet » = true pour rouvrir, à ses risques. */
+const OUTILS_RESEAU = /^(web_|navigateur_|chrome_|google_|ms_|slack_|telegram_|whatsapp_|discord_|email_|openclaw_agent|connecteur_|publier_|telecharger)/;
+export const COMMANDE_RESEAU = /\b(curl|wget|ssh|scp|sftp|ftp|nc|ncat|telnet|rsync|Invoke-WebRequest|Invoke-RestMethod|iwr|irm|Start-BitsTransfer|bitsadmin|certutil)\b|\bgit\s+(clone|pull|push|fetch|remote)\b|\b(npm|pnpm|yarn)\s+(i|install|add|publish|update|ci)\b|\bnpx\b|\bpip3?\s+(install|download)\b|https?:\/\/|http\.server|\b(ngrok|cloudflared|localtunnel|tailscale|serve)\b/i;
+export function agentsSansInternet() { return store.setting('agents.internet') !== true; }
+function bloqueParVerrou(nom, params, cadre) {
+  if (!(cadre.atelier || cadre.permis) || !agentsSansInternet()) return false;
+  if (OUTILS_RESEAU.test(nom)) return true;
+  if ((nom === 'executer' || nom === 'machine_executer') && COMMANDE_RESEAU.test(JSON.stringify(params || {}))) return true;
+  return false;
+}
+
 /* ══ L'EXÉCUTION D'UN OUTIL ═══════════════════════════════════════════════ */
 async function executer(nom, params, projet, onEvent, preuves, etapes, cadre = {}) {
   const outil = OUTILS[nom];
+  if (bloqueParVerrou(nom, params, cadre)) {
+    const msg = `Accès internet coupé pour les agents (verrou de sécurité Clipia) : « ${nom} » refusé. Travaille hors ligne avec les fichiers du projet.`;
+    etapes.push({ outil: nom, ok: false, resultat: msg });
+    return { ok: false, pourModele: msg };
+  }
   if (outil && cadre.permis && !cadre.permis.has(nom)) {
     const msg = `Outil « ${nom} » non autorisé pour ce rôle. Autorisés : ${[...cadre.permis].join(', ')}.`;
     etapes.push({ outil: nom, ok: false, resultat: msg });

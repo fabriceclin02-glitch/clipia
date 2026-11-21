@@ -37,3 +37,26 @@ Audit du dépôt `clipia` avant la version **Clipia X10 10.3.0**, **Clipia Nova 
 - Aucun appel réel n'a été fait aux nouveaux modèles (pas de clé API ici) : les identifiants viennent de la documentation des fournisseurs.
 - Le fichier `.dmg` macOS est fabriqué sous Linux et n'a jamais été testé sur un vrai Mac.
 - Mac et Linux : non signés ; Windows affiche l'avertissement SmartScreen.
+
+---
+
+# Audit du 21 novembre 2026 (soir) — base saine
+
+## Agents
+- Aucune tâche planifiée active sur le compte.
+- Supprimés du dépôt : l'« agent d'évolution » (`evolution.yml`, déclenché par les idées GitHub, il ouvrait des correctifs automatiquement) et le téléchargeur d'images (`dl-images.yml`).
+- Clipia X10 10.3.1 : **verrou internet des agents**. Par défaut, les agents, sous-agents et travaux en arrière-plan ne peuvent plus utiliser le web, le navigateur, les messageries ou les connecteurs, ni lancer de commande réseau (curl, wget, git push/pull, npm install, npx, pip install, serveurs, tunnels). Seule la conversation directe avec l'utilisateur garde le web. Réglage `agents.internet = true` pour rouvrir.
+
+## Site
+- Accueil Clipia : sections « École des Voyants » (film), « Clipia Nova, notre navigateur » et « Toutes les plateformes » ajoutées avant les vidéos ; le reste du site est inchangé.
+- Bouton « Rejoindre le groupe WhatsApp » : ouvre une discussion WhatsApp au 07 51 88 06 50 tant que le lien du groupe n'est pas collé dans `liens.json` → `communaute.whatsapp_groupe`.
+
+## Vidéos et voix off
+| Vidéo | Voix | État |
+|---|---|---|
+| École des Voyants (film 5 min 45, bande-annonce 9:16) | voix féminine de synthèse (Piper « siwis ») | paroles intégrales, non écoutées à l'oreille |
+| X10 présentation / installation, Kodi, OS, Projets, Nova | voix d'origine des vidéos | inchangées |
+| Téléphone, Kodi, Code, Espace, Tout installer (remises) | voix d'origine | titres passés en X10 ; la voix peut encore dire « X8 » |
+
+## Non vérifié
+- Aucun installeur testé sur un vrai Windows, Mac, téléphone ; Clipia Clips non testé sur le réseau Nostr (bloqué depuis l'environnement de fabrication).

@@ -308,7 +308,7 @@ const server = http.createServer(async (req, res) => {
       const locaux = byTier('local-gratuit');
       const sondes = await Promise.all(locaux.map(async l => ({ id: l.id, ...(await ping(l.id)) })));
       return json(res, {
-        version: '10.3.0', mode: 'opérationnel',
+        version: '10.3.1', mode: 'opérationnel',
         fournisseurs: {
           total: PROVIDERS.length,
           configures: PROVIDERS.filter(x => x.tier !== 'local-gratuit' && credential(x)).length,
@@ -1169,7 +1169,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/valider' && req.method === 'POST') {
           const b = await jbody(req); const r = appareils.valider(String(b.code || ''), String(b.appareil || 'Téléphone'), ipTel);
           if (!r.ok) return json(res, { erreur: r.erreur }, r.code);
-          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '10.3.0' } });
+          return json(res, { jeton: r.jeton, id: r.id, serveur: { nom: os.hostname(), version: '10.3.1' } });
         }
         if (p === '/api/appairage/creer' && req.method === 'POST') {
           if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403);
@@ -1185,7 +1185,7 @@ const server = http.createServer(async (req, res) => {
         if (p === '/api/appairage/appareils' && req.method === 'GET') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { appareils: appareils.appareils(), accordsTelephone: chatTel.accordsDepuisTelephone(), actif: distant.actif() }); }
         if (p.startsWith('/api/appairage/appareils/') && req.method === 'DELETE') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); return json(res, { ok: appareils.revoquer(decodeURIComponent(p.split('/')[4])) }); }
         if (p === '/api/appairage/reglages' && req.method === 'POST') { if (!iface) return json(res, { erreur: "Réservé à l'interface." }, 403); const b = await jbody(req); if (b.accordsTelephone !== undefined) chatTel.reglerAccordsTelephone(b.accordsTelephone); return json(res, { accordsTelephone: chatTel.accordsDepuisTelephone() }); }
-        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '10.3.0', accordsTelephone: chatTel.accordsDepuisTelephone() });
+        if (p === '/api/chat/etat' && req.method === 'GET') return json(res, { nom: os.hostname(), version: '10.3.1', accordsTelephone: chatTel.accordsDepuisTelephone() });
         if (p === '/api/chat/depuis' && req.method === 'GET') {
           const r = await chatTel.depuis(Number(url.searchParams.get('seq') || 0), Number(url.searchParams.get('ms') || 0), 'principal', url.searchParams.get('init') === '1');
           return json(res, r);
@@ -1203,7 +1203,7 @@ const server = http.createServer(async (req, res) => {
       const m = await jbody(req);
       const outils = {
         converser: async (t) => { let fin = ''; const r = await noyauBoucle.converser({ message: t, historique: [], vocal: false }, () => {}); fin = r.texte || ''; if (r.attente) fin += '\n\n[Action en attente : autorise-la sur l\'ordinateur.]'; return fin; },
-        etat: async () => ({ version: '10.3.0', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
+        etat: async () => ({ version: '10.3.1', ordinateur: noyauMachine.etatMachine(), openclaw: (await pontOC.etat()).resume }),
         competences: () => v6.listeCompetencesCourte()
       };
       const lot = Array.isArray(m) ? m : [m]; const sorties = [];
@@ -1707,7 +1707,7 @@ async function santeV5() {
   const gratuits = PROVIDERS.filter(x => x.sansCle).length;
   ajout('gratuits', 'Moteurs gratuits sans clé', gratuits > 0, gratuits + ' disponible(s)');
   ajout('extension', 'Extension Chrome', extChrome.connectee(), extChrome.connectee() ? 'connectée' : 'non installée (facultatif)');
-  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '10.3.0' };
+  return { ok: t.filter(x => !['ffmpeg', 'ollama', 'extension'].includes(x.id)).every(x => x.ok), controles: t, version: '10.3.1' };
 }
 
 // X7 — si l'accès téléphone est activé, on écoute aussi sur le réseau local (le garde ci-dessus limite ce qui est atteignable)

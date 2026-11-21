@@ -6,6 +6,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { DATA_DIR } from '../lib/env.js';
+import { store } from '../lib/store.js';
+// Verrou : les agents de projet n'ont pas accès à internet (réglage « agents.internet »).
+const COMMANDE_RESEAU = /\b(curl|wget|ssh|scp|sftp|ftp|nc|ncat|telnet|rsync|Invoke-WebRequest|Invoke-RestMethod|iwr|irm|bitsadmin|certutil)\b|\bgit\s+(clone|pull|push|fetch|remote)\b|\b(npm|pnpm|yarn)\s+(i|install|add|publish|update|ci)\b|\bnpx\b|\bpip3?\s+(install|download)\b|https?:\/\/|http\.server|\b(ngrok|cloudflared|localtunnel|tailscale|serve)\b/i;
 
 export const PROJETS_DIR = path.join(DATA_DIR, 'projets');
 fs.mkdirSync(PROJETS_DIR, { recursive: true });
@@ -130,6 +133,7 @@ export const OUTILS = {
     async run({ commande }, ctx) {
       const parts = decouper(commande);
       if (!parts.length) throw new AgentError('Commande vide.');
+      if (store.setting('agents.internet') !== true && COMMANDE_RESEAU.test(commande)) throw new AgentError('Accès internet coupé pour les agents (verrou de sécurité Clipia) : commande refusée.');
       if (!BINAIRES.has(parts[0])) throw new AgentError(`Commande refusée : « ${parts[0] } ». Autorisées : ${[...BINAIRES].join(', ')}`);
       const cwd = dans(ctx.projet);
       return new Promise((resolve) => {
