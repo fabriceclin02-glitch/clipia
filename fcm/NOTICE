@@ -1,0 +1,12 @@
+Clipia FCM 1.1
+Copyright 2026 Clin Fabrice (CLENDAX)
+
+Ce produit contient et dépend de Qwen3-4B, publié par Alibaba Cloud
+(équipe Qwen) sous licence Apache 2.0 :
+  https://huggingface.co/Qwen/Qwen3-4B
+
+Les 4,0 milliards de paramètres du modèle sont ceux de Qwen3-4B, inchangés.
+Clipia FCM 1.1 y ajoute une couche d'identité, de comportement, de réglage
+d'échantillonnage et d'appel d'outils, distribuée sous la même licence.
+
+Clipia n'est pas affiliée à Alibaba Cloud ni à l'équipe Qwen.

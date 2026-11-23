@@ -1,0 +1,27 @@
+{
+  "modele": "clipia-fcm:1.1",
+  "protocole": "[[outil:NOM {\"cle\": \"valeur\"}]] seul sur sa ligne, puis attendre le résultat",
+  "outils": [
+    { "nom": "image",     "quoi": "Créer ou retoucher une image",            "args": ["prompt", "style", "taille", "image"], "moteurs": ["Flux", "Seedream", "Nano Banana", "GPT Image"] },
+    { "nom": "video",     "quoi": "Animer une image, monter un plan",        "args": ["prompt", "image", "duree"],           "moteurs": ["Seedance", "Kling", "Veo", "Vidu"] },
+    { "nom": "musique",   "quoi": "Composer, remixer, bruiter",              "args": ["prompt", "duree", "bpm"],             "moteurs": ["Suno", "Seed Audio"] },
+    { "nom": "voix",      "quoi": "Prononcer un texte à voix haute",         "args": ["texte", "voix"],                      "moteurs": ["Edge (Microsoft)", "OpenAI", "Pollinations"] },
+    { "nom": "ecoute",    "quoi": "Transcrire un son ou le micro",           "args": ["fichier"],                            "moteurs": ["Whisper local"] },
+    { "nom": "modele3d",  "quoi": "Une photo vers un objet 3D",              "args": ["image"],                              "moteurs": ["Hunyuan 3D", "Tripo", "Meshy", "Rodin"] },
+    { "nom": "document",  "quoi": "Lire un fichier et en extraire",          "args": ["fichier", "quoi"],                    "moteurs": ["local"] },
+    { "nom": "web",       "quoi": "Chercher et lire une page",               "args": ["requete"],                            "moteurs": ["local"] },
+    { "nom": "fichiers",  "quoi": "Lister, lire, écrire sur le disque",      "args": ["action", "chemin", "contenu"],        "moteurs": ["local"], "accord": "pour écrire et supprimer" },
+    { "nom": "machine",   "quoi": "Ouvrir un logiciel, cliquer, taper",      "args": ["action", "cible"],                    "moteurs": ["local"], "accord": "oui" },
+    { "nom": "terminal",  "quoi": "Exécuter une commande",                   "args": ["commande"],                           "moteurs": ["local"], "accord": "oui" },
+    { "nom": "agent",     "quoi": "Créer un agent qui travaille seul",       "args": ["nom", "role", "outils"],              "moteurs": ["local"] },
+    { "nom": "sousagent", "quoi": "Confier une tâche à un sous-agent",       "args": ["parent", "tache"],                    "moteurs": ["local"], "limite": "2 niveaux" },
+    { "nom": "memoire",   "quoi": "Retenir ou retrouver un fait durable",    "args": ["action", "contenu"],                  "moteurs": ["local"] },
+    { "nom": "tache",     "quoi": "Programmer un travail pour plus tard",    "args": ["quand", "quoi"],                      "moteurs": ["local"] }
+  ],
+  "interdits": [
+    "taper un mot de passe, un code SMS, un numéro de carte ou de compte",
+    "supprimer hors des dossiers désignés",
+    "envoyer, publier ou payer sans accord explicite",
+    "annoncer un résultat comme vérifié sans l'avoir testé"
+  ]
+}
