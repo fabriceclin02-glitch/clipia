@@ -1,0 +1,36 @@
+CLIPIA COMME SOUS-AGENT D'ANTIGRAVITY
+=====================================
+
+Ce que ça fait
+--------------
+Antigravity code et orchestre. Clipia fabrique : images, vidéo, musique, voix,
+fichiers, pilotage de la machine, agents. En inscrivant Clipia comme serveur MCP
+dans Antigravity, les agents d'Antigravity peuvent l'appeler directement, sans
+que vous copiiez quoi que ce soit d'une fenêtre à l'autre.
+
+Le fichier mcp_config.json va dans :
+    C:\Users\Laurence\.gemini\config\mcp_config.json
+
+Il y était déjà, mais vide. C'est pour ça qu'Antigravity n'avait aucun outil
+externe.
+
+Deux interrupteurs à armer dans Clipia, sinon ça répond 401 ou 402
+------------------------------------------------------------------
+1. « Téléphone & MCP » doit être activé. C'est lui qui ouvre /mcp et qui génère
+   le jeton. Copiez ce jeton et remplacez REMPLACEZ_PAR_VOTRE_JETON_CLIPIA dans
+   le fichier.
+
+2. L'option développeur doit être active. Le code de Clipia refuse /mcp avec une
+   erreur 402 sans elle — c'est vous qui l'avez décidé ainsi quand vous avez
+   fixé le modèle économique. Si vous voulez que le MCP soit libre pour tout le
+   monde, il faut retirer cette condition dans server/index.js ligne 280 ;
+   dites-le moi et je le fais.
+
+Vérifier que ça marche
+----------------------
+Dans Antigravity, ouvrez la liste des outils MCP. « clipia » doit apparaître
+avec trois outils : clipia_demander, clipia_etat, clipia_competences.
+Demandez-lui ensuite : « Avec l'outil clipia, génère-moi une image de test. »
+
+Si rien n'apparaît : redémarrez Antigravity, c'est lui qui relit ce fichier au
+lancement.

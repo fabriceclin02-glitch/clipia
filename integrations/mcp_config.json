@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "clipia": {
+      "serverUrl": "http://127.0.0.1:8787/mcp",
+      "headers": {
+        "Authorization": "Bearer REMPLACEZ_PAR_VOTRE_JETON_CLIPIA"
+      },
+      "description": "Clipia — assistante locale de Clin Fabrice. Outils : clipia_demander (poser une tâche à Clipia), clipia_etat (ce qu'elle sait faire et ce qui est branché), clipia_competences (ses compétences importées). Images, vidéo, musique, voix, fichiers, machine, agents."
+    }
+  }
+}
