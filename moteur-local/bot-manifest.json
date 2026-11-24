@@ -1,0 +1,26 @@
+{
+  "name": "Clipia — assistante IA",
+  "short_name": "Clipia",
+  "description": "Votre assistante IA sur votre machine : conversation, voix, images, vidéo, musique, agents. Avec Clipia FCM 1.1 en local.",
+  "id": "clipia-bot",
+  "start_url": "/bot.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#08080f",
+  "theme_color": "#08080f",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["productivity", "utilities", "multimedia"],
+  "icons": [
+    { "src": "/assets/icone-192.png",  "sizes": "192x192",   "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icone-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icone-512.png",  "sizes": "512x512",   "type": "image/png", "purpose": "maskable" },
+    { "src": "/assets/icone-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Nouvelle conversation", "url": "/bot.html?neuf=1" },
+    { "name": "Mode vocal",            "url": "/bot.html?vocal=1" }
+  ]
+}

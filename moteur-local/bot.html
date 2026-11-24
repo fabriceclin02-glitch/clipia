@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clipia — FCM 1.1</title>
+<!-- Installable partout : Android et bureau par le manifeste, iPhone par les
+     balises Apple (Safari ignore le manifeste pour l'ajout à l'écran d'accueil). -->
+<link rel="manifest" href="bot-manifest.json">
+<meta name="theme-color" content="#08080f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clipia">
+<link rel="apple-touch-icon" href="/assets/icone-192.png">
+<link rel="icon" href="/assets/icone-192.png">
+<style>
+/* ─────────────────────────────────────────────────────────────────────────────
+   CLIPIA BOT — l'interface épurée : une sphère, un champ, trois bascules.
+   Les couleurs restent celles de Clipia (bleu et violet), pas celles d'un autre.
+   ───────────────────────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fond:#08080f; --fond2:#0d0d18; --carte:#12121f; --bord:#23233a;
+  --texte:#eceefc; --doux:#8b90b5; --violet:#7c5cff; --cyan:#4fe0b0;
+  --rose:#c26bff; --ok:#4fe0b0; --ko:#ff6b8a;
+  --r:14px; --police:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+html,body{height:100%}
+body{background:var(--fond);color:var(--texte);font:400 15px/1.55 var(--police);
+     display:flex;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#ffffff14;border-radius:9px}
+::-webkit-scrollbar-thumb:hover{background:#ffffff22}
+
+/* ── colonne de gauche ───────────────────────────────────────────────────── */
+#rail{width:258px;flex:none;background:var(--fond2);border-right:1px solid var(--bord);
+      display:flex;flex-direction:column;transition:width .18s ease}
+#rail.plie{width:62px}
+#rail.plie .mot,#rail.plie #hist,#rail.plie .titre{display:none}
+.railtop{padding:12px 12px 6px;display:flex;align-items:center;gap:8px}
+#plier{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--doux);font-size:17px}
+#plier:hover{background:#ffffff0f;color:var(--texte)}
+.marque{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.4px;font-size:16px}
+.marque canvas{width:28px;height:28px}
+.nav{padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;
+            color:var(--doux);font-size:14.5px;width:100%;text-align:left}
+.nav button:hover{background:#ffffff0f;color:var(--texte)}
+.nav button.actif{background:#7c5cff1f;color:var(--texte)}
+.nav .ic{width:19px;text-align:center;font-size:16px;flex:none}
+.nav button.neuf{color:var(--texte);background:#ffffff0d;font-weight:650;margin-bottom:6px}
+.nav button.neuf:hover{background:#ffffff1a}
+.titre{padding:16px 16px 6px;font-size:11.5px;text-transform:uppercase;letter-spacing:1.1px;color:#5c6088;font-weight:700}
+#hist{flex:1;overflow-y:auto;padding:0 8px 14px;display:flex;flex-direction:column;gap:1px}
+.conv{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;color:var(--doux);
+      font-size:13.8px;cursor:pointer;position:relative}
+.conv:hover{background:#ffffff0d;color:var(--texte)}
+.conv.actif{background:#7c5cff24;color:var(--texte)}
+.conv span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.conv .act{opacity:0;display:flex;gap:2px;flex:none}
+.conv:hover .act{opacity:1}
+.conv .act button{width:22px;height:22px;border-radius:6px;font-size:12px;color:var(--doux)}
+.conv .act button:hover{background:#ffffff1f;color:var(--texte)}
+.vide{padding:12px 16px;color:#4d5176;font-size:13px}
+
+/* ── zone principale ─────────────────────────────────────────────────────── */
+#principal{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+#haut{height:54px;flex:none;display:flex;align-items:center;gap:8px;padding:0 16px;
+      border-bottom:1px solid transparent}
+#haut .creux{flex:1}
+.pastille{display:flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;
+          border:1px solid var(--bord);color:var(--doux);font-size:13.5px;font-weight:600}
+.pastille:hover{border-color:#ffffff33;color:var(--texte)}
+.pastille.on{border-color:var(--violet);background:#7c5cff1f;color:var(--texte)}
+.pastille.on.prive{border-color:var(--cyan);background:#4fe0b01a}
+
+#flux{flex:1;overflow-y:auto;scroll-behavior:smooth}
+#dedans{max-width:748px;margin:0 auto;padding:18px 20px 28px}
+
+/* ── accueil ─────────────────────────────────────────────────────────────── */
+#accueil{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+         padding:20px;gap:18px}
+#accueil canvas{width:min(168px,34vw);height:min(168px,34vw)}
+#accueil h1{font-size:clamp(23px,3.6vw,33px);font-weight:750;letter-spacing:-.4px;text-align:center}
+#accueil p{color:var(--doux);font-size:14.5px;text-align:center;max-width:460px}
+#idees{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:620px;margin-top:4px}
+#idees button{padding:9px 15px;border-radius:999px;border:1px solid var(--bord);
+              color:var(--doux);font-size:13.5px;background:#ffffff06}
+#idees button:hover{border-color:var(--violet);color:var(--texte);background:#7c5cff14}
+
+/* ── messages ────────────────────────────────────────────────────────────── */
+.tour{margin-bottom:26px}
+.moi{display:flex;justify-content:flex-end}
+.moi .b{max-width:82%;background:#1b1b2e;border:1px solid var(--bord);border-radius:16px 16px 5px 16px;
+        padding:11px 15px;white-space:pre-wrap;word-wrap:break-word}
+.elle{display:flex;gap:13px}
+.elle .av{width:29px;height:29px;flex:none;margin-top:2px}
+.elle .corps{flex:1;min-width:0}
+.elle .corps p{margin:0 0 10px}
+.elle .corps p:last-child{margin-bottom:0}
+.elle .corps pre{background:#00000066;border:1px solid var(--bord);border-radius:10px;
+                 padding:12px 14px;overflow-x:auto;margin:10px 0;font-size:13.2px;
+                 font-family:ui-monospace,"Cascadia Code",Consolas,monospace}
+.elle .corps code{background:#ffffff14;border-radius:5px;padding:1px 5px;font-size:13.2px;
+                  font-family:ui-monospace,Consolas,monospace}
+.elle .corps pre code{background:none;padding:0}
+.elle .corps ul,.elle .corps ol{margin:8px 0 10px 22px}
+.elle .corps li{margin:3px 0}
+.elle .corps b{font-weight:680;color:#fff}
+.elle .corps a{color:var(--cyan)}
+.curseur::after{content:'';display:inline-block;width:7px;height:16px;background:var(--violet);
+                margin-left:2px;vertical-align:-2px;animation:clign 1s steps(2) infinite}
+@keyframes clign{50%{opacity:0}}
+
+/* réflexion : replié par défaut, comme un carnet qu'on peut ouvrir */
+.pense{border:1px solid var(--bord);border-radius:11px;background:#ffffff05;margin-bottom:11px;overflow:hidden}
+.pense>summary{padding:9px 13px;cursor:pointer;color:var(--doux);font-size:13.3px;
+               display:flex;align-items:center;gap:8px;list-style:none}
+.pense>summary::-webkit-details-marker{display:none}
+.pense>summary:hover{color:var(--texte)}
+.pense .dedans{padding:0 13px 11px;color:#9ba0c4;font-size:13.3px;white-space:pre-wrap;
+               max-height:290px;overflow-y:auto;border-top:1px solid var(--bord);padding-top:10px}
+.tourne{display:inline-block;width:12px;height:12px;border:2px solid #ffffff2b;
+        border-top-color:var(--violet);border-radius:50%;animation:t .7s linear infinite;flex:none}
+@keyframes t{to{transform:rotate(360deg)}}
+.jetons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.jeton{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;
+       background:#ffffff0d;border:1px solid var(--bord);font-size:12.3px;color:var(--doux)}
+.jeton.fait{border-color:#4fe0b047;color:var(--ok)}
+.pied{margin-top:10px;display:flex;align-items:center;gap:7px;color:#5c6088;font-size:12.2px;flex-wrap:wrap}
+.pied button{color:#5c6088;padding:3px 7px;border-radius:7px;font-size:12.2px}
+.pied button:hover{background:#ffffff0f;color:var(--texte)}
+.alerte{border:1px solid #ff6b8a4d;background:#ff6b8a12;border-radius:11px;padding:11px 14px;
+        color:#ffc2cf;font-size:13.8px}
+.alerte b{color:var(--ko)}
+
+/* ── résultats : image, son, vidéo, fichier — dans le fil, téléchargeables ── */
+.media{display:flex;flex-direction:column;gap:9px;margin:12px 0}
+.bloc{border:1px solid var(--bord);border-radius:14px;overflow:hidden;background:#0b0b16}
+.bloc img,.bloc video{display:block;width:100%;max-height:460px;object-fit:contain;background:#000}
+.bloc audio{display:block;width:100%;padding:12px 12px 10px}
+.barre{display:flex;align-items:center;gap:10px;padding:9px 12px;border-top:1px solid var(--bord);
+       font-size:12.6px;color:var(--doux)}
+.barre .nom{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.barre a{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:999px;
+         border:1px solid var(--bord);color:var(--texte);text-decoration:none;font-weight:650;flex:none}
+.barre a:hover{border-color:var(--cyan);color:var(--cyan)}
+.fichierseul{display:flex;align-items:center;gap:11px;padding:13px 14px}
+.fichierseul .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;
+                 background:#ffffff0f;font-size:19px;flex:none}
+
+/* ── pièces jointes en cours d'envoi ── */
+#joints{display:flex;flex-wrap:wrap;gap:7px;padding:0 2px 8px}
+#joints:empty{display:none}
+.joint{display:inline-flex;align-items:center;gap:7px;padding:5px 9px 5px 7px;border-radius:10px;
+       background:#ffffff0f;border:1px solid var(--bord);font-size:12.6px;max-width:260px}
+.joint img{width:26px;height:26px;border-radius:6px;object-fit:cover;flex:none}
+.joint .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.joint button{color:var(--doux);font-size:14px;line-height:1;padding:0 2px;flex:none}
+.joint button:hover{color:var(--ko)}
+.joint.encours{opacity:.55}
+
+/* ── dépôt de fichier : toute la fenêtre est une cible ── */
+#depot{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+       background:#05050bd9;backdrop-filter:blur(4px);pointer-events:none}
+#depot.on{display:flex}
+#depot div{border:2.5px dashed var(--violet);border-radius:22px;padding:42px 62px;text-align:center;
+           font-size:19px;font-weight:700;color:#dcd2ff;background:#12121fcc}
+
+/* ── saisie ──────────────────────────────────────────────────────────────── */
+#bas{flex:none;padding:0 20px 18px}
+#boite{max-width:748px;margin:0 auto;background:var(--carte);border:1px solid var(--bord);
+       border-radius:19px;padding:11px 13px 9px;transition:border-color .15s}
+#boite:focus-within{border-color:#7c5cff80}
+#saisie{width:100%;background:none;border:0;outline:0;resize:none;max-height:208px;
+        font-size:15.3px;line-height:1.55;padding:3px 2px 7px}
+#saisie::placeholder{color:#4d5176}
+#rangee{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+#rangee .creux{flex:1;min-width:8px}
+.bascule{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+         border:1px solid var(--bord);color:var(--doux);font-size:13.2px;font-weight:600}
+.bascule:hover{border-color:#ffffff33;color:var(--texte)}
+.bascule.on{border-color:var(--violet);background:#7c5cff24;color:#dcd2ff}
+.bascule.on.rech{border-color:var(--cyan);background:#4fe0b01f;color:#bff3e4}
+#modele{padding:6px 11px;border-radius:999px;border:1px solid var(--bord);background:var(--fond2);
+        color:var(--doux);font-size:12.8px;max-width:218px}
+#envoyer{width:37px;height:37px;flex:none;border-radius:50%;display:grid;place-items:center;
+         background:#ffffff1a;color:#6a6f94;font-size:16px;transition:.15s}
+#envoyer.pret{background:linear-gradient(135deg,var(--cyan),var(--rose));color:#08080f}
+#envoyer.pret:hover{filter:brightness(1.12)}
+#legal{max-width:748px;margin:7px auto 0;text-align:center;color:#454964;font-size:11.7px}
+
+/* ── voile vocal ─────────────────────────────────────────────────────────── */
+#voile{position:fixed;inset:0;z-index:60;background:#05050bf2;backdrop-filter:blur(7px);
+       display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#voile.on{display:flex}
+#voile canvas{width:min(330px,62vw);height:min(330px,62vw)}
+/* La sphère est l'ancre de cet écran : elle ne bouge pas. Le sous-titre a donc
+   une hauteur fixe, sinon chaque phrase plus longue la ferait sauter. */
+#voile canvas{flex:none}
+#vtexte{color:var(--texte);font-size:clamp(15px,2.2vw,20px);text-align:center;max-width:620px;
+        height:4.3em;overflow:hidden;padding:0 20px;flex:none;
+        display:flex;align-items:flex-start;justify-content:center}
+#vetat{color:var(--cyan);font-size:13.4px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+
+@media(max-width:860px){
+  #rail{position:absolute;inset:0 auto 0 0;z-index:40;box-shadow:0 0 50px #000a}
+  #rail.plie{width:0;border:0;overflow:hidden}
+  #dedans,#boite,#legal{max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ─── colonne ─────────────────────────────────────────────────────────── -->
+<aside id="rail">
+  <div class="railtop">
+    <button id="plier" title="Replier">☰</button>
+    <div class="marque mot"><canvas id="orbe1" width="84" height="84"></canvas>CLIPIA</div>
+  </div>
+  <nav class="nav">
+    <button class="neuf" id="bNeuf"><span class="ic">✚</span><span class="mot">Nouvelle conversation</span></button>
+    <button id="bRech"><span class="ic">🔍</span><span class="mot">Rechercher</span></button>
+    <button id="bVocal"><span class="ic">🎙</span><span class="mot">Mode vocal</span></button>
+    <button id="bCreer"><span class="ic">✨</span><span class="mot">Créer</span></button>
+    <button id="bProjets"><span class="ic">🧩</span><span class="mot">Projets &amp; agents</span></button>
+    <button id="bInstaller" hidden><span class="ic">⬇</span><span class="mot">Installer l'application</span></button>
+  </nav>
+  <div class="titre">Conversations</div>
+  <div id="hist"><div class="vide">Rien encore.</div></div>
+</aside>
+
+<!-- ─── principal ───────────────────────────────────────────────────────── -->
+<main id="principal">
+  <header id="haut">
+    <div class="creux"></div>
+    <button class="pastille" id="bPrive" title="Rien n'est enregistré, rien n'apparaît dans l'historique">🕶 Mode privé</button>
+  </header>
+
+  <section id="accueil">
+    <canvas id="orbe2" width="420" height="420"></canvas>
+    <h1>Qu'est-ce qu'on fait ?</h1>
+    <p>Je tourne sur votre machine. Vos fichiers, vos projets et nos conversations restent ici.</p>
+    <div id="idees">
+      <button data-p="Explique-moi ce que tu sais faire, en cinq lignes.">Ce que tu sais faire</button>
+      <button data-p="Crée-moi une image : ">Créer une image</button>
+      <button data-p="Compose-moi un morceau : ">Composer un morceau</button>
+      <button data-p="Lis ce dossier et dis-moi ce qu'il contient : ">Lire un dossier</button>
+      <button data-p="Crée-moi un agent qui ">Créer un agent</button>
+      <button data-p="Écris-moi un script qui ">Écrire du code</button>
+    </div>
+  </section>
+
+  <div id="flux" hidden><div id="dedans"></div></div>
+
+  <div id="bas">
+    <div id="boite">
+      <div id="joints"></div>
+      <textarea id="saisie" rows="1" placeholder="Écrivez, parlez, ou déposez un fichier…"></textarea>
+      <div id="rangee">
+        <button class="bascule" id="bPenser" title="Elle raisonne étape par étape et vous montre son cheminement">🧠 Réfléchir</button>
+        <button class="bascule rech" id="bFouille" title="Elle cherche sur le web et cite ses sources">🔭 Recherche approfondie</button>
+        <button class="bascule" id="bMicro" title="Dicter">🎙</button>
+        <button class="bascule" id="bJoindre" title="Joindre un fichier : image, son, vidéo, document, archive, code…">📎</button>
+        <input type="file" id="choixFichier" multiple hidden>
+        <div class="creux"></div>
+        <select id="modele" title="Le cerveau qui répond"><option value="">Choix automatique</option></select>
+        <button id="envoyer" title="Envoyer">↑</button>
+      </div>
+    </div>
+    <div id="legal">Clipia peut se tromper. Vérifiez ce qui compte.</div>
+  </div>
+</main>
+
+<div id="depot"><div>Lâchez vos fichiers ici</div></div>
+
+<!-- ─── vocal ───────────────────────────────────────────────────────────── -->
+<div id="voile">
+  <canvas id="orbe3" width="700" height="700"></canvas>
+  <div id="vetat">À l'écoute</div>
+  <div id="vtexte"></div>
+  <button class="pastille" id="bFinVocal">Terminer</button>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   LA SPHÈRE. Le même nuage de points que sur le site et dans l'application :
+   c'est la signature de Clipia, elle ne change pas d'un écran à l'autre.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function sphere(cv, { petite = false } = {}) {
+  if (!cv) return { pousse() {}, amplitude() {} };
+  const ctx = cv.getContext('2d');
+  const N = petite ? 170 : 460, pts = [];
+  for (let i = 0; i < N; i++) {
+    const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), a = i * 2.399963;
+    pts.push({ x: Math.cos(a) * r, y, z: Math.sin(a) * r, h: 250 + (i % 7) * 8 });
+  }
+  const anneaux = petite ? [] : [0, 1].map(k =>
+    Array.from({ length: 80 }, (_, i) => ({ a: i / 80 * Math.PI * 2, k })));
+  let W = 0, H = 0, t = 0, boost = 0, amp = 0, vivant = true;
+  const dim = () => { const d = Math.min(devicePixelRatio || 1, 2);
+    W = cv.clientWidth; H = cv.clientHeight; cv.width = W * d; cv.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+  dim(); addEventListener('resize', dim);
+  const pr = (x, y, z, ay, ax, R) => {
+    const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax);
+    const X = x * cy + z * sy; let Z = -x * sy + z * cy; const Y = y * cx - Z * sx; Z = y * sx + Z * cx;
+    const p = 2.6 / (2.6 - Z * .9);
+    return { x: W / 2 + X * R * p, y: H / 2 + Y * R * p, z: Z, p };
+  };
+  const lent = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  (function boucle() {
+    if (!vivant) return; requestAnimationFrame(boucle);
+    t += lent ? 0 : .006; boost *= .93;
+    const R = Math.min(W, H) * (.30 + boost * .05 + amp * .07), ay = t * 1.1, ax = .35 + Math.sin(t * .7) * .25;
+    ctx.clearRect(0, 0, W, H);
+    const g = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, R * 1.9);
+    g.addColorStop(0, `rgba(124,58,237,${.4 + amp * .3})`);
+    g.addColorStop(.5, 'rgba(37,99,235,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const pu = 1 + Math.sin(t * 3) * .03 + boost * .08 + amp * .09;
+    pts.map(q => { const p = pr(q.x * pu, q.y * pu, q.z * pu, ay, ax, R); p.h = q.h; return p })
+       .sort((a, b) => a.z - b.z)
+       .forEach(p => { ctx.fillStyle = `hsla(${p.h},90%,${62 + p.z * 14}%,${.24 + (p.z + 1) * .37})`;
+         ctx.beginPath(); ctx.arc(p.x, p.y, (petite ? .7 : 1) * (1 + (p.z + 1) * 1.1) * p.p * (1 + amp * .35), 0, 7); ctx.fill() });
+    anneaux.forEach((a, k) => a.forEach(q => {
+      const A = q.a + t * (k ? -1.6 : 1.3), rr = 1.38 + k * .22 + amp * .1;
+      const p = pr(Math.cos(A) * rr, Math.sin(A) * rr * (k ? .25 : .12), Math.sin(A) * rr, ay * .6 + k, ax + (k ? .9 : -.4), R);
+      ctx.fillStyle = k ? 'rgba(79,224,176,.8)' : 'rgba(201,160,255,.85)';
+      ctx.beginPath(); ctx.arc(p.x, p.y, 1.4 + (p.z + 1) * .7, 0, 7); ctx.fill();
+    }));
+  })();
+  return { pousse: () => { boost = 1 }, amplitude: v => { amp = amp * .7 + v * .3 } };
+}
+const orbe1 = sphere(document.getElementById('orbe1'), { petite: true });
+const orbe2 = sphere(document.getElementById('orbe2'));
+const orbe3 = sphere(document.getElementById('orbe3'));
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OUTILS
+   ═══════════════════════════════════════════════════════════════════════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/** Un rendu Markdown volontairement court : gras, italique, code, listes, liens, titres. */
+function md(t) {
+  const blocs = [];
+  let s = String(t || '').replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) =>
+    `\u0000${blocs.push(`<pre><code data-l="${esc(l)}">${esc(c.replace(/\n$/, ''))}</code></pre>`) - 1}\u0000`);
+  s = esc(s)
+    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>')
+    .replace(/(^|[\s(])\*([^*\n]+)\*/g, '$1<i>$2</i>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/^#{1,3}\s+(.+)$/gm, '<b>$1</b>');
+  const out = [];
+  let liste = null;
+  for (const ligne of s.split('\n')) {
+    const puce = ligne.match(/^\s*[-*•]\s+(.*)$/), num = ligne.match(/^\s*\d+[.)]\s+(.*)$/);
+    if (puce || num) {
+      const type = puce ? 'ul' : 'ol';
+      if (liste !== type) { if (liste) out.push(`</${liste}>`); out.push(`<${type}>`); liste = type; }
+      out.push(`<li>${(puce || num)[1]}</li>`); continue;
+    }
+    if (liste) { out.push(`</${liste}>`); liste = null; }
+    out.push(ligne.trim() ? `<p>${ligne}</p>` : '');
+  }
+  if (liste) out.push(`</${liste}>`);
+  return out.join('').replace(/\u0000(\d+)\u0000/g, (_, i) => blocs[+i]);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES RÉSULTATS DANS LE FIL
+   Une image, un son ou une vidéo produits par Clipia doivent s'ouvrir ici,
+   se lire ici, et se télécharger d'un clic. Un lien brut dans du texte n'est
+   pas un résultat : c'est une promesse de résultat.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const EXT = {
+  image: /\.(png|jpe?g|webp|gif|avif|bmp|svg)(\?|#|$)/i,
+  audio: /\.(mp3|wav|ogg|m4a|flac|opus|aac)(\?|#|$)/i,
+  video: /\.(mp4|webm|mov|mkv|avi)(\?|#|$)/i
+};
+const genreDe = (u) => EXT.image.test(u) ? 'image' : EXT.audio.test(u) ? 'audio'
+                     : EXT.video.test(u) ? 'video' : 'fichier';
+const nomDe = (u) => { try { return decodeURIComponent(u.split('?')[0].split('#')[0].split('/').pop()) || 'fichier'; }
+                       catch { return 'fichier'; } };
+const ICONE = { image: '🖼', audio: '🎵', video: '🎬', fichier: '📄' };
+
+/** Les URL de médias produites par Clipia, trouvées dans un texte. */
+function mediasDansTexte(t) {
+  const vus = new Set();
+  const re = /(?:!?\[[^\]]*\]\()?((?:https?:\/\/[^\s)"'<>]+|\/(?:media|uploads)\/[^\s)"'<>]+))\)?/gi;
+  let m;
+  while ((m = re.exec(t))) {
+    const u = m[1].replace(/[.,;:]+$/, '');
+    if (genreDe(u) === 'fichier' && !/^\/(media|uploads)\//.test(u)) continue;   // on n'affiche pas n'importe quel lien
+    vus.add(u);
+  }
+  return [...vus];
+}
+
+/** Ajoute un résultat lisible et téléchargeable sous la réponse. */
+function poserMedia(zone, url, titre) {
+  if (!url) return;
+  if ([...zone.children].some(c => c.dataset.url === url)) return;   // pas deux fois le même
+  const genre = genreDe(url), nom = titre || nomDe(url);
+  const b = document.createElement('div');
+  b.className = 'bloc'; b.dataset.url = url;
+  const corps =
+    genre === 'image' ? `<img src="${url}" alt="${esc(nom)}" loading="lazy">`
+  : genre === 'audio' ? `<audio controls preload="metadata" src="${url}"></audio>`
+  : genre === 'video' ? `<video controls preload="metadata" playsinline src="${url}"></video>`
+  : `<div class="fichierseul"><span class="ic">${ICONE.fichier}</span><span class="nom">${esc(nom)}</span></div>`;
+  b.innerHTML = corps +
+    `<div class="barre"><span>${ICONE[genre]}</span><span class="nom">${esc(nom)}</span>
+     <a href="${url}" download="${esc(nom)}">⬇ Télécharger</a>
+     <a href="${url}" target="_blank" rel="noopener">↗ Ouvrir</a></div>`;
+  zone.hidden = false; zone.append(b); enBas();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LES PIÈCES JOINTES
+   N'importe quel fichier : par le trombone, par glisser-déposer sur la
+   fenêtre, ou collé depuis le presse-papiers.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const PJ = [];                                   // {nom, taille, type, url, apercu}
+/* La route du serveur Clipia, lue dans son code : un fichier par requête,
+   multipart, et elle répond avec l'enregistrement de l'asset. */
+async function televerser(f) {
+  const fd = new FormData();
+  fd.append('fichier', f, f.name);
+  const r = await fetch('/api/televerser', { method: 'POST', body: fd });
+  if (!r.ok) throw new Error(`le serveur a répondu ${r.status} : ${(await r.text()).slice(0, 160)}`);
+  const j = await r.json().catch(() => ({}));
+  if (j.erreur) throw new Error(j.erreur);
+  if (!j.url) throw new Error('réponse sans URL de fichier');
+  return j.url;
+}
+
+function dessinerPJ() {
+  const z = $('#joints'); z.innerHTML = '';
+  PJ.forEach((p, i) => {
+    const d = document.createElement('span');
+    d.className = 'joint' + (p.url ? '' : ' encours');
+    d.innerHTML = (p.apercu ? `<img src="${p.apercu}" alt="">` : `<span>${ICONE[genreDe(p.nom)]}</span>`) +
+      `<span class="n">${esc(p.nom)}</span><span style="color:#5c6088">${Math.max(1, Math.round(p.taille / 1024))} Ko</span>
+       <button title="Retirer">✕</button>`;
+    d.querySelector('button').onclick = () => { PJ.splice(i, 1); dessinerPJ(); majEnvoi(); };
+    z.append(d);
+  });
+  majEnvoi();
+}
+
+async function joindre(fichiers) {
+  for (const f of fichiers) {
+    if (f.size > 220 * 1024 * 1024) { alert(`« ${f.name} » dépasse 220 Mo.`); continue; }
+    const p = { nom: f.name, taille: f.size, type: f.type, url: null, apercu: null };
+    if (/^image\//.test(f.type)) p.apercu = URL.createObjectURL(f);
+    PJ.push(p); dessinerPJ();
+    try { p.url = await televerser(f); }
+    catch (e) {
+      PJ.splice(PJ.indexOf(p), 1); dessinerPJ();
+      alert(`Impossible d'envoyer « ${f.name} ».\n\n${e.message}`);
+    }
+    dessinerPJ();
+  }
+}
+
+/**
+ * Le nom du moteur à afficher. Le noyau l'envoie tantôt en chaîne, tantôt en
+ * objet ({provider, model}, {id, label}…) : sans ça, le pied de réponse
+ * affichait « [object Object] ».
+ */
+/** Les URL de fichiers portées par un événement, quelle que soit sa forme. */
+function urlsDansEvenement(ev) {
+  const out = [];
+  const voir = (v, prof) => {
+    if (prof > 3 || v == null) return;
+    if (typeof v === 'string') { if (/^(https?:\/\/|\/media\/|\/uploads\/)/.test(v)) out.push(v); return; }
+    if (Array.isArray(v)) return v.forEach(x => voir(x, prof + 1));
+    if (typeof v === 'object') for (const k of ['url', 'chemin', 'path', 'fichier', 'file', 'asset', 'assets', 'resultat', 'media'])
+      if (k in v) voir(v[k], prof + 1);
+  };
+  voir(ev, 0);
+  return [...new Set(out)].filter(u => genreDe(u) !== 'fichier' || /^\/(media|uploads)\//.test(u));
+}
+
+function nomMoteur(ev) {
+  const brut = ev?.modele ?? ev?.moteur ?? ev?.label ?? ev?.provider ?? ev?.model ?? null;
+  if (!brut) return null;
+  if (typeof brut === 'string') return brut;
+  if (typeof brut !== 'object') return String(brut);
+  const f = brut.label || brut.fournisseur || brut.provider || brut.id || '';
+  const m = brut.model || brut.modele || brut.nom || brut.name || '';
+  const vu = [f, m].filter(Boolean).filter((v, i, t) => t.indexOf(v) === i).join(' · ');
+  return vu || null;
+}
+
+async function api(url, opt) {
+  const r = await fetch(url, { headers: { 'content-type': 'application/json' }, ...opt });
+  if (!r.ok) throw new Error(`${r.status} ${(await r.text()).slice(0, 180)}`);
+  return r.json();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ÉTAT
+   ═══════════════════════════════════════════════════════════════════════════ */
+const E = {
+  historique: [],            // [{role, content}] envoyé au noyau
+  convId: null,
+  prive: false,
+  penser: false,
+  fouille: false,
+  occupe: false,
+  stop: null                 // pour couper un flux en cours
+};
+const mem = {
+  get: (k, d) => { try { return localStorage.getItem('clipia:bot:' + k) ?? d } catch { return d } },
+  set: (k, v) => { try { localStorage.setItem('clipia:bot:' + k, v) } catch {} }
+};
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODÈLES. Les cerveaux locaux d'abord : ce sont eux qui tournent chez vous.
+   ═══════════════════════════════════════════════════════════════════════════ */
+async function chargerModeles() {
+  const sel = $('#modele');
+  const ajoute = (grp, items) => {
+    if (!items.length) return;
+    const g = document.createElement('optgroup'); g.label = grp;
+    for (const it of items) {
+      const o = document.createElement('option');
+      o.value = it.v; o.textContent = it.t; g.append(o);
+    }
+    sel.append(g);
+  };
+  try {
+    const loc = await api('/api/modeles-locaux').catch(() => null);
+    const mods = (loc?.modeles || loc || []).map(m => m.nom || m.name || m).filter(Boolean);
+    const fcm = mods.filter(n => /clipia-fcm/i.test(n));
+    const autres = mods.filter(n => !/clipia-fcm/i.test(n));
+    ajoute('Clipia, chez vous', fcm.map(n => ({ v: 'ollama|' + n, t: n + '  — local' })));
+    ajoute('Autres modèles locaux', autres.map(n => ({ v: 'ollama|' + n, t: n })));
+  } catch {}
+  try {
+    const f = await api('/api/fournisseurs');
+    const prets = f.filter(x => x.configure && (x.modalities || []).includes('texte') !== false);
+    ajoute('Branchés', prets.slice(0, 24).map(x => ({ v: x.id + '|', t: x.label })));
+  } catch {}
+  const garde = mem.get('modele', '');
+  if (garde && [...sel.options].some(o => o.value === garde)) sel.value = garde;
+  sel.onchange = () => mem.set('modele', sel.value);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HISTORIQUE
+   ═══════════════════════════════════════════════════════════════════════════ */
+async function chargerHistorique() {
+  const z = $('#hist');
+  let l = [];
+  try { l = await api('/api/conversations'); } catch {}
+  if (!Array.isArray(l) || !l.length) { z.innerHTML = '<div class="vide">Rien encore.</div>'; return; }
+  l.sort((a, b) => (b.epingle ? 1 : 0) - (a.epingle ? 1 : 0) || String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+  z.innerHTML = '';
+  for (const c of l.slice(0, 80)) {
+    const d = document.createElement('div');
+    d.className = 'conv' + (c.id === E.convId ? ' actif' : '');
+    d.innerHTML = `<span>${c.epingle ? '📌 ' : ''}${esc(c.titre || 'Sans titre')}</span>
+      <span class="act"><button data-e title="${c.epingle ? 'Détacher' : 'Épingler'}">📌</button>
+      <button data-s title="Supprimer">🗑</button></span>`;
+    d.querySelector('span').onclick = () => ouvrir(c.id);
+    d.querySelector('[data-e]').onclick = async e => { e.stopPropagation();
+      await api(`/api/conversations/${c.id}/epingler`, { method: 'POST', body: JSON.stringify({ epingle: !c.epingle }) }).catch(() => {});
+      chargerHistorique(); };
+    d.querySelector('[data-s]').onclick = async e => { e.stopPropagation();
+      await api(`/api/conversations/${c.id}`, { method: 'DELETE' }).catch(() => {});
+      if (c.id === E.convId) nouvelle();
+      chargerHistorique(); };
+    z.append(d);
+  }
+}
+
+async function ouvrir(id) {
+  let c; try { c = await api('/api/conversations/' + id); } catch { return; }
+  E.convId = id; E.historique = (c.messages || []).map(m => ({ role: m.role, content: m.content }));
+  $('#dedans').innerHTML = '';
+  for (const m of E.historique) {
+    if (m.role === 'user') ajouterMoi(m.content);
+    else { const t = ajouterElle(); t.corps.innerHTML = md(m.content);
+           t.corps.classList.remove('curseur'); t.tourne.remove(); t.pense.hidden = true;
+           for (const u of mediasDansTexte(m.content)) poserMedia(t.media, u); }
+  }
+  montrerFlux(true); chargerHistorique();
+}
+
+function nouvelle() {
+  E.convId = null; E.historique = [];
+  $('#dedans').innerHTML = ''; montrerFlux(false);
+  $('#saisie').focus(); chargerHistorique();
+}
+
+async function enregistrer() {
+  if (E.prive || E.historique.length < 2) return;      // le mode privé n'écrit rien, c'est tout son intérêt
+  try {
+    const r = await api('/api/conversations', { method: 'POST',
+      body: JSON.stringify({ id: E.convId, messages: E.historique,
+        titre: E.historique[0].content.slice(0, 60) }) });
+    if (r?.id) E.convId = r.id;
+    chargerHistorique();
+  } catch {}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   AFFICHAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+const montrerFlux = (oui) => { $('#accueil').hidden = oui; $('#flux').hidden = !oui; };
+const enBas = () => { const f = $('#flux'); f.scrollTop = f.scrollHeight; };
+
+function ajouterMoi(txt) {
+  const d = document.createElement('div');
+  d.className = 'tour moi';
+  d.innerHTML = `<div class="b">${esc(txt)}</div>`;
+  $('#dedans').append(d); enBas();
+}
+
+/** Un tour de Clipia : avatar, carnet de réflexion, jetons d'outils, corps, pied. */
+function ajouterElle() {
+  const d = document.createElement('div');
+  d.className = 'tour elle';
+  d.innerHTML = `<canvas class="av" width="80" height="80"></canvas>
+    <div class="corps-ext" style="flex:1;min-width:0">
+      <details class="pense" hidden><summary><span class="tourne"></span><span class="etq">Elle réfléchit…</span></summary><div class="dedans"></div></details>
+      <div class="jetons" hidden></div>
+      <div class="corps curseur"></div>
+      <div class="media" hidden></div>
+      <div class="pied" hidden></div>
+    </div>`;
+  $('#dedans').append(d);
+  sphere(d.querySelector('.av'), { petite: true });
+  enBas();
+  return {
+    racine: d,
+    pense: d.querySelector('.pense'),
+    penseTexte: d.querySelector('.pense .dedans'),
+    penseEtq: d.querySelector('.pense .etq'),
+    tourne: d.querySelector('.pense .tourne'),
+    jetons: d.querySelector('.jetons'),
+    corps: d.querySelector('.corps'),
+    media: d.querySelector('.media'),
+    pied: d.querySelector('.pied')
+  };
+}
+
+function jeton(zone, texte, fait) {
+  zone.hidden = false;
+  let j = [...zone.children].find(x => x.dataset.k === texte);
+  if (!j) { j = document.createElement('span'); j.className = 'jeton'; j.dataset.k = texte; zone.append(j); }
+  j.innerHTML = (fait ? '✓ ' : '<span class="tourne"></span> ') + esc(texte);
+  j.classList.toggle('fait', !!fait);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ENVOYER. Le flux du noyau est lu événement par événement : on sépare ce
+   qu'elle pense de ce qu'elle dit, parce que mélanger les deux est illisible.
+   ═══════════════════════════════════════════════════════════════════════════ */
+async function envoyer(texte) {
+  if (E.occupe) return;
+  let msg = String(texte ?? $('#saisie').value).trim();
+  const joints = PJ.filter(p => p.url);
+  if (!msg && !joints.length) return;
+  if (joints.length) {
+    /* Les fichiers partent dans le message : Clipia lit des chemins, pas des
+       pièces jointes au sens d'un courriel. */
+    const liste = joints.map(p => `- ${p.nom} : ${p.url}`).join('\n');
+    msg = (msg ? msg + '\n\n' : '') + `Fichiers joints :\n${liste}`;
+  }
+  $('#saisie').value = ''; dimensionner();
+  montrerFlux(true); ajouterMoi(msg);
+  if (joints.length) {
+    const z = $('#dedans').lastElementChild;
+    const m = document.createElement('div'); m.className = 'media';
+    z.append(m); for (const p of joints) poserMedia(m, p.url, p.nom);
+  }
+  PJ.length = 0; dessinerPJ();
+  E.historique.push({ role: 'user', content: msg });
+
+  E.occupe = true; majEnvoi();
+  const T = ajouterElle();
+  orbe1.pousse();
+
+  const [prov, mod] = ($('#modele').value || '|').split('|');
+  const corps = {
+    message: msg,
+    historique: E.historique.slice(0, -1).slice(-20),
+    vocal: false,
+    mode: E.penser ? 'reflexion' : undefined,
+    provider: prov || undefined,
+    model: mod || undefined
+  };
+  if (E.fouille) corps.message = 'Cherche sur le web, puis réponds en citant tes sources. ' + msg;
+
+  let accu = '', pensees = '', moteur = null;
+  const ctrl = new AbortController(); E.stop = () => ctrl.abort();
+
+  try {
+    const r = await fetch('/api/noyau/converser', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(corps), signal: ctrl.signal
+    });
+    if (!r.ok) throw new Error(`${r.status} — ${(await r.text()).slice(0, 200)}`);
+
+    const lect = r.body.getReader(), dec = new TextDecoder();
+    let reste = '';
+    for (;;) {
+      const { value, done } = await lect.read();
+      if (done) break;
+      reste += dec.decode(value, { stream: true });
+      const morceaux = reste.split('\n\n'); reste = morceaux.pop();
+      for (const bloc of morceaux) {
+        const ligne = bloc.split('\n').find(l => l.startsWith('data:'));
+        if (!ligne) continue;
+        let ev; try { ev = JSON.parse(ligne.slice(5).trim()); } catch { continue }
+
+        if (ev.type === 'texte' || ev.type === 'message') {
+          accu += ev.texte ?? ev.message ?? '';
+          T.corps.innerHTML = md(accu); T.corps.classList.add('curseur'); enBas();
+        } else if (ev.type === 'pensee' || ev.type === 'reflexion') {
+          const bout = String(ev.texte || ev.message || '').trim();
+          if (bout) {                      // une pensée vide n'ouvre pas le carnet
+            pensees += bout + '\n';
+            T.pense.hidden = false; T.penseTexte.textContent = pensees.trim(); enBas();
+          }
+        } else if (ev.type === 'outil') {
+          jeton(T.jetons, ev.nom || ev.outil || 'outil', false);
+        } else if (ev.type === 'resultat') {
+          jeton(T.jetons, ev.nom || ev.outil || 'outil', true);
+          for (const u of urlsDansEvenement(ev)) poserMedia(T.media, u);
+        } else if (ev.type === 'effet' || ev.type === 'simule') {
+          jeton(T.jetons, ev.quoi || ev.texte || 'action', true);
+          for (const u of urlsDansEvenement(ev)) poserMedia(T.media, u);
+        } else if (ev.type === 'moteur') {
+          moteur = nomMoteur(ev);
+        } else if (ev.type === 'attente') {
+          T.corps.insertAdjacentHTML('beforeend',
+            `<div class="alerte"><b>Elle attend votre accord.</b><br>${esc(ev.message || ev.texte || 'Une action demande votre autorisation.')}<br>
+             <small>Donnez-le dans la fenêtre principale de Clipia : un accord ne peut pas venir d'ici.</small></div>`);
+        } else if (ev.type === 'erreur') {
+          T.corps.insertAdjacentHTML('beforeend',
+            `<div class="alerte"><b>${esc(ev.message || 'Erreur')}</b>${ev.aide ? '<br>' + esc(ev.aide) : ''}</div>`);
+        } else if (ev.type === 'termine') {
+          if (ev.texte && ev.texte.length > accu.length) { accu = ev.texte; T.corps.innerHTML = md(accu); }
+          moteur = nomMoteur(ev) || moteur;
+        }
+      }
+    }
+  } catch (e) {
+    if (e.name !== 'AbortError')
+      T.corps.insertAdjacentHTML('beforeend', `<div class="alerte"><b>Rien n'est revenu.</b><br>${esc(e.message)}</div>`);
+  }
+
+  T.corps.classList.remove('curseur');
+  T.tourne.remove();
+  if (pensees) { T.penseEtq.textContent = 'Son raisonnement'; } else { T.pense.hidden = true; }
+
+  if (accu) E.historique.push({ role: 'assistant', content: accu });
+  for (const u of mediasDansTexte(accu)) poserMedia(T.media, u);
+
+  /* Le pied : qui a répondu, et quoi faire de la réponse. */
+  T.pied.hidden = false;
+  T.pied.innerHTML = (moteur ? `<span title="Le cerveau qui a répondu">${esc(moteur)}</span><span>·</span>` : '') +
+    `<button data-c>Copier</button><button data-v>🔊 Écouter</button><button data-r>↻ Refaire</button>`;
+  T.pied.querySelector('[data-c]').onclick = e => {
+    navigator.clipboard?.writeText(accu); e.target.textContent = 'Copié'; };
+  T.pied.querySelector('[data-v]').onclick = () => lire(accu);
+  T.pied.querySelector('[data-r]').onclick = () => {
+    E.historique = E.historique.filter(m => m.content !== accu);
+    T.racine.remove(); envoyer(msg);
+  };
+
+  E.occupe = false; E.stop = null; majEnvoi(); enregistrer();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VOIX. Elle passe par le serveur, donc par la voix neuronale ; la voix du
+   navigateur n'est qu'un filet de sécurité, et elle s'entend.
+   ═══════════════════════════════════════════════════════════════════════════ */
+let audio = null;
+function couperVoix() {
+  try { audio?.pause(); } catch {} audio = null;
+  try { speechSynthesis.cancel(); } catch {}
+}
+async function lire(texte, apres) {
+  couperVoix();
+  const propre = String(texte || '').replace(/```[\s\S]*?```/g, ' ').replace(/https?:\/\/\S+/g, ' ').slice(0, 3600).trim();
+  if (!propre) { apres?.(); return; }
+  try {
+    const r = await api('/api/voix/parler', { method: 'POST',
+      body: JSON.stringify({ texte: propre, voix: mem.get('voix', 'nova') }) });
+    if (!r.navigateur && r.url) {
+      audio = new Audio(r.url);
+      const ac = new (window.AudioContext || window.webkitAudioContext)();
+      const an = ac.createAnalyser(); an.fftSize = 128;
+      ac.createMediaElementSource(audio).connect(an); an.connect(ac.destination);
+      const buf = new Uint8Array(an.frequencyBinCount);
+      (function lis() { if (!audio) return; requestAnimationFrame(lis);
+        an.getByteFrequencyData(buf); let s = 0; for (let i = 0; i < 20; i++) s += buf[i];
+        const v = Math.min(1, s / 20 / 140); orbe3.amplitude(v); orbe1.amplitude(v); })();
+      audio.onended = () => { audio = null; orbe3.amplitude(0); apres?.(); };
+      await audio.play(); return;
+    }
+  } catch {}
+  try {
+    const u = new SpeechSynthesisUtterance(propre);
+    u.lang = 'fr-FR'; u.rate = 1.02; u.onend = () => apres?.();
+    speechSynthesis.speak(u);
+  } catch { apres?.(); }
+}
+
+/* ── mode vocal : on parle, elle répond, le micro revient ─────────────────── */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let reco = null, vocalOn = false;
+
+function vocal(oui) {
+  vocalOn = oui;
+  $('#voile').classList.toggle('on', oui);
+  if (!oui) { try { reco?.abort(); } catch {} reco = null; couperVoix(); return; }
+  if (!SR) { $('#vtexte').textContent = "Ce navigateur n'a pas la reconnaissance vocale. Utilisez la fenêtre principale de Clipia."; return; }
+  ecouter();
+}
+
+function ecouter() {
+  if (!vocalOn) return;
+  try { reco?.abort(); } catch {}
+  $('#vetat').textContent = 'À l\'écoute';
+  const r = reco = new SR();
+  r.lang = 'fr-FR'; r.interimResults = true; r.continuous = false;
+  let dit = '', minuteur = null;
+  r.onresult = e => {
+    let fin = '', part = '';
+    for (let i = e.resultIndex; i < e.results.length; i++)
+      e.results[i].isFinal ? fin += e.results[i][0].transcript : part += e.results[i][0].transcript;
+    dit = (dit + fin).trim(); const vu = (dit + ' ' + part).trim();
+    $('#vtexte').textContent = vu; orbe3.amplitude(.3);
+    clearTimeout(minuteur);
+    minuteur = setTimeout(() => { try { r.stop(); } catch {} }, 1800);   // 1,8 s de silence : à vous de finir
+  };
+  r.onerror = () => { if (vocalOn) setTimeout(ecouter, 700); };
+  r.onend = async () => {
+    if (!vocalOn) return;
+    const q = dit.trim();
+    if (!q) return setTimeout(ecouter, 500);
+    $('#vetat').textContent = 'Elle réfléchit';
+    const avant = $('#dedans').children.length;
+    await envoyer(q);
+    const rep = E.historique[E.historique.length - 1];
+    if (rep?.role === 'assistant') {
+      $('#vetat').textContent = 'Elle répond';
+      $('#vtexte').textContent = rep.content.slice(0, 320);
+      lire(rep.content, () => setTimeout(ecouter, 300));
+    } else setTimeout(ecouter, 500);
+  };
+  try { r.start(); } catch { setTimeout(ecouter, 800); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BRANCHEMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+const dimensionner = () => { const s = $('#saisie'); s.style.height = 'auto'; s.style.height = Math.min(s.scrollHeight, 208) + 'px'; };
+const majEnvoi = () => {
+  const b = $('#envoyer');
+  if (E.occupe) { b.textContent = '■'; b.classList.add('pret'); b.title = 'Arrêter'; }
+  else { b.textContent = '↑'; b.classList.toggle('pret', !!$('#saisie').value.trim() || PJ.some(p => p.url)); b.title = 'Envoyer'; }
+};
+
+$('#saisie').addEventListener('input', () => { dimensionner(); majEnvoi(); });
+$('#saisie').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); envoyer(); }
+});
+$('#envoyer').onclick = () => { if (E.occupe) { E.stop?.(); } else envoyer(); };
+
+$('#plier').onclick = () => $('#rail').classList.toggle('plie');
+$('#bNeuf').onclick = nouvelle;
+$('#bVocal').onclick = () => vocal(true);
+$('#bFinVocal').onclick = () => vocal(false);
+$('#bMicro').onclick = () => vocal(true);
+$('#bCreer').onclick = () => { $('#saisie').value = 'Crée-moi '; $('#saisie').focus(); dimensionner(); majEnvoi(); };
+$('#bProjets').onclick = () => { location.href = 'index.html#/moi'; };
+$('#bRech').onclick = async () => {
+  const q = prompt('Chercher dans vos conversations et compétences :');
+  if (!q) return;
+  try {
+    const r = await api('/api/recherche?q=' + encodeURIComponent(q));
+    const l = (r.conversations || []);
+    if (!l.length) return alert('Rien trouvé.');
+    ouvrir(l[0].id);
+  } catch (e) { alert('Recherche impossible : ' + e.message); }
+};
+
+/* Trombone, glisser-déposer sur toute la fenêtre, et collage. Trois chemins
+   pour la même chose : importer n'importe quel fichier dans la conversation. */
+$('#bJoindre').onclick = () => $('#choixFichier').click();
+$('#choixFichier').onchange = e => { joindre([...e.target.files]); e.target.value = ''; };
+
+let compteurDepot = 0;
+addEventListener('dragenter', e => {
+  if (![...(e.dataTransfer?.types || [])].includes('Files')) return;
+  e.preventDefault(); if (++compteurDepot === 1) $('#depot').classList.add('on');
+});
+addEventListener('dragover', e => { if ([...(e.dataTransfer?.types || [])].includes('Files')) e.preventDefault(); });
+addEventListener('dragleave', () => { if (--compteurDepot <= 0) { compteurDepot = 0; $('#depot').classList.remove('on'); } });
+addEventListener('drop', e => {
+  if (!e.dataTransfer?.files?.length) return;
+  e.preventDefault(); compteurDepot = 0; $('#depot').classList.remove('on');
+  joindre([...e.dataTransfer.files]);
+});
+$('#saisie').addEventListener('paste', e => {
+  const f = [...(e.clipboardData?.files || [])];
+  if (f.length) { e.preventDefault(); joindre(f); }
+});
+
+const bascule = (btn, cle) => {
+  btn.onclick = () => { E[cle] = !E[cle]; btn.classList.toggle('on', E[cle]); mem.set(cle, E[cle] ? '1' : '0'); };
+  if (mem.get(cle) === '1') btn.click();
+};
+bascule($('#bPenser'), 'penser');
+bascule($('#bFouille'), 'fouille');
+
+$('#bPrive').onclick = () => {
+  E.prive = !E.prive;
+  $('#bPrive').classList.toggle('on', E.prive);
+  $('#bPrive').classList.toggle('prive', E.prive);
+  $('#bPrive').textContent = E.prive ? '🕶 Mode privé actif' : '🕶 Mode privé';
+  if (E.prive) nouvelle();
+};
+
+$('#idees').querySelectorAll('button').forEach(b => b.onclick = () => {
+  const p = b.dataset.p;
+  if (p.endsWith(' ')) { $('#saisie').value = p; $('#saisie').focus(); dimensionner(); majEnvoi(); }
+  else envoyer(p);
+});
+
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (vocalOn) vocal(false); else if (E.occupe) E.stop?.(); }
+  if (e.key === 'k' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $('#bRech').click(); }
+  if (e.key === 'n' && (e.ctrlKey || e.metaKey) && e.shiftKey) { e.preventDefault(); nouvelle(); }
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INSTALLATION. La même page devient une application sur Android, Windows,
+   Mac, Linux et iPhone — sans rien compiler, parce que c'est du web.
+   Android et bureau proposent l'installation d'eux-mêmes ; Safari ne le fait
+   pas, il faut dire à la personne quoi toucher.
+   ═══════════════════════════════════════════════════════════════════════════ */
+let invite = null;
+const bInst = $('#bInstaller');
+const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const deja = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); invite = e; bInst.hidden = false; });
+addEventListener('appinstalled', () => { invite = null; bInst.hidden = true; });
+if (iOS && !deja) bInst.hidden = false;
+
+bInst.onclick = async () => {
+  if (invite) { invite.prompt(); const r = await invite.userChoice.catch(() => null);
+                if (r?.outcome === 'accepted') bInst.hidden = true; invite = null; return; }
+  if (iOS) return alert(
+    "Sur iPhone et iPad :\n\n" +
+    "1. Ouvrez cette page dans Safari (pas dans une autre application)\n" +
+    "2. Touchez le bouton Partager, en bas\n" +
+    "3. Choisissez « Sur l'écran d'accueil »\n\n" +
+    "Clipia s'installe alors comme une vraie application, avec son icône et en plein écran.");
+  alert(
+    "Pour installer Clipia sur cet appareil :\n\n" +
+    "• Chrome ou Edge : l'icône d'installation apparaît dans la barre d'adresse,\n" +
+    "  ou menu ⋮ → « Installer Clipia »\n" +
+    "• Firefox sur Android : menu → « Installer »\n\n" +
+    "Si rien n'apparaît, la page doit être servie en HTTPS ou depuis localhost.");
+};
+
+/* Le service worker rend la page installable et la garde disponible hors ligne.
+   Il va chercher le réseau d'abord : une mise à jour de Clipia est vue tout de
+   suite, au lieu de rester figée sur une version en cache. */
+if ('serviceWorker' in navigator)
+  addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+
+/* Raccourcis du manifeste : ?neuf=1 et ?vocal=1 */
+const params = new URLSearchParams(location.search);
+if (params.get('vocal') === '1') setTimeout(() => vocal(true), 350);
+
+chargerModeles(); chargerHistorique(); dimensionner(); majEnvoi();
+if (!iOS) $('#saisie').focus();   /* sur iPhone, le focus fait monter le clavier d'emblée */
+</script>
+</body>
+</html>
