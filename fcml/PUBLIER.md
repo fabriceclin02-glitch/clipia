@@ -1,4 +1,4 @@
-# Publier Clipia FCMLL 1.1 sur ollama.com
+# Publier Clipia FCML 1.1 sur ollama.com
 
 Le modèle fait environ 2,9 Go : trop gros pour un dépôt Git (GitHub refuse les
 fichiers de plus de 100 Mo, 2 Go même avec LFS). Sa place est le registre

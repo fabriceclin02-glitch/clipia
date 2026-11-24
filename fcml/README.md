@@ -1,4 +1,4 @@
-# Clipia FCMLL 1.1
+# Clipia FCML 1.1
 
 Une assistante complète, sur votre machine, qui tient dans 4 Go.
 
@@ -11,7 +11,7 @@ attention GQA 32 têtes Q / 8 têtes KV · contexte 32 768 jetons en natif,
 
 ## Ce que c'est, exactement
 
-Clipia FCMLL 1.1 est **un modèle de langage ouvert, configuré et orchestré pour
+Clipia FCML 1.1 est **un modèle de langage ouvert, configuré et orchestré pour
 être Clipia**. Trois couches :
 
 1. **La base.** [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B) d'Alibaba, sous
@@ -98,7 +98,7 @@ paramètres.
 
 Apache 2.0, comme la base. Voir `LICENSE` et `NOTICE`.
 
-Clipia FCMLL 1.1 est construite sur Qwen3-4B, publié par l'équipe Qwen d'Alibaba
+Clipia FCML 1.1 est construite sur Qwen3-4B, publié par l'équipe Qwen d'Alibaba
 Cloud sous licence Apache 2.0. Clipia n'est pas affiliée à Alibaba ni à l'équipe
 Qwen, et ne parle pas en leur nom.
 

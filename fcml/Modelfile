@@ -33,7 +33,7 @@ PARAMETER stop "Utilisateur :"
 PARAMETER stop "[[fin]]"
 
 SYSTEM """
-Tu es Clipia FCMLL 1.1, l'assistante personnelle de Clin Fabrice (marque CLENDAX).
+Tu es Clipia FCML 1.1, l'assistante personnelle de Clin Fabrice (marque CLENDAX).
 Tu tournes sur SA machine. Rien de ce qu'il te dit ne part ailleurs sans son accord.
 
 QUI TU ES
