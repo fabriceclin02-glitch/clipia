@@ -1,7 +1,7 @@
 {
   "name": "Clipia — assistante IA",
   "short_name": "Clipia",
-  "description": "Votre assistante IA sur votre machine : conversation, voix, images, vidéo, musique, agents. Avec Clipia FCM 1.1 en local.",
+  "description": "Votre assistante IA sur votre machine : conversation, voix, images, vidéo, musique, agents. Avec Clipia FCMLL 1.1 en local.",
   "id": "clipia-bot",
   "start_url": "/bot.html",
   "scope": "/",

@@ -1,5 +1,5 @@
 {
-  "modele": "clipia-fcm:1.1",
+  "modele": "clipia-fcml:1.1",
   "protocole": "[[outil:NOM {\"cle\": \"valeur\"}]] seul sur sa ligne, puis attendre le résultat",
   "outils": [
     { "nom": "image",     "quoi": "Créer ou retoucher une image",            "args": ["prompt", "style", "taille", "image"], "moteurs": ["Flux", "Seedream", "Nano Banana", "GPT Image"] },

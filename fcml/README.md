@@ -1,4 +1,4 @@
-# Clipia FCM 1.1
+# Clipia FCMLL 1.1
 
 Une assistante complète, sur votre machine, qui tient dans 4 Go.
 
@@ -11,7 +11,7 @@ attention GQA 32 têtes Q / 8 têtes KV · contexte 32 768 jetons en natif,
 
 ## Ce que c'est, exactement
 
-Clipia FCM 1.1 est **un modèle de langage ouvert, configuré et orchestré pour
+Clipia FCMLL 1.1 est **un modèle de langage ouvert, configuré et orchestré pour
 être Clipia**. Trois couches :
 
 1. **La base.** [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B) d'Alibaba, sous
@@ -24,7 +24,7 @@ Clipia FCM 1.1 est **un modèle de langage ouvert, configuré et orchestré pour
    contrainte pour qu'elle n'invente pas.
 3. **Les outils.** Quinze outils déclarés (image, vidéo, musique, voix, écoute,
    3D, documents, web, fichiers, machine, terminal, agents, sous-agents,
-   mémoire, tâches programmées). FCM 1.1 les appelle ; les moteurs spécialisés
+   mémoire, tâches programmées). FCML 1.1 les appelle ; les moteurs spécialisés
    exécutent. Une seule interlocutrice, une seule voix.
 
 ## Ce que ce n'est pas
@@ -35,7 +35,7 @@ Autant le dire avant que vous le découvriez.
   ceux de Qwen3-4B, inchangés. Ce qui est de Clipia, c'est la couche d'identité,
   de comportement et d'outils — ce qui, à l'usage, fait l'essentiel de la
   différence, mais ce n'est pas un entraînement. Voir « Phase 2 » plus bas.
-- **Ce n'est pas un modèle multimodal.** FCM 1.1 ne voit pas une image et
+- **Ce n'est pas un modèle multimodal.** FCML 1.1 ne voit pas une image et
   n'entend pas un son par elle-même. Elle passe par ses outils. Le résultat est
   le même pour vous ; la mécanique est différente, et elle le dit si on le lui
   demande.
@@ -50,11 +50,11 @@ modèle en local, hors ligne, sans clé.
 
 ```
 git clone https://github.com/fabriceclin02-glitch/clipia.git
-cd clipia/fcm
+cd clipia/fcml
 node construire.mjs
 ```
 
-Sous Windows, double-cliquez sur `Construire Clipia FCM.bat`.
+Sous Windows, double-cliquez sur `Construire Clipia FCML.bat`.
 
 Le script télécharge la base, crée le modèle, puis **mesure** : taille réelle
 sur le disque, paramètres déclarés, contexte, et vitesse en jetons par seconde.
@@ -63,10 +63,10 @@ Il affiche ce qu'il a mesuré, pas ce qu'on espérait.
 Ensuite :
 
 ```
-ollama run clipia-fcm:1.1
+ollama run clipia-fcml:1.1
 ```
 
-Ou, dans Clipia : **Cerveau → Ollama → clipia-fcm:1.1**.
+Ou, dans Clipia : **Cerveau → Ollama → clipia-fcml:1.1**.
 
 ## Vitesse
 
@@ -98,7 +98,7 @@ paramètres.
 
 Apache 2.0, comme la base. Voir `LICENSE` et `NOTICE`.
 
-Clipia FCM 1.1 est construite sur Qwen3-4B, publié par l'équipe Qwen d'Alibaba
+Clipia FCMLL 1.1 est construite sur Qwen3-4B, publié par l'équipe Qwen d'Alibaba
 Cloud sous licence Apache 2.0. Clipia n'est pas affiliée à Alibaba ni à l'équipe
 Qwen, et ne parle pas en leur nom.
 

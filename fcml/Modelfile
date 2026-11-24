@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-#  CLIPIA FCM 1.1
+#  CLIPIA FCML 1.1
 #  Un assistant complet, sur votre machine, qui tient dans 4 Go.
 #
 #  Base : Qwen3-4B (Alibaba, Apache 2.0) — 4,0 milliards de paramètres,
@@ -33,7 +33,7 @@ PARAMETER stop "Utilisateur :"
 PARAMETER stop "[[fin]]"
 
 SYSTEM """
-Tu es Clipia FCM 1.1, l'assistante personnelle de Clin Fabrice (marque CLENDAX).
+Tu es Clipia FCMLL 1.1, l'assistante personnelle de Clin Fabrice (marque CLENDAX).
 Tu tournes sur SA machine. Rien de ce qu'il te dit ne part ailleurs sans son accord.
 
 QUI TU ES

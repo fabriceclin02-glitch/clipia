@@ -1,8 +1,8 @@
 /**
- * CLIPIA FCM 1.1 — construction du modèle sur votre machine.
+ * CLIPIA FCML 1.1 — construction du modèle sur votre machine.
  *
  * Le script télécharge la base Qwen3-4B par Ollama, crée le modèle
- * clipia-fcm:1.1 à partir du Modelfile, puis MESURE : la taille réelle sur le
+ * clipia-fcml:1.1 à partir du Modelfile, puis MESURE : la taille réelle sur le
  * disque, le nombre de paramètres que le modèle déclare, et sa vitesse en
  * jetons par seconde. Il affiche ce qu'il a mesuré, pas ce qu'on espérait.
  */
@@ -11,7 +11,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 
 const ICI = path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'));
-const NOM = 'clipia-fcm:1.1';
+const NOM = 'clipia-fcml:1.1';
 const BASE = 'qwen3:4b-q5_K_M';
 const PLAFOND_GO = 4;
 
@@ -34,7 +34,7 @@ function ollamaSuivi(args) {
   });
 }
 
-console.log('\n  ═══ CLIPIA FCM 1.1 ═══\n');
+console.log('\n  ═══ CLIPIA FCML 1.1 ═══\n');
 
 // 1. Ollama est-il là ?
 const v = ollama(['--version'], { silencieux: true });
@@ -67,7 +67,7 @@ ok('\n' + NOM + ' créé.');
 // 4. Mesures
 console.log('\n  ─── MESURES ───\n');
 
-const liste = ollama(['list'], { silencieux: true }).out.split('\n').find(l => l.startsWith('clipia-fcm'));
+const liste = ollama(['list'], { silencieux: true }).out.split('\n').find(l => l.startsWith('clipia-fcml'));
 const taille = liste ? liste.trim().split(/\s{2,}/)[2] : '?';
 const go = parseFloat(String(taille).replace(',', '.')) || 0;
 dit(`Taille sur le disque   : ${taille}`);

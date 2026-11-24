@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Clipia — FCM 1.1</title>
+<title>Clipia — FCML 1.1</title>
 <!-- Installable partout : Android et bureau par le manifeste, iPhone par les
      balises Apple (Safari ignore le manifeste pour l'ajout à l'écran d'accueil). -->
 <link rel="manifest" href="bot-manifest.json">
@@ -539,8 +539,8 @@ async function chargerModeles() {
   try {
     const loc = await api('/api/modeles-locaux').catch(() => null);
     const mods = (loc?.modeles || loc || []).map(m => m.nom || m.name || m).filter(Boolean);
-    const fcm = mods.filter(n => /clipia-fcm/i.test(n));
-    const autres = mods.filter(n => !/clipia-fcm/i.test(n));
+    const fcm = mods.filter(n => /clipia-fcml/i.test(n));
+    const autres = mods.filter(n => !/clipia-fcml/i.test(n));
     ajoute('Clipia, chez vous', fcm.map(n => ({ v: 'ollama|' + n, t: n + '  — local' })));
     ajoute('Autres modèles locaux', autres.map(n => ({ v: 'ollama|' + n, t: n })));
   } catch {}
